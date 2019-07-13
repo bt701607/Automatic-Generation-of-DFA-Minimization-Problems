@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29020.237
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "DFAMinimizationTaskGenerator", "DFAMinimizationTaskGenerator.pyproj", "{21CE3930-BE5C-42BA-AADD-CD474DA69638}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{21CE3930-BE5C-42BA-AADD-CD474DA69638}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21CE3930-BE5C-42BA-AADD-CD474DA69638}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C093252B-A7E2-4BE6-85B7-CFB1122F7967}
+	EndGlobalSection
+EndGlobal

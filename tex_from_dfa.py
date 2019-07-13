@@ -1,0 +1,66 @@
+from DFA import DFA
+
+from graphviz import Digraph
+from dot2tex  import dot2tex
+
+import os
+
+
+def dot_from_dfa(dfa):
+    """description of function"""
+
+    graph = Digraph()
+
+    graph.attr('node', shape='doublecircle')
+    for q in dfa.accepting:
+        graph.node(str(q))
+        
+    graph.attr('node', shape='circle')
+    for q in dfa.states:
+        if q not in dfa.accepting:
+            graph.node(str(q))
+    
+    graph.attr('node', style='filled', color='white')
+    graph.node("")
+
+            
+    graph.edge("", str(dfa.start))
+
+    for (q1,q2),c in dfa.transitions:
+        graph.edge(str(q1), str(q2), label=str(c))
+
+    return graph.source
+
+
+def tex_from_dfa(dfa):
+    """description of function"""
+
+    return dot2tex(dot_from_dfa(dfa), format='tikz', crop=True)
+
+
+
+if __name__ == "__main__":
+
+    fileName = "output"
+
+    test_dfa = DFA(
+        (1,2,3,4,5),
+        (
+            ((1,1),'a'),
+            ((1,2),'b'),
+            ((2,4),'c'),
+            ((5,1),'d'),
+            ((2,5),'e')
+        ),
+        1,
+        (4,5)
+    )
+
+    with open(fileName + ".tex", "w") as outputFile:
+
+        outputFile.write(tex_from_dfa(test_dfa))
+
+    os.system("""pdflatex.exe -synctex=1 -interaction=nonstopmode -shell-escape {}""".format(fileName + ".tex"))
+    
+    os.system("""{}""".format(fileName + ".tex"))
+    os.system("""{}""".format(fileName + ".pdf"))

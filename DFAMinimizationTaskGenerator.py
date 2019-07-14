@@ -6,6 +6,7 @@ from tex_from_dfa import dot_from_dfa, tex_from_dfa
 from copy import deepcopy
 
 import os
+import platform
 
 
 FILE_NAME       = "output"
@@ -13,7 +14,11 @@ FILE_NAME       = "output"
 USE_DOT2TEX     = True
 USE_DFA_BUILDER = False
 
-EXE_ENDING	  = ".exe" # 
+EXE_ENDING	= ""
+
+# no ending for e.g. Linux, MacOS
+if platform.system() == "Windows":
+    EXE_ENDING = ".exe"
 
 
 # construct dfa

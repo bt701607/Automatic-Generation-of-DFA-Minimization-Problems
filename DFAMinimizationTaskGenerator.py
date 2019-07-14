@@ -65,7 +65,7 @@ else:
 
 orig_dfa = deepcopy(test_dfa)
 
-test_dfa = DFALanguagePreservingExtender(dfa = test_dfa).duplicate(3).dfa()
+test_dfa = DFALanguagePreservingExtender(dfa = test_dfa).duplicate(1).dfa()
 
 
 # generate and view dfa
@@ -76,8 +76,6 @@ def tex_to_pdf(dfa, suffix):
         outputFile.write(tex_from_dfa(dfa))
         
     os.system("pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape {}".format(EXE_ENDING, FILE_NAME + suffix + ".tex"))
-    
-    os.system("{}".format(FILE_NAME + suffix + ".pdf"))
 
 if USE_DOT2TEX:
 

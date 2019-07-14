@@ -85,6 +85,10 @@ class DFALanguagePreservingExtender(DFAManipulationInterface):
             state1 = random.choice(tuple(q for q in self._dfa.states if len(tuple( t for t in self._dfa.transitions if t[0][1] == q )) >= 2)) # self._connected
             state2 = self._new_state(is_accepting = state1 in self._dfa.accepting)
 
+            for equivClass in self._equiv_classes:
+                if state1 in equivClass:
+                    equivClass.append(state2)
+
             # split ingoing transitions upon state1, state2
 
             ingoingTransitions  = [ t for t in self._dfa.transitions if t[0][1] == state1 ]

@@ -16,10 +16,8 @@ class DFA(object):
         if start and self.start != None:
             raise ValueError("Start state already set.")
 
-        newState = self.__state_counter
-
-        self.__state_counter += 1
-
+        newState = self.__next_state()
+        
         self.states.append(newState)
 
         if start:
@@ -69,3 +67,11 @@ class DFA(object):
             raise ValueError("Transition to remove does not exist.")
 
         self.transitions.remove(transition_to_remove)
+
+
+    def __next_state(self):
+
+        while self.__state_counter in self.states:
+            self.__state_counter += 1
+
+        return self.__state_counter

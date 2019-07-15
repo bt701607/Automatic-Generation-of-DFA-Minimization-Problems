@@ -2,6 +2,7 @@ from DFA          import DFA
 from DFABuilder   import DFABuilder
 from DFAExtender  import DFAExtender
 from pdf_from_dfa import pdf_from_dfa
+from clean		  import clean_code_dir
 
 from copy import deepcopy
 
@@ -65,3 +66,8 @@ test_dfa = DFAExtender(dfa = test_dfa).duplicate(1).dfa()
 
 pdf_from_dfa(orig_dfa, "1")
 pdf_from_dfa(test_dfa, "2")
+
+
+# clean up directory
+
+clean_code_dir((".pdf",".tex"))

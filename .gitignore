@@ -1,5 +1,7 @@
 *.pdf
 *.tex
+!thesis/thesis.tex
+
 *.aux
 *.log
 *.out

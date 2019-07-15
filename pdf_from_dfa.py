@@ -4,6 +4,15 @@ from graphviz import Digraph
 from dot2tex  import dot2tex
 
 import os
+import platform
+
+
+FILE_NAME  = "output"
+EXE_ENDING = ""
+
+# no ending for e.g. Linux, MacOS
+if platform.system() == "Windows":
+    EXE_ENDING = ".exe"
 
 
 def dot_from_dfa(dfa):
@@ -36,6 +45,14 @@ def tex_from_dfa(dfa):
     """description of function"""
 
     return dot2tex(dot_from_dfa(dfa), format='tikz', crop=True)
+	
+
+def pdf_from_dfa(dfa, identifier):
+
+    with open(FILE_NAME + identifier + ".tex", "w") as outputFile:
+        outputFile.write(tex_from_dfa(dfa))
+        
+    os.system("pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape {}".format(EXE_ENDING, FILE_NAME + identifier + ".tex"))
 
 
 

@@ -1,24 +1,9 @@
 from DFA import DFA
-from utils import *
+from DFAManipulationInterface import *
 
 import random
 
 from copy import deepcopy
-
-
-def custom_sample(original_list, max_elements):
-    """
-    Returns a sublist with 1 to (max_elements+1) / 2 elements.
-
-    Returns the empty list, if the empty list is passed.
-    """
-
-    if original_list == []:
-        return []
-    elif max_elements > len(original_list):
-        return random.sample(original_list, random.randint(1, len(original_list)))
-    else:
-        return random.sample(original_list, random.randint(1, max_elements)) # (max_elements + 1) // 2
 
 
 class DFABuilder(DFAManipulationInterface):
@@ -34,6 +19,10 @@ class DFABuilder(DFAManipulationInterface):
     - randomness is used to create different DFAs in different run-throughs
     - 'custom sample' shall refer in this context to the semantics defined by the 'custom_sample' method
     """
+
+    def __init__(self, accepting=[], lonely=[], ingoing_only=[], outgoing_only=[], connected=[], unused_symbols={}, dfa=None):
+        
+        DFAManipulationInterface.__init__(self, accepting=accepting, lonely=lonely, ingoing_only=ingoing_only, outgoing_only=outgoing_only, connected=connected, unused_symbols=unused_symbols, dfa=dfa)
 
 
     def lonely(self, number=1):

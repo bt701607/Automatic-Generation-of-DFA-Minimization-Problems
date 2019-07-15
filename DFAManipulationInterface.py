@@ -3,6 +3,21 @@ import random
 from DFA import DFA
 
 
+def custom_sample(original_list, max_elements):
+    """
+    Returns a sublist with 1 to (max_elements+1) / 2 elements.
+
+    Returns the empty list, if the empty list is passed.
+    """
+
+    if original_list == []:
+        return []
+    elif max_elements > len(original_list):
+        return random.sample(original_list, random.randint(1, len(original_list)))
+    else:
+        return random.sample(original_list, random.randint(1, (max_elements + 1) // 2)) # (max_elements + 1) // 2
+
+
 class DFAManipulationInterface(object):
 
     def __init__(self, accepting=[], lonely=[], ingoing_only=[], outgoing_only=[], connected=[], unused_symbols={}, dfa=None):
@@ -22,7 +37,7 @@ class DFAManipulationInterface(object):
         
         if dfa == None:
 
-            self.dfa = DFA()
+            self._dfa = DFA()
             self._connected.append(self._new_state(is_start = True))
 
         else:

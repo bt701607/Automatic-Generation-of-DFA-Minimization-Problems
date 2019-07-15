@@ -1,10 +1,10 @@
 from DFA import DFA
-from utils import *
+from DFAManipulationInterface import *
 
 import random
 
 
-class DFALanguagePreservingExtender(DFAManipulationInterface):
+class DFAExtender(DFAManipulationInterface):
 
     def __init__(self, accepting=[], lonely=[], ingoing_only=[], outgoing_only=[], connected=[], unused_symbols={}, dfa=None, equiv_classes=None):
         

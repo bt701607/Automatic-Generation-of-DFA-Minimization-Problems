@@ -3,8 +3,6 @@ from DFAManipulationInterface import *
 
 import random
 
-from copy import deepcopy
-
 
 class DFABuilder(DFAManipulationInterface):
     """

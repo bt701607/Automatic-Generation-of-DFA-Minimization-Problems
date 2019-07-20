@@ -1,6 +1,8 @@
+from DFA import DFA
+
 import random
 
-from DFA import DFA
+from copy import deepcopy
 
 
 def custom_sample(original_list, max_elements):
@@ -48,7 +50,7 @@ class DFAManipulationInterface(object):
     def dfa(self):
         # Returns the so far constructed DFA.
 
-        return self._dfa
+        return deepcopy(self._dfa)
 
 
     def _next_free_symbol(self, state):

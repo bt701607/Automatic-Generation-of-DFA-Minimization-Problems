@@ -11,18 +11,26 @@
 \usepackage{graphicx}
 \graphicspath{ {images/} }
 
+\usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{amssymb}
 
-%\newtheorem{theorem}{Theorem}
-%\newtheorem{corollary}{Corollary}
-%\newtheorem{lemma}{Lemma}
-%
-%\theoremstyle{definition}
-%\newtheorem{definition}{Definition}
-%
-%\theoremstyle{remark}
-%\newtheorem*{remark}{Remark}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode} % [noend]
+
+% ------------------------
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
 
 % Title Page
 \title{Generation of DFA Minimization Problems}
@@ -45,15 +53,47 @@
 \section{Preliminaries}
 
 \begin{itemize}
-	\item def of dfa, $\mathcal{A}$ is set of all dfas
 	\item sink-state, unreachable, lonely, ingoing/outgoing transitions
-	\item def of nfa
 	\item def of isomorphic dfas
 	\item def of Myhill-Nerode-equivalence-relation to a language
 	\item def of minimal dfa to a language
 	\item statement that minimal dfa is unique besides isomorphism
-	\item minimization algorithm
+	\item minimization depth
 \end{itemize}
+
+\subsection{Finite Automatons}
+
+\begin{definition}[Deterministic Finite Automaton]
+	A 5-tuple $A = (Q, \Sigma, \delta, s, F)$ with $Q$ as set of \emph{states}, $\Sigma$ as \emph{input alphabet}, $\delta \colon\ Q \times \Sigma \to Q$ as \emph{transition function}, $s \in Q$ as \emph{start state} and $F \subseteq Q$ as \emph{finite states} is called \emph{deterministic finite automaton}.
+\end{definition}
+\noindent From now on $\mathcal{A}$ shall denote the set of all deterministic finite automatons.
+
+\begin{definition}[Nondeterministic Finite Automaton]
+	A 5-tuple $A = (Q, \Sigma, \delta, s, F)$ with $Q$ as set of \emph{states}, $\Sigma$ as \emph{input alphabet}, $\delta \colon\ Q \times \Sigma \to \mathcal{P}(Q)$ as \emph{transition function}, $s \in Q$ as \emph{start state} and $F \subseteq Q$ as \emph{finite states} is called \emph{nondeterministic finite automaton}.
+\end{definition}
+
+\subsection{Minimization algorithm}
+
+\begin{algorithmic}[1]
+	\Function{MinimizationMark}{$(Q, \Sigma, \delta, s, F)$}
+	\State $M \gets \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}$
+	\Do
+		\State $M' \gets \{ (p,q)\ |\ (p,q) \notin M \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in M \}$
+		\State $M \gets M \cup M'$
+	\doWhile {$M' \neq \emptyset$}
+	\State \Return $M$
+	\EndFunction
+\end{algorithmic}
+
+\subsection{Duplicate States}
+
+\begin{definition}[Duplicate States]
+	Two states $q_1, q_2 \in Q$ of a finite automaton $A = (Q, \Sigma, \delta, s, F)$ are called \emph{duplicates} of each other, iff $d_A(q_1, q_2)$ is true, whereas
+	\[
+	d_A = \{\ (p, q)\ |\ \forall z \in \Sigma^* \colon\ \delta^*(p, z) \in F \Leftrightarrow \delta^*(q, z) \in F\ \}
+	\]
+\end{definition}
+\noindent Note that \textsc{MinimizationMark} does compute exactly $N_A(p,q) = \neg d_A(p, q)$.
 
 \section{Problem Definition}
 
@@ -67,7 +107,9 @@ heuristic:
 
 
 
-\chapter{Heuristics for the friendlieness of dfas}
+\chapter{DFA requirements and following implications}
+
+\section{Heuristics for the friendlieness of dfas}
 
 \begin{itemize}
 	\item $h(A_{min}, A_{task}) = |Q_{task}|\ /\ |Q_{min}|$
@@ -75,8 +117,61 @@ heuristic:
 	\item max degree of a node
 	\item planarity (can be checked in $O(|Q_{task}|)$)
 	\item Does GraphViz have a heuristic?
+	\item[->] number of duplicate states
+	\item[->] number of minimization algorithm iterations ($depth_min(A)$)
+	\item[->] number of unreachable states
 \end{itemize}
 
+\section{Proofs for validity of separate steps}
+
+\begin{theorem}[]
+	Adding duplicate states to an automaton $A$ does not increase the number of iterations in the \textsc{MinimizationMark}-algorithm for $A$.
+\end{theorem}
+
+\begin{proof}
+	\begin{description}
+		\item
+		
+		Proof per contradiction.
+		
+		For clarity's sake we will denote the number of iterations $n \in \mathbb{N}$ done by \textsc{MinimizationMark} on an input deterministic finite automaton $A$ as $minmarkDepth(A)$.
+		
+		Let's assume adding a duplicate state $q_d$ to a given automaton $A = (Q, \Sigma, \delta, s, F)$ results in an automaton $A' = (Q', \Sigma, \delta', s, F')$ whereas $minmarkDepth(A') > minmarkDepth(A)$.
+		
+		Concerning $A'$ we can say the following:
+		\begin{itemize}
+			\item $Q' = Q \cup \{ q_d \}$
+			\item $\delta \subseteq \delta'$
+			\item $F \subseteq F'$
+			\item $\exists q \in Q \colon\ d_A(q, q_d)$
+		\end{itemize}
+		
+		\begin{lemma}
+			\begin{multline*}
+				minmarkDepth(A) =\ n \Leftrightarrow \\
+				n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon \\
+				|w| = n - 1 \land (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
+			\end{multline*}
+		\end{lemma}
+	
+		\ldots
+	\end{description}
+\end{proof}
+
+\begin{lemma}[]
+	Adding unreachable to an automaton, does alter the number of iterations in the minimization-marking-algorithm for in the context of the minimization algorithm.
+\end{lemma}
+
+\begin{proof}
+	content \ldots
+\end{proof}
+
+As a result, we will set $depth_min(A)$ when building the minimal DFA.
+
+We will add duplicate and unreachable states afterwards.
+
+
+\chapter{Building minimal DFAs}
 
 \chapter{Extending minimal DFAs}
 
@@ -100,7 +195,7 @@ Our study of DFA extension possibilities will focus on methods, that add or remo
 \end{enumerate}
 Adding states $p_1, \ldots, p_n$ leads to the situation, that $p_1, \ldots, p_n$ are lonely states. Since adding lonely states does not affect an automatons language, we can use this as option to extend DFAs.
 
-Adding new transitions \ldots
+Adding new transitions does not work because of minimal automaton isomorphism \ldots
 
 For option 3, we can not tell yet, whether it will generate usable automatons. The two additional conditions guarantee, that the generated automatons are distinct from the ones generated by options 1 and 2 \\
 
@@ -146,6 +241,13 @@ Thus we remain with option 3, which states that every new state has at least one
 
 \section{New states have both in- and outgoing transitions}
 
+\section{Controlling number of minimization iterations}
+
+We define a function, that defines the set of states marked for each round of the minimization algorithm. \\
+$f_A \colon \mathbb{N} \to \mathcal{P}(Q^2)$ \\
+$f_A(0) = \{ (p,q) | p \in F, q \notin F \}$ \\
+$f_A(n+1) = \{ (p,q) | (p,q) \notin \bigcup\limits_{0 \dots n}f(n), \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in \bigcup\limits_{0 \dots n}f(n)\}$ \\
+This function can be naturally computed alongside the minimization algorithm.
 
 
 \section{The DFA extension algorithm}

@@ -1,3 +1,4 @@
+% !TeX spellcheck = en_US
 \documentclass[a4paper, oneside, 11pt]{report}
 
 \usepackage[a4paper,width=150mm,top=25mm,bottom=25mm]{geometry}
@@ -159,19 +160,27 @@ heuristic:
 \end{proof}
 
 \begin{lemma}[]
-	Adding unreachable to an automaton, does alter the number of iterations in the minimization-marking-algorithm for in the context of the minimization algorithm.
+	Adding unreachable states to an automaton, does alter the number of iterations in the minimization-marking-algorithm in the context of the minimization algorithm.
 \end{lemma}
 
 \begin{proof}
 	content \ldots
 \end{proof}
 
-As a result, we will set $depth_min(A)$ when building the minimal DFA.
+As a result, we will set $depth\_min(A)$ when building the minimal DFA.
 
 We will add duplicate and unreachable states afterwards.
 
 
 \chapter{Building minimal DFAs}
+
+When building the minimal DFA, we do not want to have duplicates.
+
+\begin{align*}
+	f(0) &= F \\
+	f(n + 1) &= \{\ q\ |\ \exists p\in f(n),\ \sigma\in\Sigma\colon\ \delta(q,\sigma) = p\ \}
+\end{align*}
+Based on this we define
 
 \chapter{Extending minimal DFAs}
 

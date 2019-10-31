@@ -32,6 +32,7 @@
 \newtheorem*{remark}{Remark}
 
 \algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+\newcommand{\MinMark}{\textsc{MinimizationMark}}
 
 % Title Page
 \title{Generation of DFA Minimization Problems}
@@ -54,26 +55,68 @@
 \section{Preliminaries}
 
 \begin{itemize}
-	\item sink-state, unreachable, lonely, ingoing/outgoing transitions
 	\item def of isomorphic dfas
-	\item def of Myhill-Nerode-equivalence-relation to a language
-	\item def of minimal dfa to a language
 	\item statement that minimal dfa is unique besides isomorphism
-	\item minimization depth
 \end{itemize}
 
 \subsection{Finite Automatons}
 
-\begin{definition}[Deterministic Finite Automaton]
-	A 5-tuple $A = (Q, \Sigma, \delta, s, F)$ with $Q$ as set of \emph{states}, $\Sigma$ as \emph{input alphabet}, $\delta \colon\ Q \times \Sigma \to Q$ as \emph{transition function}, $s \in Q$ as \emph{start state} and $F \subseteq Q$ as \emph{finite states} is called \emph{deterministic finite automaton}.
-\end{definition}
-\noindent From now on $\mathcal{A}$ shall denote the set of all deterministic finite automatons.
+A 5-tuple $A = (Q, \Sigma, \delta, s, F)$ with $Q$ as set of \emph{states}, $\Sigma$ as \emph{input alphabet}, $\delta \colon\ Q \times \Sigma \to Q$ as \emph{transition function}, $s \in Q$ as \emph{start state} and $F \subseteq Q$ as \emph{finite states} is called \emph{deterministic finite automaton} (DFA).
 
-\begin{definition}[Nondeterministic Finite Automaton]
-	A 5-tuple $A = (Q, \Sigma, \delta, s, F)$ with $Q$ as set of \emph{states}, $\Sigma$ as \emph{input alphabet}, $\delta \colon\ Q \times \Sigma \to \mathcal{P}(Q)$ as \emph{transition function}, $s \in Q$ as \emph{start state} and $F \subseteq Q$ as \emph{finite states} is called \emph{nondeterministic finite automaton}.
+From now on $\mathcal{A}$ shall denote the set of all DFAs. We will call $\delta(q,\sigma) = p$ a \emph{transition from $q$ to $p$ using symbol $\sigma$}.
+We define the \emph{extended transition function} $\delta^* : Q \times \Sigma^* \to Q$ of a DFA $A = (Q, \Sigma, \delta, s, F)$:
+\begin{itemize}
+	\item $\delta^*(q,\varepsilon) = q$
+	\item $\delta^*(q,w\sigma) = \delta(\delta^*(q,w),\sigma)$ for all $q \in Q$, $w \in \Sigma^*$, $\sigma \in \Sigma$
+\end{itemize}
+Given a DFA $A = (Q, \Sigma, \delta, s, F)$ and a state $q \in Q$. We call all transitions $\delta(q', \sigma) = q$, $q'\in Q$, $\sigma\in\Sigma$, \emph{ingoing transitions of $q$}. All transitions $\delta(q, \sigma) = q'$, $q'\in Q$, $\sigma\in\Sigma$, are called \emph{outgoing transitions of $q$}.
+
+We say a state $q$ is \emph{(un-)reachable} in an DFA $A$, iff there is (no) a word $w \in \Sigma^*$ such that $\delta^*(s, w) = q$.
+
+States that are reachable but have only ingoing transitions are named \emph{sink-states}.
+If a state has neither ingoing nor outgoing transitions, then it is called \emph{lonely}.
+If a transition is of the form $\delta(q, \sigma) = q$, $\sigma\in\Sigma$, then we say that $q$ has a \emph{loop}.
+
+\subsection{Minimal DFAs}
+
+The \emph{Nerode-relation} $\equiv_L\ \subseteq\ \Sigma^* \times \Sigma^*$ of a language $L$ with alphabet $\Sigma$ is defined as follows:
+\begin{displaymath}
+	x \equiv_L y\ \Leftrightarrow_{def}\ \forall z\in\Sigma^*\colon (xz\in L \Leftrightarrow yz\in L)
+\end{displaymath}
+Thus the Nerode-relation of a DFA $A$ is exactly $\equiv_{L(A)}$. If the context makes it clear, than we will shorten the notation of a equivalence class $[x]_{\equiv_L}$ with $[x]$.
+
+\begin{theorem}
+	A language $L$ is regular if and only if the number of equivalence classes of $\equiv_L$ is finite.
+\end{theorem}
+
+The \emph{equivalence class automaton} $A_L = (Q_L, \Sigma_L, \delta_L, s_L, F_L)$ to a regular language $L$ with alphabet $\Sigma$ is defined as follows:
+\begin{itemize}
+	\item $Q_L = \{\ [x]\ |\ x \in \Sigma^*\ \}$
+	\item $\Sigma_L = \Sigma$
+	\item $\delta_L([x], \sigma) = [x\sigma],\ \forall x\in\Sigma^*,\ \forall\sigma\in\Sigma$
+	\item $s = [\varepsilon]$
+	\item $F = \{\ [x]\ |\ x \in L\ \}$
+\end{itemize}
+We call a DFA $A$ \emph{minimal}, if there exists no other automaton with the same language using less states.
+\begin{corollary}
+	Given a language $L$, then the equivalence class automaton $A_L$ is minimal.
+\end{corollary}
+
+\begin{definition}[Duplicate States]
+	Two states $q_1, q_2 \in Q$ of a finite automaton $A = (Q, \Sigma, \delta, s, F)$ are called \emph{duplicates} of each other, iff $d_A(q_1, q_2)$ is true, whereas
+	\[
+		d_A = \{\ (p, q)\ |\ \forall z \in \Sigma^* \colon\ \delta^*(p, z) \in F \Leftrightarrow \delta^*(q, z) \in F\ \}
+	\]
 \end{definition}
 
-\subsection{Minimization algorithm}
+\subsection{The minimization algorithm}
+
+The minimization algorithm works in three main steps.
+\begin{enumerate}
+	\item Remove all unreachable states.
+	\item Compute $\neg d_A(p, q)$ via the \MinMark-algorithm.
+	\item Merge all node pairs, which are not in $\neg d_A(p, q)$.
+\end{enumerate}
 
 \begin{algorithmic}[1]
 	\Function{MinimizationMark}{$(Q, \Sigma, \delta, s, F)$}
@@ -85,16 +128,7 @@
 	\State \Return $M$
 	\EndFunction
 \end{algorithmic}
-
-\subsection{Duplicate States}
-
-\begin{definition}[Duplicate States]
-	Two states $q_1, q_2 \in Q$ of a finite automaton $A = (Q, \Sigma, \delta, s, F)$ are called \emph{duplicates} of each other, iff $d_A(q_1, q_2)$ is true, whereas
-	\[
-	d_A = \{\ (p, q)\ |\ \forall z \in \Sigma^* \colon\ \delta^*(p, z) \in F \Leftrightarrow \delta^*(q, z) \in F\ \}
-	\]
-\end{definition}
-\noindent Note that \textsc{MinimizationMark} does compute exactly $N_A(p,q) = \neg d_A(p, q)$.
+We will denote the number of iterations $n \in \mathbb{N}$ done by \MinMark on an DFA $A$ as $minmarkDepth(A)$.
 
 \section{Problem Definition}
 
@@ -126,7 +160,7 @@ heuristic:
 \section{Proofs for validity of separate steps}
 
 \begin{theorem}[]
-	Adding duplicate states to an automaton $A$ does not increase the number of iterations in the \textsc{MinimizationMark}-algorithm for $A$.
+	Adding duplicate states to an automaton $A$ does not increase the number of iterations in the \MinMark-algorithm for $A$.
 \end{theorem}
 
 \begin{proof}
@@ -134,8 +168,6 @@ heuristic:
 		\item
 		
 		Proof per contradiction.
-		
-		For clarity's sake we will denote the number of iterations $n \in \mathbb{N}$ done by \textsc{MinimizationMark} on an input deterministic finite automaton $A$ as $minmarkDepth(A)$.
 		
 		Let's assume adding a duplicate state $q_d$ to a given automaton $A = (Q, \Sigma, \delta, s, F)$ results in an automaton $A' = (Q', \Sigma, \delta', s, F')$ whereas $minmarkDepth(A') > minmarkDepth(A)$.
 		
@@ -160,11 +192,11 @@ heuristic:
 \end{proof}
 
 \begin{lemma}[]
-	Adding unreachable states to an automaton, does alter the number of iterations in the minimization-marking-algorithm in the context of the minimization algorithm.
+	Adding unreachable states to an automaton does not alter the number of iterations in the \MinMark-algorithm in the context of the minimization algorithm.
 \end{lemma}
 
 \begin{proof}
-	content \ldots
+	\ldots
 \end{proof}
 
 As a result, we will set $depth\_min(A)$ when building the minimal DFA.
@@ -174,13 +206,41 @@ We will add duplicate and unreachable states afterwards.
 
 \chapter{Building minimal DFAs}
 
-When building the minimal DFA, we do not want to have duplicates.
+%When building the minimal DFA, we do not want to have duplicates.
+%
+%\begin{align*}
+%	f(0) &= F \\
+%	f(n + 1) &= \{\ q\ |\ \exists p\in f(n),\ \sigma\in\Sigma\colon\ \delta(q,\sigma) = p\ \}
+%\end{align*}
+%Based on this we define
 
-\begin{align*}
-	f(0) &= F \\
-	f(n + 1) &= \{\ q\ |\ \exists p\in f(n),\ \sigma\in\Sigma\colon\ \delta(q,\sigma) = p\ \}
-\end{align*}
-Based on this we define
+We want an algorithm for dfa generation that fulfills the following conditions:
+\begin{itemize}
+	\item the resulting dfa is minimal
+	\item we can control $minmarkDepth$ of the resulting dfa via paramter
+	\item we can control the number of states of the resulting dfa via parameter
+\end{itemize}
+The resulting algorithm will work iterative, such that states are added one by one.
+At first, we define two functions.
+
+We take a closer look at the \MinMark-algorithm now, to see when exactly new iterations are needed. %Since duplicate states do not effect this, we assume from now on, that the input dfa is minimal.
+
+When looking at the \MinMark-algorithm, one notes, that it does compute a distinct subsets of $Q \times Q$ on the way. Indeed, one could write it in such a way, that these subsets (in form of a function $m\colon\mathbb{N}\to\mathcal{P}(Q\times Q)$) are explicitly computed:
+
+\begin{algorithmic}[1]
+	\Function{MinimizationMark}{$(Q, \Sigma, \delta, s, F)$}
+	\State $i \gets 0$
+	\State $m(0) \gets \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}$
+	\Do
+	\State $i \gets i + 1$
+	\State $m(i) \gets \{ (p,q)\ |\ (p,q) \notin \bigcup{m(\cdot)} \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in m(i-1) \}$
+	\doWhile {$m(i) \neq \emptyset$}
+	\State \Return $\bigcup{m(\cdot)}$
+	\EndFunction
+\end{algorithmic}
+We see that $minmarkDepth(A) = \max n\in\mathbb{N}\colon m(n-1)\neq\emptyset$.
+
+Based on $m$ we define a new function, 
 
 \chapter{Extending minimal DFAs}
 

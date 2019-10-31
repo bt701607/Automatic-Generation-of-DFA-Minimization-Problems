@@ -54,6 +54,10 @@ class DFAManipulationInterface(object):
 
 
     def _next_free_symbol(self, state):
+        """
+        Returns a symbol of the so far constructed DFA,
+        that is not labelled on an outgoing transition.
+        """
 
         symbol = random.choice(self._unused_symbols[state])
         self._unused_symbols[state].remove(symbol)

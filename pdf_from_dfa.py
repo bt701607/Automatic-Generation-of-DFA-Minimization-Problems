@@ -35,7 +35,7 @@ def dot_from_dfa(dfa):
             
     graph.edge("", str(dfa.start))
 
-    for (q1,q2),c in dfa.transitions:
+    for (q1,c),q2 in dfa.transitions:
         graph.edge(str(q1), str(q2), label=str(c))
 
     return graph.source

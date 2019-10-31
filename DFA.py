@@ -37,7 +37,7 @@ class DFA(object):
         if state2 not in self.states:
             raise ValueError("State 2 does not exist.")
 
-        newTransition = (state1, state2), symbol
+        newTransition = (state1, symbol), state2
 
         if newTransition in self.transitions:
             raise ValueError("Transition exists already.")
@@ -54,11 +54,17 @@ class DFA(object):
 
         self.states.remove(state_to_remove)
 
-        remainsValid = lambda states,c: state_to_remove not in states
+        def remainsValid(t):
+            ((q1,s),q2) = t
+            return state_to_remove not in (q1,q2)
+            
         self.transitions = set(filter(remainsValid, self.transitions))
 
         if self.start == state_to_remove:
             self.start = None
+            
+        if state_to_remove in self.accepting:
+            self.accepting.remove(state_to_remove)
 
 
     def remove_transition(self, transition_to_remove):

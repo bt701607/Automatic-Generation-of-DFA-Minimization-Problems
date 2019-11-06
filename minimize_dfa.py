@@ -1,6 +1,5 @@
-from DFA import DFA
-from pdf_from_dfa import pdf_from_dfa
-from clean		  import clean_code_dir_keep_results
+from DFA          import DFA
+from copy         import deepcopy
 
 
 def minimize_dfa(dfa):
@@ -9,6 +8,8 @@ def minimize_dfa(dfa):
 
 
 def delete_unreachable_states(dfa):
+    
+    dfa = deepcopy(dfa)
                 
     # find unreachable states via breadth-first search
     
@@ -54,6 +55,8 @@ def delete_unreachable_states(dfa):
 
 def delete_duplicate_states(dfa):
     
+    dfa = deepcopy(dfa)
+    
     # find duplicate states via the minimization-mark algorithm
     
     M = set()
@@ -86,15 +89,16 @@ def delete_duplicate_states(dfa):
             break
         
     # merge duplicate states
-    duplicate_state_pairs = [(p,q) for p in dfa.states for q in dfa.states if (p,q) not in M]
+    duplicate_state_pairs = [(p,q) for p in dfa.states for q in dfa.states if (p,q) not in M and p != q]
     
     while len(duplicate_state_pairs) != 0:
         
-        print(duplicate_state_pairs)
+        #print(duplicate_state_pairs)
         (p,q) = duplicate_state_pairs.pop()
-        print(duplicate_state_pairs)
+        #print(duplicate_state_pairs)
         
-        print(p,q)
+        if p == q:
+            continue
         
         dfa.states.remove(q)
         
@@ -122,7 +126,56 @@ def delete_duplicate_states(dfa):
                 q2 = p
             duplicate_state_pairs[i] = (q1,q2)
             
+    dfa.transitions = list(set(dfa.transitions))
+            
     return dfa
+
+
+# -----------------------------------------------------
+
+
+def minimization_mark_depth(dfa):
+    
+    dfa = deepcopy(dfa)
+    
+    # find duplicate states via the minimization-mark algorithm
+    
+    M = set()
+    
+    min_mark_depth = 0
+    
+    for q in dfa.accepting:
+        for p in dfa.states:
+            if p not in dfa.accepting:
+                M.add((p,q))
+                M.add((q,p))
+                
+    delta = dict(dfa.transitions)
+                
+    while True:
+        
+        N = set()
+        
+        for q in dfa.states:
+            for p in dfa.states:
+                if (p,q) not in M:
+                    for sigma in dfa.alphabet:
+                        
+                        if (p,sigma) in delta and (q,sigma) in delta:
+                            if (delta[(p,sigma)], delta[(q,sigma)]) in M:
+                                N.add((p,q))
+                                break
+                            
+        M = M.union(N)
+        
+        if len(N) == 0:
+            break
+        else:
+            min_mark_depth += 1
+            
+    return min_mark_depth
+    
+    
 
 
 
@@ -143,14 +196,37 @@ if __name__ == "__main__":
         [4,5]
     )
         
-    pdf_from_dfa(test_dfa, "minimization_test_pre")
+    test_dfa = DFA(
+        ['0','1'],
+        ['A','B','C','D','E','F','G'],
+        [
+            (('A','1'),'C'),
+            (('A','0'),'G'),
+            (('B','1'),'E'),
+            (('B','0'),'C'),
+            (('C','1'),'D'),
+            (('C','0'),'B'),
+            (('D','1'),'E'),
+            (('D','0'),'G'),
+            (('E','1'),'A'),
+            (('E','0'),'B'),
+            (('F','1'),'E'),
+            (('F','0'),'B'),
+            (('G','1'),'C'),
+            (('G','0'),'B'),
+        ],
+        'A',
+        ['C','E']
+    )
+        
+    print(minimization_mark_depth(test_dfa))
+    
+    print("\n" + str(test_dfa) + "\n")
     
     test_dfa = delete_unreachable_states(test_dfa)
     
-    pdf_from_dfa(test_dfa, "minimization_test_post1")
+    print("\n" + str(test_dfa) + "\n")
     
     test_dfa = delete_duplicate_states(test_dfa)
-        
-    pdf_from_dfa(test_dfa, "minimization_test_post2")
-
-    clean_code_dir_keep_results()
+    
+    print("\n" + str(test_dfa) + "\n")

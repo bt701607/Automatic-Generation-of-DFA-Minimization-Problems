@@ -1,11 +1,11 @@
 from DFA          import DFA
-from DFABuilder   import DFABuilder
+from DFABuilder   import build_random_minimal_dfa
 from DFAExtender  import DFAExtender
 from pdf_from_dfa import pdf_from_dfa
 from clean		  import clean_code_dir_keep_results
 
 
-USE_DFA_BUILDER = True
+CONSTRUCT_RANDOM_MINIMAL_DFA = True
 
 
 def main():
@@ -14,9 +14,16 @@ def main():
 
 	test_dfa = None
 
-	if USE_DFA_BUILDER:
+	if CONSTRUCT_RANDOM_MINIMAL_DFA:
 
-		orig_dfa = DFABuilder().mix(0,1,1,3).dfa()
+		orig_dfa = build_random_minimal_dfa(
+            numberOfStates = 4,
+            minDepth = 2,
+            maxDepth = 3,
+            alphabetSize = 2,
+            numberOfAcceptingStates = 1,
+            probabilityToBeIncomplete = 0.0
+        )
 
 	else:
 
@@ -57,10 +64,13 @@ def main():
 
 	# extend dfa
 
-	task_dfa = DFAExtender(dfa = orig_dfa).duplicate(1).dfa()
+	task_dfa = DFAExtender(orig_dfa).duplicate(1).outgoing_only(0).sink_state().dfa()
 
 
 	# generate graphical representation of original and extended dfa
+
+	print(orig_dfa)
+	print(task_dfa)
 
 	pdf_from_dfa(orig_dfa, "1")
 	pdf_from_dfa(task_dfa, "2")

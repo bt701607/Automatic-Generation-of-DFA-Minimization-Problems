@@ -52,7 +52,7 @@ def pdf_from_dfa(dfa, identifier):
     with open(FILE_NAME + identifier + ".tex", "w") as outputFile:
         outputFile.write(tex_from_dfa(dfa))
         
-    os.system("pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape {}".format(EXE_ENDING, FILE_NAME + identifier + ".tex"))
+    os.popen("pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape {}".format(EXE_ENDING, FILE_NAME + identifier + ".tex")).read()
 
 
 
@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
         outputFile.write(tex_from_dfa(test_dfa))
 
-    os.system("""pdflatex.exe -synctex=1 -interaction=nonstopmode -shell-escape {}""".format(fileName + ".tex"))
+    os.popen("""pdflatex.exe -synctex=1 -interaction=nonstopmode -shell-escape {}""".format(fileName + ".tex")).read()
     
-    os.system("""{}""".format(fileName + ".tex"))
-    os.system("""{}""".format(fileName + ".pdf"))
+    os.popen("""{}""".format(fileName + ".tex")).read()
+    os.popen("""{}""".format(fileName + ".pdf")).read()

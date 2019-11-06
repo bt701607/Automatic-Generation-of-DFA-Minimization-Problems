@@ -9,6 +9,24 @@ class DFA(object):
         self.transitions = transition_function
         self.start       = start_state
         self.accepting   = accepting_states
+        
+        
+    def __str__(self):
+        
+        string = "(\n"
+        string += "\t" + str(self.alphabet) + ",\n"
+        string += "\t" + str(self.states) + ",\n"
+        string += "\t[\n"
+
+        for transition in self.transitions:
+            string += "\t\t" + str(transition) + ",\n"
+            
+        string += "\t],\n"
+        string += "\t" + str(self.start) + ",\n"
+        string += "\t" + str(self.accepting) + "\n"
+        string += ")\n"
+
+        return string
 
 
     def add_state(self, start=False, accepting=False):
@@ -29,7 +47,7 @@ class DFA(object):
         return newState
 
 
-    def add_transition(self, state1, state2, symbol):
+    def add_transition(self, state1, symbol, state2):
 
         if state1 not in self.states:
             raise ValueError("State 1 does not exist.")
@@ -77,7 +95,7 @@ class DFA(object):
 
     def __next_state(self):
 
-        while self.__state_counter in self.states:
+        while self.__state_counter in self.states or str(self.__state_counter) in self.states:
             self.__state_counter += 1
 
         return self.__state_counter

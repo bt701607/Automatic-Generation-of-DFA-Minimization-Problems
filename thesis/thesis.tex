@@ -77,6 +77,8 @@ States that are reachable but have only ingoing transitions are named \emph{sink
 If a state has neither ingoing nor outgoing transitions, then it is called \emph{lonely}.
 If a transition is of the form $\delta(q, \sigma) = q$, $\sigma\in\Sigma$, then we say that $q$ has a \emph{loop}.
 
+A DFA is called \emph{complete} iff for all states, every symbol of the alphabet is used on an outgoing transition: $\forall q\in Q\colon \forall\sigma\in\Sigma\colon \exists p\in Q\colon \delta(q,\sigma) = p$.
+
 \subsection{Minimal DFAs}
 
 The \emph{Nerode-relation} $\equiv_L\ \subseteq\ \Sigma^* \times \Sigma^*$ of a language $L$ with alphabet $\Sigma$ is defined as follows:
@@ -111,7 +113,7 @@ We call a DFA $A$ \emph{minimal}, if there exists no other automaton with the sa
 
 \subsection{The minimization algorithm}
 
-The minimization algorithm works in three main steps.
+The minimization algorithm requires a complete DFA and works in three major steps.
 \begin{enumerate}
 	\item Remove all unreachable states.
 	\item Compute $\neg d_A(p, q)$ via the \MinMark-algorithm.

@@ -187,15 +187,15 @@ class DFAExtender():
         return self
         
         
-    def sink_state(self):
+    def make_complete(self):
         """
-        Adds a sink state which makes the automaton complete.
+        Adds - if needed - a sink state which makes the automaton complete.
         All states which have not used symbols on outgoing transitions yet,
         will get an outgoing transition to this sink state.
         """
         
         # check if there are any missing transitions
-        if sum(len(value) for value in self._unused_symbols.values()) == 0:
+        if sum(len(unused_symbols_of_state) for unused_symbols_of_state in self._unused_symbols.values()) == 0:
             return self
         
         newState = self._new_state(is_start=False, is_accepting=False)

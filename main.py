@@ -64,7 +64,7 @@ def main():
 
 	# extend dfa
 
-	task_dfa = DFAExtender(orig_dfa).duplicate(1).outgoing_only(0).sink_state().dfa()
+	task_dfa = DFAExtender(orig_dfa).duplicate(1).outgoing_only(0).make_complete().dfa()
 
 
 	# generate graphical representation of original and extended dfa

@@ -21,8 +21,7 @@ def main():
             minDepth = 2,
             maxDepth = 3,
             alphabetSize = 2,
-            numberOfAcceptingStates = 1,
-            probabilityToBeIncomplete = 0.0
+            numberOfAcceptingStates = 1
         )
 
 	else:

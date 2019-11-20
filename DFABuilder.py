@@ -4,7 +4,7 @@ from minimize_dfa import minimize_dfa, minimization_mark_depth
 import random
 
 
-def build_random_minimal_dfa(numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates, probabilityToBeIncomplete=0.05):
+def build_random_minimal_dfa(numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates):
     
     A = [ chr(i) for i in range(ord('a'), ord('a')+alphabetSize) ]
     Q = [ str(i) for i in range(numberOfStates) ]
@@ -17,8 +17,7 @@ def build_random_minimal_dfa(numberOfStates, minDepth, maxDepth, alphabetSize, n
         
         for q in dfa.states:
             for sigma in dfa.alphabet:
-                if random.random() > probabilityToBeIncomplete:
-                    dfa.transitions.append(random.choice([((q,sigma),p) for p in dfa.states]))
+                dfa.transitions.append(random.choice([((q,sigma),p) for p in dfa.states]))
                 
         min_dfa = minimize_dfa(dfa)
         #print("----------------------------")
@@ -34,4 +33,4 @@ def build_random_minimal_dfa(numberOfStates, minDepth, maxDepth, alphabetSize, n
     
 if __name__ == "__main__":
     
-    print(build_random_minimal_dfa(6, 2, 3, 2))
+    print(build_random_minimal_dfa(6, 2, 2, 3, 2))

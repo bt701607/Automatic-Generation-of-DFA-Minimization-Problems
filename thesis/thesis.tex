@@ -112,8 +112,7 @@ We call a DFA $A$ \emph{minimal}, if there exists no other automaton with the sa
 		d_A = \{\ (p, q)\ |\ \forall z \in \Sigma^* \colon\ \delta^*(p, z) \in F \Leftrightarrow \delta^*(q, z) \in F\ \}
 	\]
 \end{definition}
-
-Equivalence class...
+Note that the relation $d_A$ is indeed an equivalence relation.
 
 \subsection{The minimization algorithm}
 
@@ -196,8 +195,8 @@ We will add duplicate and unreachable states afterwards.
 We want an algorithm for DFA generation that fulfills the following conditions:
 \begin{itemize}
 	\item the resulting DFA is minimal
-	\item we can control $minmarkDepth$ of the resulting DFA via parameter
 	\item we can control the number of states of the resulting DFA via parameter
+	\item we can control $minmarkDepth$ of the resulting DFA via parameter
 \end{itemize}
 Approaches:
 \begin{itemize}
@@ -205,7 +204,11 @@ Approaches:
 	\item Build $m$ from $m$-\MinMark\ iteratively. (Why would this basically result in running \MinMark all the time?)
 \end{itemize}
 
+\section{The trial-and-error method}
 
+Using this method we have a lot of freedom. We will, in addition to the stated conditions, allow to control the alphabet size and the number of accepting states.
+
+The biggest problem we are approaching here is termination.
 
 \chapter{Extending minimal DFAs}
 
@@ -314,17 +317,51 @@ From step 1 of the minimization algorithm we can deduce option 1. Unreachable st
 
 \section{Duplicate states}
 
+%\begin{definition}[Correct duplication]
+%	Let $A = (Q, \Sigma, \delta, s, F)$ be the original DFA and $A' = (Q', \Sigma, \delta', s, F')$ the task DFA with a $q_o, q_d \in Q'$, $q_d \notin Q$. Building such an $A'$ is called a \emph{correct duplication}, iff
+%	\[
+%		d_{A'}(q_o, q_d)
+%	\]
+%	and
+%	\[
+%		\forall q \in Q \colon [q]_{d_{A'}} = [q]_{d_A}
+%	\]
+%\end{definition}
+
 Step 2 and 3 of the minimization algorithm are concerned with detection and elimination of duplicate states. How do we add duplicate states to a DFA?
 
-Consider the properties a duplicate state, say $q_d$, has. It is in particular duplicate to \emph{another} state, we call it $q_o$. Since we add only one state for now, $q_d$, we can assume that $q_o$ is part of the original DFA. We call the new, by $q_d$ extended DFA $A$.
+\paragraph*{Outgoing transitions}
 
-We know that $q_d$, $q_o$ are duplicates, iff $\forall \sigma \in \Sigma \colon [\delta(q_d, \sigma)] = [\delta(q_o, \sigma)]$. Thus in order to fulfill this property, we should ensure that, for every symbol, $q_d$ and $q_o$ have outgoing transitions to states of the same equivalent class.
+Consider the properties a duplicate state, say $q_d$, must have. It is in particular duplicate to \emph{another} state, we call it $q_o$. Since we add only one state for now, $q_d$, we can assume that $q_o$ is part of the original DFA. We call the new, by $q_d$ extended DFA $A$.
 
-The ingoing transitions of $q_d$ are irrelevant for the duplicateness of $q_d$ and $q_o$. Since we do not want to construct an unreachable state, we need to give $q_d$ at least one ingoing transition. Doing this, we have to ensure, that any state $s$, that gets an outgoing transition to $q_d$ remains in its original equivalence class.
+We know that $q_d$, $q_o$ are duplicates, iff $\forall \sigma \in \Sigma \colon [\delta(q_d, \sigma)]_{d_A} = [\delta(q_o, \sigma)]_{d_A}$. Thus, when adding some $q_d$, we have to choose for each symbol $\sigma \in \Sigma$ at least one transition from the following set:
+\[
+	P_\sigma = \{\ ((q_d, \sigma), p)\ |\ p \in [\delta(q_o, \sigma)]_{d_A}\ \}
+\]
+Since the original DFA is complete, we know that every $P_\sigma \neq \emptyset$.
 
-We are thus looking for pairs $s,\sigma$, such that $\delta(s, \sigma) \in [q_d]$. These leads us exactly to all ingoing transitions of states equivalent to $q_d$. If we change the end points of these transitions to $q_d$ we are fine.
+\paragraph*{Ingoing transitions}
+
+The ingoing transitions of $q_d$ are not directly restricted through the duplicateness of $q_d$ and $q_o$. We can distinguish two cases:
+\begin{enumerate}
+	\item $q_o$ is unreachable. Then we may not give $q_d$ any ingoing transitions too.
+	
+	\item $q_o$ is reachable. We then need to give $q_d$ at least one ingoing transition. Doing this, we have to ensure, that any state $s$, that gets such an outgoing transition to $q_d$ remains in its original equivalence class.
+	
+	Thus a fitting state $s$ has to have a transition to some state in $[q_d]_{d_A} = [q_o]_{d_A}$ already. So, given a state $s$ with $((s, \sigma), t)$ and $t \in [q_o]_{d_A}$, we can add $((s, \sigma), q_d)$.
+	
+	But this would make our new DFA a NFA. As a consequence we have to remove the original transition $((s, \sigma), t)$ each time we add an ingoing transition for a newly created duplicate state.
+	
+	So we have to choose at least one transition of
+	\[
+	\{\ ((s, \sigma), q_d)\ |\ \delta(s,\sigma) \in [q_o]_{d_A}\ \}
+	\]
+	If a $((s, \sigma), q_d)$ is chosen, remove $((s, \sigma), t)$. This leads us to the requirement, that any $q_o$ has to have at least $2$ ingoing transitions.
+\end{enumerate}
 
 \subsection{Adding duplicate states does not change a DFAs language}
+
+p. 159 Hopcroft
 
 \subsection{Adding duplicate states does not change $minmarkDepth$ of a DFA}
 
@@ -403,7 +440,7 @@ We are thus looking for pairs $s,\sigma$, such that $\delta(s, \sigma) \in [q_d]
 		
 		%This means, there exists a minimization word $v$ in $A'$, which is exactly one symbol longer than the longest minimization word of $A$. This word has length $i$ and is detected at minimization depth $i + 1$.
 		
-		We can state, that $p, q \notin Q$, because then $minmarkDepth(A)$ would be higher than $i$ too. 
+		We can state, that $p, q \notin Q$, because else $minmarkDepth(A)$ would be higher than $i$ too. 
 		
 		Since $q_d$ is the only new state in $A'$, we can conclude that at least one of both states must be $q_d$. Since $p = q_d = q$ is contradictory, we can conclude that exactly one of both states $p, q$ is $q_d$ and that the other one is not.
 		

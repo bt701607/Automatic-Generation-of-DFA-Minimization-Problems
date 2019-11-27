@@ -1,0 +1,4266 @@
+{
+  "h": {
+    "objectName": "DFABuilderEnumerating.py",
+    "runTime": 84.60275745391846,
+    "heatmaps": [
+      {
+        "name": "D:\\Studium\\Module\\Semester 6\\Bachelor-Arbeit\\Generation-of-DFA-Minimization-Problems\\DFABuilderEnumerating.py",
+        "heatmap": {
+          "1": 0.0,
+          "2": 0.0,
+          "4": 0.0,
+          "5": 0.0,
+          "8": 0.0,
+          "9": 0.0,
+          "12": 0.0,
+          "16": 0.0,
+          "21": 0.0,
+          "27": 0.0,
+          "43": 0.0,
+          "136": 0.0,
+          "138": 0.0010018348693847656,
+          "140": 0.0,
+          "141": 0.0,
+          "143": 0.0,
+          "145": 0.0,
+          "45": 0.0,
+          "47": 0.0,
+          "48": 0.0,
+          "52": 0.0,
+          "54": 0.0,
+          "60": 0.0,
+          "63": 0.0,
+          "64": 0.0,
+          "66": 0.0,
+          "67": 0.0,
+          "69": 0.0,
+          "72": 0.002002239227294922,
+          "80": 0.0030040740966796875,
+          "84": 0.0019948482513427734,
+          "86": 0.007010698318481445,
+          "87": 0.00399327278137207,
+          "92": 0.008019447326660156,
+          "93": 0.0029997825622558594,
+          "18": 0.006002187728881836,
+          "97": 36.60739326477051,
+          "98": 0.004988908767700195,
+          "99": 0.0,
+          "101": 0.0,
+          "23": 0.0010006427764892578,
+          "114": 0.0024275779724121094,
+          "116": 0.0,
+          "117": 0.0010068416595458984,
+          "119": 0.002978086471557617,
+          "121": 0.0,
+          "123": 0.0,
+          "124": 0.0,
+          "126": 0.002001523971557617,
+          "131": 0.0050046443939208984,
+          "133": 0.0,
+          "88": 0.0017309188842773438,
+          "73": 0.0,
+          "74": 0.0,
+          "75": 0.0,
+          "76": 0.0,
+          "77": 0.0010030269622802734
+        },
+        "executionCount": {
+          "1": 1,
+          "2": 1,
+          "4": 1,
+          "5": 1,
+          "8": 1,
+          "9": 1,
+          "12": 1,
+          "16": 1,
+          "21": 1,
+          "27": 1,
+          "43": 1,
+          "136": 1,
+          "138": 1,
+          "140": 1,
+          "141": 1,
+          "143": 1,
+          "145": 1,
+          "45": 1,
+          "47": 1,
+          "48": 1,
+          "52": 1,
+          "54": 1,
+          "60": 1,
+          "63": 1,
+          "64": 1,
+          "66": 1,
+          "67": 1,
+          "69": 1,
+          "72": 2501,
+          "80": 2500,
+          "84": 2500,
+          "86": 2500,
+          "87": 2500,
+          "92": 2500,
+          "93": 2500,
+          "18": 2500,
+          "97": 2500,
+          "98": 2500,
+          "99": 591,
+          "101": 591,
+          "23": 591,
+          "114": 591,
+          "116": 591,
+          "117": 591,
+          "119": 591,
+          "121": 2,
+          "123": 2,
+          "124": 2,
+          "126": 2,
+          "131": 1909,
+          "133": 1909,
+          "88": 10,
+          "73": 1,
+          "74": 1,
+          "75": 1,
+          "76": 1,
+          "77": 1
+        },
+        "srcCode": [
+          [
+            "line",
+            1,
+            "from DFA \t      import DFA"
+          ],
+          [
+            "line",
+            2,
+            "from minimize_dfa import minimize_dfa, minimization_mark_depth"
+          ],
+          [
+            "line",
+            3,
+            ""
+          ],
+          [
+            "line",
+            4,
+            "import DB_MinimalDFAs         as db1"
+          ],
+          [
+            "line",
+            5,
+            "import DB_EnumerationProgress as db2"
+          ],
+          [
+            "line",
+            6,
+            ""
+          ],
+          [
+            "line",
+            7,
+            ""
+          ],
+          [
+            "line",
+            8,
+            "import threading"
+          ],
+          [
+            "line",
+            9,
+            "import sqlite3"
+          ],
+          [
+            "line",
+            10,
+            ""
+          ],
+          [
+            "line",
+            11,
+            ""
+          ],
+          [
+            "line",
+            12,
+            "DB_MUTEX = threading.Lock()"
+          ],
+          [
+            "line",
+            13,
+            ""
+          ],
+          [
+            "line",
+            14,
+            ""
+          ],
+          [
+            "line",
+            15,
+            ""
+          ],
+          [
+            "line",
+            16,
+            "def computeProperties(dfa):"
+          ],
+          [
+            "line",
+            17,
+            ""
+          ],
+          [
+            "line",
+            18,
+            "    return (len(dfa.states), minimization_mark_depth(dfa), len(dfa.accepting), len(dfa.alphabet))"
+          ],
+          [
+            "line",
+            19,
+            "    "
+          ],
+          [
+            "line",
+            20,
+            "    "
+          ],
+          [
+            "line",
+            21,
+            "def propertiesMatch(properties, numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates):"
+          ],
+          [
+            "line",
+            22,
+            ""
+          ],
+          [
+            "line",
+            23,
+            "    return properties[0] == numberOfStates and minDepth <= properties[1] <= maxDepth and properties[2] == numberOfAcceptingStates and properties[3] == alphabetSize"
+          ],
+          [
+            "line",
+            24,
+            "    "
+          ],
+          [
+            "line",
+            25,
+            "    "
+          ],
+          [
+            "line",
+            26,
+            "    "
+          ],
+          [
+            "line",
+            27,
+            "def saveListOfMinimalDFAs(l):"
+          ],
+          [
+            "skip",
+            15
+          ],
+          [
+            "line",
+            43,
+            "def build_next_fitting_dfa(numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates):"
+          ],
+          [
+            "line",
+            44,
+            ""
+          ],
+          [
+            "line",
+            45,
+            "    conn = sqlite3.connect('dfa.db')"
+          ],
+          [
+            "line",
+            46,
+            "    "
+          ],
+          [
+            "line",
+            47,
+            "    db1.ensureValidity(conn)"
+          ],
+          [
+            "line",
+            48,
+            "    db2.ensureValidity(conn)"
+          ],
+          [
+            "line",
+            49,
+            "    "
+          ],
+          [
+            "line",
+            50,
+            "    # look whether our db of found minimal DFAs has a fitting, unused one"
+          ],
+          [
+            "line",
+            51,
+            "    "
+          ],
+          [
+            "line",
+            52,
+            "    result = db1.findMatchingUnusedMinimalDFA(conn, numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates)"
+          ],
+          [
+            "line",
+            53,
+            "    "
+          ],
+          [
+            "line",
+            54,
+            "    if result != None:"
+          ],
+          [
+            "line",
+            55,
+            "        conn.close()"
+          ],
+          [
+            "line",
+            56,
+            "        return result"
+          ],
+          [
+            "line",
+            57,
+            ""
+          ],
+          [
+            "line",
+            58,
+            "    # "
+          ],
+          [
+            "line",
+            59,
+            "    "
+          ],
+          [
+            "line",
+            60,
+            "    enumProgress = db2.fetchEnumerationProgress(conn, numberOfStates, alphabetSize, numberOfAcceptingStates)"
+          ],
+          [
+            "line",
+            61,
+            "    "
+          ],
+          [
+            "line",
+            62,
+            "    # DEBUG"
+          ],
+          [
+            "line",
+            63,
+            "    iEnd = 2500"
+          ],
+          [
+            "line",
+            64,
+            "    i = 0; fI = 0; pMn = 0"
+          ],
+          [
+            "line",
+            65,
+            "                    "
+          ],
+          [
+            "line",
+            66,
+            "    foundMinimalDFAs = []"
+          ],
+          [
+            "line",
+            67,
+            "    foundMinimalDFANumber = 0"
+          ],
+          [
+            "line",
+            68,
+            "    "
+          ],
+          [
+            "line",
+            69,
+            "    while True:"
+          ],
+          [
+            "line",
+            70,
+            "    "
+          ],
+          [
+            "line",
+            71,
+            "        # DEBUG"
+          ],
+          [
+            "line",
+            72,
+            "        if i == iEnd:"
+          ],
+          [
+            "line",
+            73,
+            "            DB_MUTEX.acquire()"
+          ],
+          [
+            "line",
+            74,
+            "            db2.updateEnumerationProgress(conn, enumProgress)"
+          ],
+          [
+            "line",
+            75,
+            "            DB_MUTEX.release()"
+          ],
+          [
+            "line",
+            76,
+            "            print(i, fI, pMn, enumProgress)"
+          ],
+          [
+            "line",
+            77,
+            "            return None"
+          ],
+          [
+            "line",
+            78,
+            "            "
+          ],
+          [
+            "line",
+            79,
+            "    "
+          ],
+          [
+            "line",
+            80,
+            "        if enumProgress.finished:"
+          ],
+          [
+            "line",
+            81,
+            "            conn.close()"
+          ],
+          [
+            "line",
+            82,
+            "            return None"
+          ],
+          [
+            "line",
+            83,
+            "            "
+          ],
+          [
+            "line",
+            84,
+            "        enumProgress.increment()"
+          ],
+          [
+            "line",
+            85,
+            "        "
+          ],
+          [
+            "line",
+            86,
+            "        i += 1"
+          ],
+          [
+            "line",
+            87,
+            "        if not i % 250:"
+          ],
+          [
+            "line",
+            88,
+            "            print(i/iEnd)"
+          ],
+          [
+            "line",
+            89,
+            "        "
+          ],
+          [
+            "line",
+            90,
+            "        #print(enumProgress.dfa())"
+          ],
+          [
+            "line",
+            91,
+            "        "
+          ],
+          [
+            "line",
+            92,
+            "        minDFA = minimize_dfa(enumProgress.dfa())"
+          ],
+          [
+            "line",
+            93,
+            "        minDFAproperties = computeProperties(minDFA)"
+          ],
+          [
+            "line",
+            94,
+            "        "
+          ],
+          [
+            "line",
+            95,
+            "        #print(minDFA)"
+          ],
+          [
+            "line",
+            96,
+            "            "
+          ],
+          [
+            "line",
+            97,
+            "        DB_MUTEX.acquire()"
+          ],
+          [
+            "line",
+            98,
+            "        if not db1.hasIsomorphMatchingDFA(conn, minDFA, minDFAproperties):"
+          ],
+          [
+            "line",
+            99,
+            "            DB_MUTEX.release()"
+          ],
+          [
+            "line",
+            100,
+            "        "
+          ],
+          [
+            "line",
+            101,
+            "            if propertiesMatch(minDFAproperties, numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates):"
+          ],
+          [
+            "skip",
+            12
+          ],
+          [
+            "line",
+            114,
+            "                pMn += 1"
+          ],
+          [
+            "line",
+            115,
+            "                "
+          ],
+          [
+            "line",
+            116,
+            "                foundMinimalDFAs.append((minDFA, minDFAproperties))"
+          ],
+          [
+            "line",
+            117,
+            "                foundMinimalDFANumber += 1"
+          ],
+          [
+            "line",
+            118,
+            "                "
+          ],
+          [
+            "line",
+            119,
+            "                if foundMinimalDFANumber > 200:"
+          ],
+          [
+            "line",
+            120,
+            "                "
+          ],
+          [
+            "line",
+            121,
+            "                    swapList = foundMinimalDFAs"
+          ],
+          [
+            "line",
+            122,
+            "                    "
+          ],
+          [
+            "line",
+            123,
+            "                    foundMinimalDFAs = []"
+          ],
+          [
+            "line",
+            124,
+            "                    foundMinimalDFANumber = 0"
+          ],
+          [
+            "line",
+            125,
+            "                    "
+          ],
+          [
+            "line",
+            126,
+            "                    threading.Thread(target=saveListOfMinimalDFAs, args=(swapList,)).start()"
+          ],
+          [
+            "line",
+            127,
+            "            "
+          ],
+          [
+            "line",
+            128,
+            "                #db1.saveNewDFA(conn, minDFA, minDFAproperties, used=False)"
+          ],
+          [
+            "line",
+            129,
+            "                "
+          ],
+          [
+            "line",
+            130,
+            "        else:"
+          ],
+          [
+            "line",
+            131,
+            "            DB_MUTEX.release()"
+          ],
+          [
+            "line",
+            132,
+            "        "
+          ],
+          [
+            "line",
+            133,
+            "            fI += 1"
+          ],
+          [
+            "line",
+            134,
+            "        "
+          ],
+          [
+            "line",
+            135,
+            "            "
+          ],
+          [
+            "line",
+            136,
+            "if __name__ == \"__main__\":"
+          ],
+          [
+            "line",
+            137,
+            ""
+          ],
+          [
+            "line",
+            138,
+            "    conn = sqlite3.connect('dfa.db')"
+          ],
+          [
+            "line",
+            139,
+            "    "
+          ],
+          [
+            "line",
+            140,
+            "    db1.clear(conn)"
+          ],
+          [
+            "line",
+            141,
+            "    db2.clear(conn)"
+          ],
+          [
+            "line",
+            142,
+            "    "
+          ],
+          [
+            "line",
+            143,
+            "    conn.close()"
+          ],
+          [
+            "line",
+            144,
+            ""
+          ],
+          [
+            "line",
+            145,
+            "    print(build_next_fitting_dfa(7, 2, 3, 3, 2))"
+          ],
+          [
+            "line",
+            146,
+            ""
+          ]
+        ],
+        "runTime": 36.6655638217926
+      },
+      {
+        "name": "D:\\Studium\\Module\\Semester 6\\Bachelor-Arbeit\\Generation-of-DFA-Minimization-Problems\\DFA.py",
+        "heatmap": {
+          "1": 0.0,
+          "3": 0.0,
+          "14": 0.0,
+          "32": 0.0,
+          "50": 0.0,
+          "68": 0.0,
+          "88": 0.0,
+          "96": 0.0,
+          "5": 0.16676807403564453,
+          "7": 0.18433070182800293,
+          "8": 0.19626688957214355,
+          "9": 0.20828604698181152,
+          "10": 0.21457862854003906,
+          "11": 0.916015625
+        },
+        "executionCount": {
+          "1": 2,
+          "3": 1,
+          "14": 1,
+          "32": 1,
+          "50": 1,
+          "68": 1,
+          "88": 1,
+          "96": 1,
+          "5": 180016,
+          "7": 180016,
+          "8": 180016,
+          "9": 180016,
+          "10": 180016,
+          "11": 180016
+        },
+        "srcCode": [
+          [
+            "line",
+            1,
+            "class DFA(object):"
+          ],
+          [
+            "line",
+            2,
+            "\t"
+          ],
+          [
+            "line",
+            3,
+            "    def __init__(self, alphabet=['a','b','c'], states=[], transition_function=[], start_state=None, accepting_states=[]):"
+          ],
+          [
+            "line",
+            4,
+            ""
+          ],
+          [
+            "line",
+            5,
+            "        self.__state_counter = 0"
+          ],
+          [
+            "line",
+            6,
+            ""
+          ],
+          [
+            "line",
+            7,
+            "        self.alphabet    = alphabet"
+          ],
+          [
+            "line",
+            8,
+            "        self.states      = states"
+          ],
+          [
+            "line",
+            9,
+            "        self.transitions = transition_function"
+          ],
+          [
+            "line",
+            10,
+            "        self.start       = start_state"
+          ],
+          [
+            "line",
+            11,
+            "        self.accepting   = accepting_states"
+          ],
+          [
+            "line",
+            12,
+            "        "
+          ],
+          [
+            "line",
+            13,
+            "        "
+          ],
+          [
+            "line",
+            14,
+            "    def __str__(self):"
+          ],
+          [
+            "skip",
+            17
+          ],
+          [
+            "line",
+            32,
+            "    def add_state(self, start=False, accepting=False):"
+          ],
+          [
+            "skip",
+            17
+          ],
+          [
+            "line",
+            50,
+            "    def add_transition(self, state1, symbol, state2):"
+          ],
+          [
+            "skip",
+            17
+          ],
+          [
+            "line",
+            68,
+            "    def remove_state(self, state_to_remove):"
+          ],
+          [
+            "skip",
+            19
+          ],
+          [
+            "line",
+            88,
+            "    def remove_transition(self, transition_to_remove):"
+          ],
+          [
+            "line",
+            89,
+            ""
+          ],
+          [
+            "line",
+            90,
+            "        if transition_to_remove not in self.transitions:"
+          ],
+          [
+            "line",
+            91,
+            "            raise ValueError(\"Transition to remove does not exist.\")"
+          ],
+          [
+            "line",
+            92,
+            ""
+          ],
+          [
+            "line",
+            93,
+            "        self.transitions.remove(transition_to_remove)"
+          ],
+          [
+            "line",
+            94,
+            ""
+          ],
+          [
+            "line",
+            95,
+            ""
+          ],
+          [
+            "line",
+            96,
+            "    def __next_state(self):"
+          ],
+          [
+            "line",
+            97,
+            ""
+          ],
+          [
+            "line",
+            98,
+            "        while self.__state_counter in self.states or str(self.__state_counter) in self.states:"
+          ],
+          [
+            "line",
+            99,
+            "            self.__state_counter += 1"
+          ],
+          [
+            "line",
+            100,
+            ""
+          ],
+          [
+            "line",
+            101,
+            "        return self.__state_counter"
+          ],
+          [
+            "line",
+            102,
+            ""
+          ]
+        ],
+        "runTime": 1.8862459659576416
+      },
+      {
+        "name": "D:\\Studium\\Module\\Semester 6\\Bachelor-Arbeit\\Generation-of-DFA-Minimization-Problems\\minimize_dfa.py",
+        "heatmap": {
+          "1": 0.0,
+          "4": 0.0,
+          "9": 0.0,
+          "26": 0.0,
+          "70": 0.0,
+          "149": 0.0,
+          "192": 0.0,
+          "6": 0.010027408599853516,
+          "30": 0.0049970149993896484,
+          "31": 0.0030002593994140625,
+          "33": 0.005012035369873047,
+          "35": 0.004003047943115234,
+          "37": 0.014019966125488281,
+          "39": 0.01499795913696289,
+          "41": 0.011996030807495117,
+          "43": 0.019073963165283203,
+          "44": 0.054061174392700195,
+          "45": 0.032039642333984375,
+          "47": 0.036529541015625,
+          "48": 0.045563697814941406,
+          "49": 0.013016939163208008,
+          "51": 0.010021686553955078,
+          "52": 0.013027667999267578,
+          "53": 0.008514642715454102,
+          "57": 0.02206134796142578,
+          "58": 0.014006376266479492,
+          "60": 0.011020898818969727,
+          "63": 0.2986454963684082,
+          "64": 0.03651762008666992,
+          "65": 0.05005359649658203,
+          "67": 0.010997533798217773,
+          "74": 0.005988359451293945,
+          "76": 0.006997108459472656,
+          "77": 0.02191925048828125,
+          "78": 0.026020288467407227,
+          "79": 0.01697516441345215,
+          "80": 0.015027046203613281,
+          "82": 0.003998279571533203,
+          "84": 0.003015756607055664,
+          "86": 0.008022785186767578,
+          "88": 0.025989055633544922,
+          "89": 0.09812068939208984,
+          "90": 0.08870506286621094,
+          "91": 0.16718053817749023,
+          "93": 0.11712121963500977,
+          "94": 0.15417075157165527,
+          "98": 0.007009744644165039,
+          "100": 0.0040094852447509766,
+          "101": 0.005003213882446289,
+          "104": 0.06770634651184082,
+          "106": 0.01800990104675293,
+          "141": 0.01701498031616211,
+          "143": 0.011018991470336914,
+          "11": 0.01501774787902832,
+          "13": 0.007040739059448242,
+          "15": 0.021026134490966797,
+          "16": 0.01501154899597168,
+          "17": 0.007991552352905273,
+          "18": 0.016015052795410156,
+          "20": 0.01500701904296875,
+          "23": 0.010019063949584961,
+          "153": 0.007016181945800781,
+          "155": 0.005017757415771484,
+          "157": 0.0070230960845947266,
+          "158": 0.012995719909667969,
+          "159": 0.009996652603149414,
+          "160": 0.008005619049072266,
+          "161": 0.009008407592773438,
+          "163": 0.008021116256713867,
+          "165": 0.0020024776458740234,
+          "167": 0.01101064682006836,
+          "169": 0.008028268814086914,
+          "170": 0.03905987739562988,
+          "171": 0.026013612747192383,
+          "172": 0.03707766532897949,
+          "174": 0.043036699295043945,
+          "175": 0.03404068946838379,
+          "179": 0.002001047134399414,
+          "181": 0.0020012855529785156,
+          "182": 0.003003358840942383,
+          "186": 0.004012346267700195,
+          "109": 0.013004779815673828,
+          "112": 0.012029647827148438,
+          "115": 0.00394749641418457,
+          "117": 0.0029954910278320312,
+          "120": 0.0039920806884765625,
+          "123": 0.04204511642456055,
+          "124": 0.050057411193847656,
+          "126": 0.04003620147705078,
+          "128": 0.0415959358215332,
+          "131": 0.04501152038574219,
+          "129": 0.00400233268737793,
+          "127": 0.011524438858032227,
+          "133": 0.02099466323852539,
+          "134": 0.014024734497070312,
+          "135": 0.01501321792602539,
+          "136": 0.008010387420654297,
+          "137": 0.007991552352905273,
+          "139": 0.008509635925292969,
+          "113": 0.004031658172607422,
+          "138": 0.002992868423461914,
+          "95": 0.005011796951293945,
+          "96": 0.006004810333251953,
+          "176": 0.0030024051666259766,
+          "177": 0.004003763198852539,
+          "184": 0.0010008811950683594
+        },
+        "executionCount": {
+          "1": 1,
+          "4": 1,
+          "9": 1,
+          "26": 1,
+          "70": 1,
+          "149": 1,
+          "192": 1,
+          "6": 2500,
+          "30": 2500,
+          "31": 2500,
+          "33": 2500,
+          "35": 2500,
+          "37": 2500,
+          "39": 7948,
+          "41": 5448,
+          "43": 13932,
+          "44": 33936,
+          "45": 25452,
+          "47": 25452,
+          "48": 25452,
+          "49": 6849,
+          "51": 5448,
+          "52": 5448,
+          "53": 5448,
+          "57": 11516,
+          "58": 9016,
+          "60": 9016,
+          "63": 169775,
+          "64": 36064,
+          "65": 27048,
+          "67": 2500,
+          "74": 2500,
+          "76": 5000,
+          "77": 10984,
+          "78": 8484,
+          "79": 5984,
+          "80": 5984,
+          "82": 2500,
+          "84": 2500,
+          "86": 3311,
+          "88": 15028,
+          "89": 55330,
+          "90": 43613,
+          "91": 84802,
+          "93": 64445,
+          "94": 64445,
+          "98": 3311,
+          "100": 3311,
+          "101": 2500,
+          "104": 43838,
+          "106": 9180,
+          "141": 2500,
+          "143": 2500,
+          "11": 10000,
+          "13": 7500,
+          "15": 17832,
+          "16": 17832,
+          "17": 7500,
+          "18": 7500,
+          "20": 7500,
+          "23": 2500,
+          "153": 2500,
+          "155": 2500,
+          "157": 5000,
+          "158": 8304,
+          "159": 5804,
+          "160": 3304,
+          "161": 3304,
+          "163": 2500,
+          "165": 2500,
+          "167": 3311,
+          "169": 11548,
+          "170": 29570,
+          "171": 21333,
+          "172": 34682,
+          "174": 26445,
+          "175": 26445,
+          "179": 3311,
+          "181": 3311,
+          "182": 2500,
+          "186": 2500,
+          "109": 6680,
+          "112": 6680,
+          "115": 2680,
+          "117": 2680,
+          "120": 2680,
+          "123": 33160,
+          "124": 30480,
+          "126": 30480,
+          "128": 30480,
+          "131": 30480,
+          "129": 2995,
+          "127": 8040,
+          "133": 9980,
+          "134": 7300,
+          "135": 7300,
+          "136": 4000,
+          "137": 7300,
+          "139": 7300,
+          "113": 4000,
+          "138": 1320,
+          "95": 3222,
+          "96": 3222,
+          "176": 1622,
+          "177": 1622,
+          "184": 811
+        },
+        "srcCode": [
+          [
+            "line",
+            1,
+            "from DFA import DFA"
+          ],
+          [
+            "line",
+            2,
+            ""
+          ],
+          [
+            "line",
+            3,
+            ""
+          ],
+          [
+            "line",
+            4,
+            "def minimize_dfa(dfa):"
+          ],
+          [
+            "line",
+            5,
+            "    "
+          ],
+          [
+            "line",
+            6,
+            "    return delete_useless_symbols(delete_duplicate_states(delete_unreachable_states(dfa)))"
+          ],
+          [
+            "line",
+            7,
+            "    "
+          ],
+          [
+            "line",
+            8,
+            "    "
+          ],
+          [
+            "line",
+            9,
+            "def delete_useless_symbols(dfa):"
+          ],
+          [
+            "line",
+            10,
+            ""
+          ],
+          [
+            "line",
+            11,
+            "    for c in dfa.alphabet:"
+          ],
+          [
+            "line",
+            12,
+            "    "
+          ],
+          [
+            "line",
+            13,
+            "        found = False"
+          ],
+          [
+            "line",
+            14,
+            "        "
+          ],
+          [
+            "line",
+            15,
+            "        for ((q1,s),q2) in dfa.transitions:"
+          ],
+          [
+            "line",
+            16,
+            "            if s == c:"
+          ],
+          [
+            "line",
+            17,
+            "                found = True"
+          ],
+          [
+            "line",
+            18,
+            "                break"
+          ],
+          [
+            "line",
+            19,
+            "                "
+          ],
+          [
+            "line",
+            20,
+            "        if not found:"
+          ],
+          [
+            "line",
+            21,
+            "            dfa.alphabet.remove(c)"
+          ],
+          [
+            "line",
+            22,
+            "            "
+          ],
+          [
+            "line",
+            23,
+            "    return dfa"
+          ],
+          [
+            "line",
+            24,
+            ""
+          ],
+          [
+            "line",
+            25,
+            ""
+          ],
+          [
+            "line",
+            26,
+            "def delete_unreachable_states(dfa):"
+          ],
+          [
+            "line",
+            27,
+            "                "
+          ],
+          [
+            "line",
+            28,
+            "    # find unreachable states via breadth-first search"
+          ],
+          [
+            "line",
+            29,
+            "    "
+          ],
+          [
+            "line",
+            30,
+            "    undiscovered = set(dfa.states)"
+          ],
+          [
+            "line",
+            31,
+            "    undiscovered.remove(dfa.start)"
+          ],
+          [
+            "line",
+            32,
+            "    "
+          ],
+          [
+            "line",
+            33,
+            "    observed = set([dfa.start])"
+          ],
+          [
+            "line",
+            34,
+            "    "
+          ],
+          [
+            "line",
+            35,
+            "    discovered = set()"
+          ],
+          [
+            "line",
+            36,
+            "                "
+          ],
+          [
+            "line",
+            37,
+            "    delta = dict(dfa.transitions)"
+          ],
+          [
+            "line",
+            38,
+            "    "
+          ],
+          [
+            "line",
+            39,
+            "    while len(observed) != 0:"
+          ],
+          [
+            "line",
+            40,
+            "        "
+          ],
+          [
+            "line",
+            41,
+            "        new_observed = set()"
+          ],
+          [
+            "line",
+            42,
+            "        "
+          ],
+          [
+            "line",
+            43,
+            "        for q in observed:"
+          ],
+          [
+            "line",
+            44,
+            "            for sigma in dfa.alphabet:"
+          ],
+          [
+            "line",
+            45,
+            "                if (q,sigma) in delta:"
+          ],
+          [
+            "line",
+            46,
+            "                    "
+          ],
+          [
+            "line",
+            47,
+            "                    p = delta[(q,sigma)]"
+          ],
+          [
+            "line",
+            48,
+            "                    if p not in observed.union(discovered):"
+          ],
+          [
+            "line",
+            49,
+            "                        new_observed.add(p)"
+          ],
+          [
+            "line",
+            50,
+            ""
+          ],
+          [
+            "line",
+            51,
+            "        undiscovered.difference_update(new_observed)"
+          ],
+          [
+            "line",
+            52,
+            "        discovered.update(observed)"
+          ],
+          [
+            "line",
+            53,
+            "        observed = new_observed"
+          ],
+          [
+            "line",
+            54,
+            "        "
+          ],
+          [
+            "line",
+            55,
+            "    # delete unreachable states"
+          ],
+          [
+            "line",
+            56,
+            "    "
+          ],
+          [
+            "line",
+            57,
+            "    for q in undiscovered:"
+          ],
+          [
+            "line",
+            58,
+            "        dfa.states.remove(q)"
+          ],
+          [
+            "line",
+            59,
+            "        "
+          ],
+          [
+            "line",
+            60,
+            "        if q in dfa.accepting:"
+          ],
+          [
+            "line",
+            61,
+            "            dfa.accepting.remove(q)"
+          ],
+          [
+            "line",
+            62,
+            "            "
+          ],
+          [
+            "line",
+            63,
+            "        transitions_to_remove = [((q1,s),q2) for ((q1,s),q2) in dfa.transitions if q1 == q or q2 == q]"
+          ],
+          [
+            "line",
+            64,
+            "        for t in transitions_to_remove:"
+          ],
+          [
+            "line",
+            65,
+            "            dfa.transitions.remove(t)"
+          ],
+          [
+            "line",
+            66,
+            "        "
+          ],
+          [
+            "line",
+            67,
+            "    return dfa"
+          ],
+          [
+            "line",
+            68,
+            ""
+          ],
+          [
+            "line",
+            69,
+            ""
+          ],
+          [
+            "line",
+            70,
+            "def delete_duplicate_states(dfa):"
+          ],
+          [
+            "line",
+            71,
+            "    "
+          ],
+          [
+            "line",
+            72,
+            "    # find duplicate states via the minimization-mark algorithm"
+          ],
+          [
+            "line",
+            73,
+            "    "
+          ],
+          [
+            "line",
+            74,
+            "    M = set()"
+          ],
+          [
+            "line",
+            75,
+            "    "
+          ],
+          [
+            "line",
+            76,
+            "    for q in dfa.accepting:"
+          ],
+          [
+            "line",
+            77,
+            "        for p in dfa.states:"
+          ],
+          [
+            "line",
+            78,
+            "            if p not in dfa.accepting:"
+          ],
+          [
+            "line",
+            79,
+            "                M.add((p,q))"
+          ],
+          [
+            "line",
+            80,
+            "                M.add((q,p))"
+          ],
+          [
+            "line",
+            81,
+            "                "
+          ],
+          [
+            "line",
+            82,
+            "    delta = dict(dfa.transitions)"
+          ],
+          [
+            "line",
+            83,
+            "                "
+          ],
+          [
+            "line",
+            84,
+            "    while True:"
+          ],
+          [
+            "line",
+            85,
+            "        "
+          ],
+          [
+            "line",
+            86,
+            "        N = set()"
+          ],
+          [
+            "line",
+            87,
+            "        "
+          ],
+          [
+            "line",
+            88,
+            "        for q in dfa.states:"
+          ],
+          [
+            "line",
+            89,
+            "            for p in dfa.states:"
+          ],
+          [
+            "line",
+            90,
+            "                if (p,q) not in M:"
+          ],
+          [
+            "line",
+            91,
+            "                    for sigma in dfa.alphabet:"
+          ],
+          [
+            "line",
+            92,
+            "                        "
+          ],
+          [
+            "line",
+            93,
+            "                        if (p,sigma) in delta and (q,sigma) in delta:"
+          ],
+          [
+            "line",
+            94,
+            "                            if (delta[(p,sigma)], delta[(q,sigma)]) in M:"
+          ],
+          [
+            "line",
+            95,
+            "                                N.add((p,q))"
+          ],
+          [
+            "line",
+            96,
+            "                                break"
+          ],
+          [
+            "line",
+            97,
+            "                            "
+          ],
+          [
+            "line",
+            98,
+            "        M = M.union(N)"
+          ],
+          [
+            "line",
+            99,
+            "        "
+          ],
+          [
+            "line",
+            100,
+            "        if len(N) == 0:"
+          ],
+          [
+            "line",
+            101,
+            "            break"
+          ],
+          [
+            "line",
+            102,
+            "        "
+          ],
+          [
+            "line",
+            103,
+            "    # merge duplicate states"
+          ],
+          [
+            "line",
+            104,
+            "    duplicate_state_pairs = [(p,q) for p in dfa.states for q in dfa.states if (p,q) not in M and p != q]"
+          ],
+          [
+            "line",
+            105,
+            "    "
+          ],
+          [
+            "line",
+            106,
+            "    while len(duplicate_state_pairs) != 0:"
+          ],
+          [
+            "line",
+            107,
+            "        "
+          ],
+          [
+            "line",
+            108,
+            "        #print(duplicate_state_pairs)"
+          ],
+          [
+            "line",
+            109,
+            "        (p,q) = duplicate_state_pairs.pop()"
+          ],
+          [
+            "line",
+            110,
+            "        #print(duplicate_state_pairs)"
+          ],
+          [
+            "line",
+            111,
+            "        "
+          ],
+          [
+            "line",
+            112,
+            "        if p == q:"
+          ],
+          [
+            "line",
+            113,
+            "            continue"
+          ],
+          [
+            "line",
+            114,
+            "        "
+          ],
+          [
+            "line",
+            115,
+            "        dfa.states.remove(q)"
+          ],
+          [
+            "line",
+            116,
+            "        "
+          ],
+          [
+            "line",
+            117,
+            "        if dfa.start == q:"
+          ],
+          [
+            "line",
+            118,
+            "            dfa.start = p"
+          ],
+          [
+            "line",
+            119,
+            "            "
+          ],
+          [
+            "line",
+            120,
+            "        if q in dfa.accepting:"
+          ],
+          [
+            "line",
+            121,
+            "            dfa.accepting.remove(q)"
+          ],
+          [
+            "line",
+            122,
+            "            "
+          ],
+          [
+            "line",
+            123,
+            "        for i in range(len(dfa.transitions)):"
+          ],
+          [
+            "line",
+            124,
+            "            t = (q1,s),q2 = dfa.transitions[i]"
+          ],
+          [
+            "line",
+            125,
+            "            "
+          ],
+          [
+            "line",
+            126,
+            "            if q1 == q:"
+          ],
+          [
+            "line",
+            127,
+            "                q1 = p"
+          ],
+          [
+            "line",
+            128,
+            "            if q2 == q:"
+          ],
+          [
+            "line",
+            129,
+            "                q2 = p"
+          ],
+          [
+            "line",
+            130,
+            "                "
+          ],
+          [
+            "line",
+            131,
+            "            dfa.transitions[i] = (q1,s),q2"
+          ],
+          [
+            "line",
+            132,
+            "            "
+          ],
+          [
+            "line",
+            133,
+            "        for i in range(len(duplicate_state_pairs)):"
+          ],
+          [
+            "line",
+            134,
+            "            (q1,q2) = duplicate_state_pairs[i]"
+          ],
+          [
+            "line",
+            135,
+            "            if q1 == q:"
+          ],
+          [
+            "line",
+            136,
+            "                q1 = p"
+          ],
+          [
+            "line",
+            137,
+            "            if q2 == q:"
+          ],
+          [
+            "line",
+            138,
+            "                q2 = p"
+          ],
+          [
+            "line",
+            139,
+            "            duplicate_state_pairs[i] = (q1,q2)"
+          ],
+          [
+            "line",
+            140,
+            "            "
+          ],
+          [
+            "line",
+            141,
+            "    dfa.transitions = list(set(dfa.transitions))"
+          ],
+          [
+            "line",
+            142,
+            "            "
+          ],
+          [
+            "line",
+            143,
+            "    return dfa"
+          ],
+          [
+            "line",
+            144,
+            ""
+          ],
+          [
+            "line",
+            145,
+            ""
+          ],
+          [
+            "line",
+            146,
+            "# -----------------------------------------------------"
+          ],
+          [
+            "line",
+            147,
+            ""
+          ],
+          [
+            "line",
+            148,
+            ""
+          ],
+          [
+            "line",
+            149,
+            "def minimization_mark_depth(dfa):"
+          ],
+          [
+            "line",
+            150,
+            "    "
+          ],
+          [
+            "line",
+            151,
+            "    # find duplicate states via the minimization-mark algorithm"
+          ],
+          [
+            "line",
+            152,
+            "    "
+          ],
+          [
+            "line",
+            153,
+            "    M = set()"
+          ],
+          [
+            "line",
+            154,
+            "    "
+          ],
+          [
+            "line",
+            155,
+            "    min_mark_depth = 0"
+          ],
+          [
+            "line",
+            156,
+            "    "
+          ],
+          [
+            "line",
+            157,
+            "    for q in dfa.accepting:"
+          ],
+          [
+            "line",
+            158,
+            "        for p in dfa.states:"
+          ],
+          [
+            "line",
+            159,
+            "            if p not in dfa.accepting:"
+          ],
+          [
+            "line",
+            160,
+            "                M.add((p,q))"
+          ],
+          [
+            "line",
+            161,
+            "                M.add((q,p))"
+          ],
+          [
+            "line",
+            162,
+            "                "
+          ],
+          [
+            "line",
+            163,
+            "    delta = dict(dfa.transitions)"
+          ],
+          [
+            "line",
+            164,
+            "                "
+          ],
+          [
+            "line",
+            165,
+            "    while True:"
+          ],
+          [
+            "line",
+            166,
+            "        "
+          ],
+          [
+            "line",
+            167,
+            "        N = set()"
+          ],
+          [
+            "line",
+            168,
+            "        "
+          ],
+          [
+            "line",
+            169,
+            "        for q in dfa.states:"
+          ],
+          [
+            "line",
+            170,
+            "            for p in dfa.states:"
+          ],
+          [
+            "line",
+            171,
+            "                if (p,q) not in M:"
+          ],
+          [
+            "line",
+            172,
+            "                    for sigma in dfa.alphabet:"
+          ],
+          [
+            "line",
+            173,
+            "                        "
+          ],
+          [
+            "line",
+            174,
+            "                        if (p,sigma) in delta and (q,sigma) in delta:"
+          ],
+          [
+            "line",
+            175,
+            "                            if (delta[(p,sigma)], delta[(q,sigma)]) in M:"
+          ],
+          [
+            "line",
+            176,
+            "                                N.add((p,q))"
+          ],
+          [
+            "line",
+            177,
+            "                                break"
+          ],
+          [
+            "line",
+            178,
+            "                            "
+          ],
+          [
+            "line",
+            179,
+            "        M = M.union(N)"
+          ],
+          [
+            "line",
+            180,
+            "        "
+          ],
+          [
+            "line",
+            181,
+            "        if len(N) == 0:"
+          ],
+          [
+            "line",
+            182,
+            "            break"
+          ],
+          [
+            "line",
+            183,
+            "        else:"
+          ],
+          [
+            "line",
+            184,
+            "            min_mark_depth += 1"
+          ],
+          [
+            "line",
+            185,
+            "            "
+          ],
+          [
+            "line",
+            186,
+            "    return min_mark_depth"
+          ],
+          [
+            "line",
+            187,
+            "    "
+          ],
+          [
+            "line",
+            188,
+            "    "
+          ],
+          [
+            "line",
+            189,
+            ""
+          ],
+          [
+            "line",
+            190,
+            ""
+          ],
+          [
+            "line",
+            191,
+            ""
+          ],
+          [
+            "line",
+            192,
+            "if __name__ == \"__main__\":"
+          ],
+          [
+            "skip",
+            51
+          ]
+        ],
+        "runTime": 2.3885657787323
+      },
+      {
+        "name": "D:\\Studium\\Module\\Semester 6\\Bachelor-Arbeit\\Generation-of-DFA-Minimization-Problems\\DB_MinimalDFAs.py",
+        "heatmap": {
+          "1": 0.0,
+          "2": 0.0,
+          "3": 0.0,
+          "5": 0.0,
+          "9": 0.0,
+          "19": 0.0,
+          "30": 0.0,
+          "61": 0.0,
+          "84": 0.0,
+          "95": 0.0,
+          "103": 0.0,
+          "132": 0.0,
+          "168": 0.0,
+          "21": 0.0,
+          "22": 0.0,
+          "11": 0.0,
+          "13": 0.2208406925201416,
+          "15": 0.0,
+          "38": 0.0,
+          "40": 0.0,
+          "42": 0.0,
+          "44": 0.0,
+          "56": 0.0,
+          "68": 0.005004405975341797,
+          "70": 0.14404773712158203,
+          "72": 0.8218817710876465,
+          "80": 0.0019989013671875,
+          "74": 0.5357058048248291,
+          "97": 0.28272533416748047,
+          "99": 0.5346918106079102,
+          "134": 0.3169562816619873,
+          "140": 0.39377307891845703,
+          "142": 0.31887078285217285,
+          "143": 0.300304651260376,
+          "146": 0.3454899787902832,
+          "147": 0.24370932579040527,
+          "149": 1.528965950012207,
+          "135": 3.25647234916687,
+          "136": 7.651504039764404,
+          "151": 0.3637840747833252,
+          "152": 0.27590417861938477,
+          "154": 2.499924898147583,
+          "155": 3.064865827560425,
+          "157": 0.28969454765319824,
+          "159": 0.29939723014831543,
+          "160": 0.2125530242919922,
+          "162": 1.007335901260376,
+          "164": 0.42046308517456055,
+          "76": 0.6845362186431885,
+          "78": 0.01302957534790039
+        },
+        "executionCount": {
+          "1": 1,
+          "2": 1,
+          "3": 1,
+          "5": 1,
+          "9": 1,
+          "19": 1,
+          "30": 1,
+          "61": 1,
+          "84": 1,
+          "95": 1,
+          "103": 1,
+          "132": 1,
+          "168": 1,
+          "21": 1,
+          "22": 1,
+          "11": 1,
+          "13": 1,
+          "15": 1,
+          "38": 1,
+          "40": 1,
+          "42": 1,
+          "44": 1,
+          "56": 1,
+          "68": 2500,
+          "70": 2500,
+          "72": 178107,
+          "80": 591,
+          "74": 177516,
+          "97": 177516,
+          "99": 177516,
+          "134": 177516,
+          "140": 177516,
+          "142": 177516,
+          "143": 177516,
+          "146": 177516,
+          "147": 177516,
+          "149": 815088,
+          "135": 3575424,
+          "136": 3575424,
+          "151": 177516,
+          "152": 177516,
+          "154": 1735200,
+          "155": 1735200,
+          "157": 177516,
+          "159": 177516,
+          "160": 177516,
+          "162": 532548,
+          "164": 177516,
+          "76": 177516,
+          "78": 1909
+        },
+        "srcCode": [
+          [
+            "line",
+            1,
+            "from DFA                     import DFA"
+          ],
+          [
+            "line",
+            2,
+            "from minimize_dfa            import minimization_mark_depth, minimize_dfa"
+          ],
+          [
+            "line",
+            3,
+            "from isomorphy_test_min_dfas import isomorphy_test_min_dfas"
+          ],
+          [
+            "line",
+            4,
+            ""
+          ],
+          [
+            "line",
+            5,
+            "import sqlite3"
+          ],
+          [
+            "line",
+            6,
+            ""
+          ],
+          [
+            "line",
+            7,
+            ""
+          ],
+          [
+            "line",
+            8,
+            ""
+          ],
+          [
+            "line",
+            9,
+            "def ensureValidity(dbConn):"
+          ],
+          [
+            "line",
+            10,
+            "    "
+          ],
+          [
+            "line",
+            11,
+            "    dbConn.cursor().execute('''"
+          ],
+          [
+            "line",
+            12,
+            "        CREATE TABLE IF NOT EXISTS MinimalDFAs "
+          ],
+          [
+            "line",
+            13,
+            "        (id INTEGER PRIMARY KEY AUTOINCREMENT, dfa TEXT, numberOfStates INTEGER, minmarkDepth INTEGER, numberOfAcceptingStates INTEGER, alphabetSize INTEGER, used INTEGER)'''"
+          ],
+          [
+            "line",
+            14,
+            "    )"
+          ],
+          [
+            "line",
+            15,
+            "    dbConn.commit()"
+          ],
+          [
+            "line",
+            16,
+            "    "
+          ],
+          [
+            "line",
+            17,
+            "    "
+          ],
+          [
+            "line",
+            18,
+            "    "
+          ],
+          [
+            "line",
+            19,
+            "def clear(dbConn):"
+          ],
+          [
+            "line",
+            20,
+            "    "
+          ],
+          [
+            "line",
+            21,
+            "    dbConn.cursor().execute('''DROP TABLE IF EXISTS MinimalDFAs''')"
+          ],
+          [
+            "line",
+            22,
+            "    dbConn.commit()"
+          ],
+          [
+            "line",
+            23,
+            ""
+          ],
+          [
+            "line",
+            24,
+            ""
+          ],
+          [
+            "line",
+            25,
+            ""
+          ],
+          [
+            "line",
+            26,
+            "# if successful:"
+          ],
+          [
+            "line",
+            27,
+            "#    returns dfa, properties"
+          ],
+          [
+            "line",
+            28,
+            "#    sets dfa as used"
+          ],
+          [
+            "line",
+            29,
+            "# else: None"
+          ],
+          [
+            "line",
+            30,
+            "def findMatchingUnusedMinimalDFA(dbConn, numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates):"
+          ],
+          [
+            "line",
+            31,
+            "    "
+          ],
+          [
+            "line",
+            32,
+            "    qFindMatchingDFA = '''SELECT * FROM MinimalDFAs WHERE "
+          ],
+          [
+            "line",
+            33,
+            "        numberOfStates = ? AND"
+          ],
+          [
+            "line",
+            34,
+            "        minmarkDepth >= ? AND"
+          ],
+          [
+            "line",
+            35,
+            "        minmarkDepth <= ? AND"
+          ],
+          [
+            "line",
+            36,
+            "        numberOfAcceptingStates = ? AND"
+          ],
+          [
+            "line",
+            37,
+            "        alphabetSize = ?"
+          ],
+          [
+            "line",
+            38,
+            "    '''"
+          ],
+          [
+            "line",
+            39,
+            "    "
+          ],
+          [
+            "line",
+            40,
+            "    c = dbConn.cursor()"
+          ],
+          [
+            "line",
+            41,
+            "    "
+          ],
+          [
+            "line",
+            42,
+            "    c.execute(qFindMatchingDFA, (numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates))"
+          ],
+          [
+            "line",
+            43,
+            "    "
+          ],
+          [
+            "line",
+            44,
+            "    for row in c.fetchall():"
+          ],
+          [
+            "skip",
+            11
+          ],
+          [
+            "line",
+            56,
+            "    return None"
+          ],
+          [
+            "line",
+            57,
+            ""
+          ],
+          [
+            "line",
+            58,
+            ""
+          ],
+          [
+            "line",
+            59,
+            ""
+          ],
+          [
+            "line",
+            60,
+            "# returns boolean"
+          ],
+          [
+            "line",
+            61,
+            "def hasIsomorphMatchingDFA(dbConn, newDFA, properties):"
+          ],
+          [
+            "line",
+            62,
+            "    "
+          ],
+          [
+            "line",
+            63,
+            "    qFindMatchingDFA = '''SELECT * FROM MinimalDFAs WHERE "
+          ],
+          [
+            "line",
+            64,
+            "        numberOfStates = ? AND"
+          ],
+          [
+            "line",
+            65,
+            "        minmarkDepth = ? AND"
+          ],
+          [
+            "line",
+            66,
+            "        numberOfAcceptingStates = ? AND"
+          ],
+          [
+            "line",
+            67,
+            "        alphabetSize = ?"
+          ],
+          [
+            "line",
+            68,
+            "    '''"
+          ],
+          [
+            "line",
+            69,
+            "    "
+          ],
+          [
+            "line",
+            70,
+            "    results = dbConn.cursor().execute(qFindMatchingDFA, properties)"
+          ],
+          [
+            "line",
+            71,
+            "    "
+          ],
+          [
+            "line",
+            72,
+            "    for row in results:"
+          ],
+          [
+            "line",
+            73,
+            "    "
+          ],
+          [
+            "line",
+            74,
+            "        id, dfa, properties, used = __interpretDBRow(row)"
+          ],
+          [
+            "line",
+            75,
+            ""
+          ],
+          [
+            "line",
+            76,
+            "        if isomorphy_test_min_dfas(newDFA, dfa) == True:"
+          ],
+          [
+            "line",
+            77,
+            "    "
+          ],
+          [
+            "line",
+            78,
+            "            return True"
+          ],
+          [
+            "line",
+            79,
+            "            "
+          ],
+          [
+            "line",
+            80,
+            "    return False"
+          ],
+          [
+            "line",
+            81,
+            "            "
+          ],
+          [
+            "line",
+            82,
+            "    "
+          ],
+          [
+            "line",
+            83,
+            ""
+          ],
+          [
+            "line",
+            84,
+            "def saveNewDFA(dbConn, dfa, properties, used):"
+          ],
+          [
+            "line",
+            85,
+            ""
+          ],
+          [
+            "line",
+            86,
+            "    qSaveDFA = '''INSERT INTO MinimalDFAs VALUES (NULL,?,?,?,?,?,?)'''"
+          ],
+          [
+            "line",
+            87,
+            "    "
+          ],
+          [
+            "line",
+            88,
+            "    row = (__encodeDFA(dfa), properties[0], properties[1], properties[2], properties[3], int(used))"
+          ],
+          [
+            "line",
+            89,
+            ""
+          ],
+          [
+            "line",
+            90,
+            "    dbConn.cursor().execute(qSaveDFA, row)"
+          ],
+          [
+            "line",
+            91,
+            "    dbConn.commit()"
+          ],
+          [
+            "line",
+            92,
+            ""
+          ],
+          [
+            "line",
+            93,
+            "        "
+          ],
+          [
+            "line",
+            94,
+            "        "
+          ],
+          [
+            "line",
+            95,
+            "def __interpretDBRow(row):"
+          ],
+          [
+            "line",
+            96,
+            ""
+          ],
+          [
+            "line",
+            97,
+            "    id, dfa, numberOfStates, minmarkDepth, numberOfAcceptingStates, alphabetSize, used = row"
+          ],
+          [
+            "line",
+            98,
+            ""
+          ],
+          [
+            "line",
+            99,
+            "    return id, __decodeDFA(dfa), (numberOfStates, minmarkDepth, numberOfAcceptingStates, alphabetSize), bool(used)"
+          ],
+          [
+            "line",
+            100,
+            ""
+          ],
+          [
+            "line",
+            101,
+            ""
+          ],
+          [
+            "line",
+            102,
+            ""
+          ],
+          [
+            "line",
+            103,
+            "def __encodeDFA(dfa):"
+          ],
+          [
+            "skip",
+            28
+          ],
+          [
+            "line",
+            132,
+            "def __decodeDFA(encodedDFA):"
+          ],
+          [
+            "line",
+            133,
+            ""
+          ],
+          [
+            "line",
+            134,
+            "    def d(e):"
+          ],
+          [
+            "line",
+            135,
+            "        if e in \"0123456789\":"
+          ],
+          [
+            "line",
+            136,
+            "            return int(e)"
+          ],
+          [
+            "line",
+            137,
+            "        else:"
+          ],
+          [
+            "line",
+            138,
+            "            return e"
+          ],
+          [
+            "line",
+            139,
+            ""
+          ],
+          [
+            "line",
+            140,
+            "    encodedElements = encodedDFA.split(\";\")"
+          ],
+          [
+            "line",
+            141,
+            "    "
+          ],
+          [
+            "line",
+            142,
+            "    alphabet = encodedElements[0].split(\",\")"
+          ],
+          [
+            "line",
+            143,
+            "    if '' in alphabet:"
+          ],
+          [
+            "line",
+            144,
+            "        alphabet.remove('')"
+          ],
+          [
+            "line",
+            145,
+            "    "
+          ],
+          [
+            "line",
+            146,
+            "    states = encodedElements[1].split(\",\")"
+          ],
+          [
+            "line",
+            147,
+            "    if '' in states:"
+          ],
+          [
+            "line",
+            148,
+            "        states.remove('')"
+          ],
+          [
+            "line",
+            149,
+            "    states = [d(e) for e in states]"
+          ],
+          [
+            "line",
+            150,
+            "    "
+          ],
+          [
+            "line",
+            151,
+            "    transitions = encodedElements[2].split(\",\")"
+          ],
+          [
+            "line",
+            152,
+            "    if '' in transitions:"
+          ],
+          [
+            "line",
+            153,
+            "        transitions.remove('')"
+          ],
+          [
+            "line",
+            154,
+            "    transitions = [t.split(\".\") for t in transitions]"
+          ],
+          [
+            "line",
+            155,
+            "    transitions = [((d(q1), c), d(q2)) for (q1,c,q2) in transitions]"
+          ],
+          [
+            "line",
+            156,
+            "    "
+          ],
+          [
+            "line",
+            157,
+            "    start = d(encodedElements[3])"
+          ],
+          [
+            "line",
+            158,
+            "    "
+          ],
+          [
+            "line",
+            159,
+            "    accepting = encodedElements[4].split(\",\")"
+          ],
+          [
+            "line",
+            160,
+            "    if '' in accepting:"
+          ],
+          [
+            "line",
+            161,
+            "        accepting.remove('')"
+          ],
+          [
+            "line",
+            162,
+            "    accepting = [d(e) for e in accepting]"
+          ],
+          [
+            "line",
+            163,
+            "    "
+          ],
+          [
+            "line",
+            164,
+            "    return DFA(alphabet, states, transitions, start, accepting)"
+          ],
+          [
+            "line",
+            165,
+            ""
+          ],
+          [
+            "line",
+            166,
+            ""
+          ],
+          [
+            "line",
+            167,
+            ""
+          ],
+          [
+            "line",
+            168,
+            "if __name__ == \"__main__\":"
+          ],
+          [
+            "skip",
+            66
+          ]
+        ],
+        "runTime": 26.03443145751953
+      },
+      {
+        "name": "D:\\Studium\\Module\\Semester 6\\Bachelor-Arbeit\\Generation-of-DFA-Minimization-Problems\\isomorphy_test_min_dfas.py",
+        "heatmap": {
+          "1": 0.0,
+          "4": 0.0,
+          "68": 0.0,
+          "6": 0.45663928985595703,
+          "9": 0.45055603981018066,
+          "12": 0.4282371997833252,
+          "15": 0.5856060981750488,
+          "17": 0.42466044425964355,
+          "19": 0.40496349334716797,
+          "21": 0.3898489475250244,
+          "22": 0.4308018684387207,
+          "24": 0.34058260917663574,
+          "27": 0.3638608455657959,
+          "29": 1.7532844543457031,
+          "30": 1.534649133682251,
+          "32": 2.3608665466308594,
+          "34": 0.8217911720275879,
+          "36": 0.9490232467651367,
+          "38": 0.6511425971984863,
+          "43": 0.3603949546813965,
+          "49": 0.2632253170013428,
+          "45": 0.2232668399810791,
+          "51": 0.41189050674438477,
+          "52": 0.28669071197509766,
+          "40": 0.29317164421081543,
+          "41": 0.19712591171264648,
+          "54": 0.06705284118652344,
+          "57": 0.0750284194946289,
+          "59": 0.08807134628295898,
+          "55": 0.006001710891723633,
+          "61": 0.007006168365478516,
+          "62": 0.004003047943115234,
+          "65": 0.002994060516357422
+        },
+        "executionCount": {
+          "1": 1,
+          "4": 1,
+          "68": 1,
+          "6": 177516,
+          "9": 177516,
+          "12": 177516,
+          "15": 177516,
+          "17": 177516,
+          "19": 177516,
+          "21": 177516,
+          "22": 177516,
+          "24": 177516,
+          "27": 177516,
+          "29": 1079956,
+          "30": 1034066,
+          "32": 446998,
+          "34": 446998,
+          "36": 446998,
+          "38": 446998,
+          "43": 258890,
+          "49": 101797,
+          "45": 157093,
+          "51": 271391,
+          "52": 180048,
+          "40": 188108,
+          "41": 73810,
+          "54": 45890,
+          "57": 43981,
+          "59": 43981,
+          "55": 1909,
+          "61": 3818,
+          "62": 1909,
+          "65": 1909
+        },
+        "srcCode": [
+          [
+            "line",
+            1,
+            "from DFA import DFA"
+          ],
+          [
+            "line",
+            2,
+            ""
+          ],
+          [
+            "line",
+            3,
+            ""
+          ],
+          [
+            "line",
+            4,
+            "def isomorphy_test_min_dfas(dfa1, dfa2):"
+          ],
+          [
+            "line",
+            5,
+            ""
+          ],
+          [
+            "line",
+            6,
+            "    if len(dfa1.states) != len(dfa2.states):"
+          ],
+          [
+            "line",
+            7,
+            "        return False"
+          ],
+          [
+            "line",
+            8,
+            ""
+          ],
+          [
+            "line",
+            9,
+            "    if len(dfa1.accepting) != len(dfa2.accepting):"
+          ],
+          [
+            "line",
+            10,
+            "        return False"
+          ],
+          [
+            "line",
+            11,
+            "        "
+          ],
+          [
+            "line",
+            12,
+            "    if dfa1.alphabet != dfa2.alphabet:"
+          ],
+          [
+            "line",
+            13,
+            "        return False"
+          ],
+          [
+            "line",
+            14,
+            "        "
+          ],
+          [
+            "line",
+            15,
+            "    delta2 = dict(dfa2.transitions)"
+          ],
+          [
+            "line",
+            16,
+            ""
+          ],
+          [
+            "line",
+            17,
+            "    bijection = dict()"
+          ],
+          [
+            "line",
+            18,
+            "    "
+          ],
+          [
+            "line",
+            19,
+            "    bijection[dfa1.start] = dfa2.start"
+          ],
+          [
+            "line",
+            20,
+            "    "
+          ],
+          [
+            "line",
+            21,
+            "    finished_states = [dfa1.start]"
+          ],
+          [
+            "line",
+            22,
+            "    observed_states = []"
+          ],
+          [
+            "line",
+            23,
+            "    "
+          ],
+          [
+            "line",
+            24,
+            "    act_state = dfa1.start"
+          ],
+          [
+            "line",
+            25,
+            "    "
+          ],
+          [
+            "line",
+            26,
+            "    "
+          ],
+          [
+            "line",
+            27,
+            "    while True:"
+          ],
+          [
+            "line",
+            28,
+            "    "
+          ],
+          [
+            "line",
+            29,
+            "        for ((q1,c),p1) in dfa1.transitions:"
+          ],
+          [
+            "line",
+            30,
+            "            if q1 == act_state:"
+          ],
+          [
+            "line",
+            31,
+            "                "
+          ],
+          [
+            "line",
+            32,
+            "                p1Marked = p1 in bijection.keys()"
+          ],
+          [
+            "line",
+            33,
+            "                "
+          ],
+          [
+            "line",
+            34,
+            "                p2 = delta2[(bijection[act_state], c)]"
+          ],
+          [
+            "line",
+            35,
+            "                    "
+          ],
+          [
+            "line",
+            36,
+            "                p2Marked = p2 in bijection.values()"
+          ],
+          [
+            "line",
+            37,
+            "                "
+          ],
+          [
+            "line",
+            38,
+            "                if p1Marked and p2Marked:"
+          ],
+          [
+            "line",
+            39,
+            "                "
+          ],
+          [
+            "line",
+            40,
+            "                    if bijection[p1] != p2:"
+          ],
+          [
+            "line",
+            41,
+            "                        return False"
+          ],
+          [
+            "line",
+            42,
+            "                        "
+          ],
+          [
+            "line",
+            43,
+            "                elif not p1Marked and not p2Marked:"
+          ],
+          [
+            "line",
+            44,
+            "                "
+          ],
+          [
+            "line",
+            45,
+            "                    bijection[p1] = p2"
+          ],
+          [
+            "line",
+            46,
+            "                    "
+          ],
+          [
+            "line",
+            47,
+            "                else:"
+          ],
+          [
+            "line",
+            48,
+            "                "
+          ],
+          [
+            "line",
+            49,
+            "                    return False"
+          ],
+          [
+            "line",
+            50,
+            "                    "
+          ],
+          [
+            "line",
+            51,
+            "                if p1 not in finished_states:"
+          ],
+          [
+            "line",
+            52,
+            "                    observed_states.append(p1)"
+          ],
+          [
+            "line",
+            53,
+            "    "
+          ],
+          [
+            "line",
+            54,
+            "        if not observed_states:"
+          ],
+          [
+            "line",
+            55,
+            "            break"
+          ],
+          [
+            "line",
+            56,
+            "            "
+          ],
+          [
+            "line",
+            57,
+            "        act_state = observed_states.pop()"
+          ],
+          [
+            "line",
+            58,
+            "        "
+          ],
+          [
+            "line",
+            59,
+            "        finished_states.append(act_state)"
+          ],
+          [
+            "line",
+            60,
+            "        "
+          ],
+          [
+            "line",
+            61,
+            "    for q in dfa1.accepting:"
+          ],
+          [
+            "line",
+            62,
+            "        if bijection[q] not in dfa2.accepting:"
+          ],
+          [
+            "line",
+            63,
+            "            return False"
+          ],
+          [
+            "line",
+            64,
+            "        "
+          ],
+          [
+            "line",
+            65,
+            "    return True"
+          ],
+          [
+            "line",
+            66,
+            "   "
+          ],
+          [
+            "line",
+            67,
+            ""
+          ],
+          [
+            "line",
+            68,
+            "if __name__ == \"__main__\":"
+          ],
+          [
+            "skip",
+            104
+          ]
+        ],
+        "runTime": 14.632437467575073
+      },
+      {
+        "name": "D:\\Studium\\Module\\Semester 6\\Bachelor-Arbeit\\Generation-of-DFA-Minimization-Problems\\DB_EnumerationProgress.py",
+        "heatmap": {
+          "1": 0.0,
+          "3": 0.0,
+          "7": 0.0,
+          "17": 0.0,
+          "24": 0.0,
+          "32": 0.0,
+          "74": 0.0,
+          "95": 0.0,
+          "97": 0.0,
+          "118": 0.0,
+          "133": 0.0,
+          "138": 0.0,
+          "185": 0.0,
+          "201": 0.0,
+          "19": 0.0,
+          "20": 0.0,
+          "9": 0.0,
+          "11": 0.08844947814941406,
+          "13": 0.0,
+          "34": 0.0,
+          "36": 0.0,
+          "39": 0.0,
+          "40": 0.0,
+          "42": 0.0,
+          "44": 0.0,
+          "46": 0.0,
+          "99": 0.0,
+          "102": 0.0,
+          "103": 0.0,
+          "107": 0.0,
+          "108": 0.0,
+          "110": 0.0,
+          "111": 0.0,
+          "115": 0.0,
+          "49": 0.0,
+          "50": 0.0,
+          "51": 0.0,
+          "52": 0.0,
+          "25": 0.0,
+          "26": 0.0,
+          "27": 0.0,
+          "28": 0.0,
+          "53": 0.0,
+          "54": 0.0,
+          "57": 0.001003265380859375,
+          "58": 0.07638049125671387,
+          "60": 0.0,
+          "140": 0.003994941711425781,
+          "155": 0.0030019283294677734,
+          "160": 0.005504131317138672,
+          "141": 0.003003835678100586,
+          "142": 0.006019115447998047,
+          "143": 0.0,
+          "144": 0.0,
+          "161": 0.00601506233215332,
+          "187": 0.027028799057006836,
+          "188": 0.023001432418823242,
+          "190": 0.006006002426147461,
+          "191": 0.022822856903076172,
+          "192": 0.10985970497131348,
+          "193": 0.09156131744384766,
+          "195": 0.007005214691162109,
+          "196": 0.036849021911621094,
+          "198": 0.0030069351196289062,
+          "145": 0.0020017623901367188,
+          "150": 0.0010094642639160156,
+          "151": 0.010010004043579102,
+          "146": 0.001001119613647461,
+          "147": 0.0,
+          "148": 0.0,
+          "77": 0.0,
+          "78": 0.0,
+          "79": 0.0,
+          "80": 0.0,
+          "81": 0.0,
+          "82": 0.0,
+          "85": 0.0,
+          "88": 0.0,
+          "89": 2.309826374053955,
+          "91": 0.15115070343017578,
+          "135": 0.0
+        },
+        "executionCount": {
+          "1": 1,
+          "3": 1,
+          "7": 1,
+          "17": 1,
+          "24": 1,
+          "32": 1,
+          "74": 1,
+          "95": 2,
+          "97": 1,
+          "118": 1,
+          "133": 1,
+          "138": 1,
+          "185": 1,
+          "201": 1,
+          "19": 1,
+          "20": 1,
+          "9": 1,
+          "11": 1,
+          "13": 1,
+          "34": 1,
+          "36": 1,
+          "39": 1,
+          "40": 1,
+          "42": 1,
+          "44": 1,
+          "46": 1,
+          "99": 1,
+          "102": 1,
+          "103": 1,
+          "107": 1,
+          "108": 1,
+          "110": 8,
+          "111": 23,
+          "115": 1,
+          "49": 1,
+          "50": 1,
+          "51": 1,
+          "52": 1,
+          "25": 4,
+          "26": 60,
+          "27": 56,
+          "28": 4,
+          "53": 1,
+          "54": 1,
+          "57": 1,
+          "58": 1,
+          "60": 1,
+          "140": 2500,
+          "155": 2500,
+          "160": 2500,
+          "141": 2500,
+          "142": 2500,
+          "143": 358,
+          "144": 358,
+          "161": 2500,
+          "187": 12500,
+          "188": 22500,
+          "190": 2500,
+          "191": 20000,
+          "192": 70000,
+          "193": 52500,
+          "195": 2500,
+          "196": 22500,
+          "198": 2500,
+          "145": 2558,
+          "150": 2142,
+          "151": 2142,
+          "146": 416,
+          "147": 416,
+          "148": 416,
+          "77": 1,
+          "78": 1,
+          "79": 1,
+          "80": 1,
+          "81": 1,
+          "82": 1,
+          "85": 1,
+          "88": 1,
+          "89": 1,
+          "91": 1,
+          "135": 1
+        },
+        "srcCode": [
+          [
+            "line",
+            1,
+            "from DFA import DFA"
+          ],
+          [
+            "line",
+            2,
+            ""
+          ],
+          [
+            "line",
+            3,
+            "import sqlite3"
+          ],
+          [
+            "line",
+            4,
+            ""
+          ],
+          [
+            "line",
+            5,
+            ""
+          ],
+          [
+            "line",
+            6,
+            ""
+          ],
+          [
+            "line",
+            7,
+            "def ensureValidity(dbConn):"
+          ],
+          [
+            "line",
+            8,
+            "    "
+          ],
+          [
+            "line",
+            9,
+            "    dbConn.cursor().execute('''"
+          ],
+          [
+            "line",
+            10,
+            "        CREATE TABLE IF NOT EXISTS EnumerationProgress "
+          ],
+          [
+            "line",
+            11,
+            "        (numberOfStates INTEGER, alphabetSize INTEGER, numberOfAcceptingStates INTEGER, acceptingStatesProgress TEXT, transitionsProgress TEXT, finished INTEGER)'''"
+          ],
+          [
+            "line",
+            12,
+            "    )"
+          ],
+          [
+            "line",
+            13,
+            "    dbConn.commit()"
+          ],
+          [
+            "line",
+            14,
+            "    "
+          ],
+          [
+            "line",
+            15,
+            "    "
+          ],
+          [
+            "line",
+            16,
+            "    "
+          ],
+          [
+            "line",
+            17,
+            "def clear(dbConn):"
+          ],
+          [
+            "line",
+            18,
+            "    "
+          ],
+          [
+            "line",
+            19,
+            "    dbConn.cursor().execute('''DROP TABLE IF EXISTS EnumerationProgress''')"
+          ],
+          [
+            "line",
+            20,
+            "    dbConn.commit()"
+          ],
+          [
+            "line",
+            21,
+            "    "
+          ],
+          [
+            "line",
+            22,
+            "    "
+          ],
+          [
+            "line",
+            23,
+            "    "
+          ],
+          [
+            "line",
+            24,
+            "def __encodeListOfInts(l):"
+          ],
+          [
+            "line",
+            25,
+            "    s = \"\""
+          ],
+          [
+            "line",
+            26,
+            "    for n in l:"
+          ],
+          [
+            "line",
+            27,
+            "        s += str(n) + \",\""
+          ],
+          [
+            "line",
+            28,
+            "    return s[:-1]"
+          ],
+          [
+            "line",
+            29,
+            "    "
+          ],
+          [
+            "line",
+            30,
+            "    "
+          ],
+          [
+            "line",
+            31,
+            "    "
+          ],
+          [
+            "line",
+            32,
+            "def fetchEnumerationProgress(dbConn, numberOfStates, alphabetSize, numberOfAcceptingStates):"
+          ],
+          [
+            "line",
+            33,
+            ""
+          ],
+          [
+            "line",
+            34,
+            "    c = dbConn.cursor()"
+          ],
+          [
+            "line",
+            35,
+            "    "
+          ],
+          [
+            "line",
+            36,
+            "    c.execute('''"
+          ],
+          [
+            "line",
+            37,
+            "        SELECT acceptingStatesProgress, transitionsProgress, finished "
+          ],
+          [
+            "line",
+            38,
+            "        FROM EnumerationProgress "
+          ],
+          [
+            "line",
+            39,
+            "        WHERE numberOfStates = ? AND alphabetSize = ? AND numberOfAcceptingStates = ?''', "
+          ],
+          [
+            "line",
+            40,
+            "        (numberOfStates, alphabetSize, numberOfAcceptingStates)"
+          ],
+          [
+            "line",
+            41,
+            "    )"
+          ],
+          [
+            "line",
+            42,
+            "    result = c.fetchone()"
+          ],
+          [
+            "line",
+            43,
+            "    "
+          ],
+          [
+            "line",
+            44,
+            "    if result == None:"
+          ],
+          [
+            "line",
+            45,
+            "    "
+          ],
+          [
+            "line",
+            46,
+            "        enumProg = EnumerationProgress(numberOfStates, alphabetSize, numberOfAcceptingStates)"
+          ],
+          [
+            "line",
+            47,
+            ""
+          ],
+          [
+            "line",
+            48,
+            "        dbTuple = ("
+          ],
+          [
+            "line",
+            49,
+            "            enumProg.numberOfStates,"
+          ],
+          [
+            "line",
+            50,
+            "            enumProg.alphabetSize,"
+          ],
+          [
+            "line",
+            51,
+            "            enumProg.numberOfAcceptingStates,"
+          ],
+          [
+            "line",
+            52,
+            "            __encodeListOfInts(enumProg.acceptingStatesProgress),"
+          ],
+          [
+            "line",
+            53,
+            "            __encodeListOfInts(enumProg.transitionsProgress),"
+          ],
+          [
+            "line",
+            54,
+            "            int(enumProg.finished)"
+          ],
+          [
+            "line",
+            55,
+            "        )"
+          ],
+          [
+            "line",
+            56,
+            "        "
+          ],
+          [
+            "line",
+            57,
+            "        c.execute('''INSERT INTO EnumerationProgress VALUES (?,?,?,?,?,?)''', dbTuple)"
+          ],
+          [
+            "line",
+            58,
+            "        dbConn.commit()"
+          ],
+          [
+            "line",
+            59,
+            "    "
+          ],
+          [
+            "line",
+            60,
+            "        return enumProg"
+          ],
+          [
+            "skip",
+            13
+          ],
+          [
+            "line",
+            74,
+            "def updateEnumerationProgress(dbConn, enumProg):"
+          ],
+          [
+            "line",
+            75,
+            ""
+          ],
+          [
+            "line",
+            76,
+            "    dbTuple = ("
+          ],
+          [
+            "line",
+            77,
+            "        __encodeListOfInts(enumProg.acceptingStatesProgress),"
+          ],
+          [
+            "line",
+            78,
+            "        __encodeListOfInts(enumProg.transitionsProgress),"
+          ],
+          [
+            "line",
+            79,
+            "        int(enumProg.finished),"
+          ],
+          [
+            "line",
+            80,
+            "        enumProg.numberOfStates,"
+          ],
+          [
+            "line",
+            81,
+            "        enumProg.alphabetSize,"
+          ],
+          [
+            "line",
+            82,
+            "        enumProg.numberOfAcceptingStates"
+          ],
+          [
+            "line",
+            83,
+            "    )"
+          ],
+          [
+            "line",
+            84,
+            "    "
+          ],
+          [
+            "line",
+            85,
+            "    dbConn.cursor().execute('''"
+          ],
+          [
+            "line",
+            86,
+            "        UPDATE EnumerationProgress "
+          ],
+          [
+            "line",
+            87,
+            "        SET acceptingStatesProgress = ?, transitionsProgress = ?, finished = ? "
+          ],
+          [
+            "line",
+            88,
+            "        WHERE numberOfStates = ? AND alphabetSize = ? AND numberOfAcceptingStates = ?''',"
+          ],
+          [
+            "line",
+            89,
+            "        dbTuple"
+          ],
+          [
+            "line",
+            90,
+            "    )"
+          ],
+          [
+            "line",
+            91,
+            "    dbConn.commit()"
+          ],
+          [
+            "line",
+            92,
+            "    "
+          ],
+          [
+            "line",
+            93,
+            "    "
+          ],
+          [
+            "line",
+            94,
+            "    "
+          ],
+          [
+            "line",
+            95,
+            "class EnumerationProgress(object):"
+          ],
+          [
+            "line",
+            96,
+            ""
+          ],
+          [
+            "line",
+            97,
+            "    def __init__(self, numberOfStates, alphabetSize, numberOfAcceptingStates):"
+          ],
+          [
+            "line",
+            98,
+            "    "
+          ],
+          [
+            "line",
+            99,
+            "        if numberOfStates < 1:"
+          ],
+          [
+            "line",
+            100,
+            "            raise Exception(\"Number of states must be greater than zero for a DFA.\")"
+          ],
+          [
+            "line",
+            101,
+            "    "
+          ],
+          [
+            "line",
+            102,
+            "        self.numberOfStates = numberOfStates"
+          ],
+          [
+            "line",
+            103,
+            "        self.alphabetSize   = alphabetSize"
+          ],
+          [
+            "line",
+            104,
+            "        "
+          ],
+          [
+            "line",
+            105,
+            "        # ----"
+          ],
+          [
+            "line",
+            106,
+            "        "
+          ],
+          [
+            "line",
+            107,
+            "        self.numberOfTransitions     = numberOfStates * alphabetSize"
+          ],
+          [
+            "line",
+            108,
+            "        self.numberOfAcceptingStates = numberOfAcceptingStates"
+          ],
+          [
+            "line",
+            109,
+            "        "
+          ],
+          [
+            "line",
+            110,
+            "        self.acceptingStatesProgress = [1] + [0 for i in range(self.numberOfStates-1)]"
+          ],
+          [
+            "line",
+            111,
+            "        self.transitionsProgress     = [0 for i in range(self.numberOfTransitions)]"
+          ],
+          [
+            "line",
+            112,
+            "        "
+          ],
+          [
+            "line",
+            113,
+            "        # ----"
+          ],
+          [
+            "line",
+            114,
+            "        "
+          ],
+          [
+            "line",
+            115,
+            "        self.finished = False"
+          ],
+          [
+            "line",
+            116,
+            "        "
+          ],
+          [
+            "line",
+            117,
+            "        "
+          ],
+          [
+            "line",
+            118,
+            "    @staticmethod"
+          ],
+          [
+            "skip",
+            14
+          ],
+          [
+            "line",
+            133,
+            "    def __str__(self):"
+          ],
+          [
+            "line",
+            134,
+            "    "
+          ],
+          [
+            "line",
+            135,
+            "        return str((self.numberOfStates, self.alphabetSize, self.numberOfAcceptingStates, self.acceptingStatesProgress, self.transitionsProgress, self.finished))"
+          ],
+          [
+            "line",
+            136,
+            "        "
+          ],
+          [
+            "line",
+            137,
+            "        "
+          ],
+          [
+            "line",
+            138,
+            "    def increment(self):"
+          ],
+          [
+            "line",
+            139,
+            ""
+          ],
+          [
+            "line",
+            140,
+            "        def addOneReverse(n, p):"
+          ],
+          [
+            "line",
+            141,
+            "            i = 0"
+          ],
+          [
+            "line",
+            142,
+            "            if n[i] == 0:"
+          ],
+          [
+            "line",
+            143,
+            "                n[i] = 1"
+          ],
+          [
+            "line",
+            144,
+            "                return n"
+          ],
+          [
+            "line",
+            145,
+            "            while n[i] == p-1:"
+          ],
+          [
+            "line",
+            146,
+            "                n[i] = 0"
+          ],
+          [
+            "line",
+            147,
+            "                i += 1"
+          ],
+          [
+            "line",
+            148,
+            "                if i == len(n):"
+          ],
+          [
+            "line",
+            149,
+            "                    return None"
+          ],
+          [
+            "line",
+            150,
+            "            n[i] += 1"
+          ],
+          [
+            "line",
+            151,
+            "            return n"
+          ],
+          [
+            "line",
+            152,
+            "        "
+          ],
+          [
+            "line",
+            153,
+            "        # ----"
+          ],
+          [
+            "line",
+            154,
+            "        "
+          ],
+          [
+            "line",
+            155,
+            "        if self.finished:"
+          ],
+          [
+            "line",
+            156,
+            "            return None"
+          ],
+          [
+            "line",
+            157,
+            "        "
+          ],
+          [
+            "line",
+            158,
+            "        # further iterate through transitions, if possible"
+          ],
+          [
+            "line",
+            159,
+            "        "
+          ],
+          [
+            "line",
+            160,
+            "        if addOneReverse(self.transitionsProgress, self.numberOfStates) != None:"
+          ],
+          [
+            "line",
+            161,
+            "            return self"
+          ],
+          [
+            "skip",
+            23
+          ],
+          [
+            "line",
+            185,
+            "    def dfa(self):"
+          ],
+          [
+            "line",
+            186,
+            "    "
+          ],
+          [
+            "line",
+            187,
+            "        A = [ chr(i) for i in range(ord('a'), ord('a')+self.alphabetSize) ]"
+          ],
+          [
+            "line",
+            188,
+            "        Q = [ i for i in range(self.numberOfStates) ]"
+          ],
+          [
+            "line",
+            189,
+            "        "
+          ],
+          [
+            "line",
+            190,
+            "        d = []"
+          ],
+          [
+            "line",
+            191,
+            "        for i in range(self.numberOfStates):"
+          ],
+          [
+            "line",
+            192,
+            "            for j in range(self.alphabetSize):"
+          ],
+          [
+            "line",
+            193,
+            "                d.append(((Q[i],A[j]),self.transitionsProgress[i * self.alphabetSize + j]))"
+          ],
+          [
+            "line",
+            194,
+            "        "
+          ],
+          [
+            "line",
+            195,
+            "        s = 0"
+          ],
+          [
+            "line",
+            196,
+            "        F = [ q for q in Q if self.acceptingStatesProgress[q] ]"
+          ],
+          [
+            "line",
+            197,
+            "    "
+          ],
+          [
+            "line",
+            198,
+            "        return DFA(A, Q, d, s, F)"
+          ],
+          [
+            "line",
+            199,
+            "    "
+          ],
+          [
+            "line",
+            200,
+            ""
+          ],
+          [
+            "line",
+            201,
+            "if __name__ == \"__main__\":"
+          ],
+          [
+            "skip",
+            22
+          ]
+        ],
+        "runTime": 2.9955129623413086
+      }
+    ]
+  },
+  "version": "0.37.6"
+}

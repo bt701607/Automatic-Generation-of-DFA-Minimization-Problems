@@ -1,8 +1,8 @@
-from DFA          import DFA
-from DFABuilder   import build_random_minimal_dfa
-from DFAExtender  import DFAExtender
-from pdf_from_dfa import pdf_from_dfa
-from clean		  import clean_code_dir_keep_results
+from DFA                  import DFA
+from DFABuilderRandomized import build_random_minimal_dfa
+from DFAExtender          import DFAExtender
+from pdf_from_dfa         import pdf_from_dfa
+from clean		          import clean_code_dir_keep_results
 
 
 CONSTRUCT_RANDOM_MINIMAL_DFA = True
@@ -27,37 +27,37 @@ def main():
 	else:
 
 		orig_dfa = DFA(
-			['a','b','c','d','e'],
-			[1,2,3,4,5],
-			[
-				((1,1),'a'),
-				((1,2),'b'),
-				((2,4),'c'),
-				((5,1),'d'),
-				((2,5),'e')
-			],
-			1,
-			[4,5]
+            ['a','b','c','d','e'],
+            [1,2,3,4,5],
+            [
+                ((1,'a'),1),
+                ((1,'b'),2),
+                ((2,'c'),4),
+                ((5,'d'),1),
+                ((2,'e'),5)
+            ],
+            1,
+            [4,5]
 		)
 
 		orig_dfa = DFA(
-			['0', '1'],
-			['AD', 'B', 'CE', 'G'],
-			[
-				(('AD','CE'),'1'),
-				(('AD','G' ),'0'),
-				
-				(('B' ,'CE'),'0'),
-				(('B' ,'CE'),'1'),
-				
-				(('CE','B' ),'0'),
-				(('CE','AD'),'1'),
-				
-				(('G' ,'B' ),'0'),
-				(('G' ,'CE'),'1'),
-			],
-			'AD',
-			['CE']
+            ['0', '1'],
+            ['AD', 'B', 'CE', 'G'],
+            [
+                (('AD','1'),'CE'),
+                (('AD','0'),'G' ),
+                
+                (('B' ,'0'),'CE'),
+                (('B' ,'1'),'CE'),
+                
+                (('CE','0'),'B' ),
+                (('CE','1'),'AD'),
+                
+                (('G' ,'0'),'B' ),
+                (('G' ,'1'),'CE'),
+            ],
+            'AD',
+            ['CE']
 		)
 
 

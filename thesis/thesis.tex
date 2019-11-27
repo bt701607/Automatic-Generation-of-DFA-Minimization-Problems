@@ -210,6 +210,75 @@ Using this method we have a lot of freedom. We will, in addition to the stated c
 
 The biggest problem we are approaching here is termination.
 
+\paragraph*{DB1 - Found Minimal DFAs}
+
+\begin{tabular}{c c c c c c}
+	dfa\_id & |Q| & minDepth & |F| & |$\Sigma$| & used
+\end{tabular}\\
+dfa\_id is the encoded DFA. This table saves already found minimal DFAs.
+
+\paragraph*{DB2 - Enumeration Progress}
+
+\begin{tabular}{c c c c c}
+	|Q| & |$\Sigma$| & f & t & finished
+\end{tabular}\\
+f and t are the encoded final states respectively transitions enumeration progresses for the given |Q| and |$\Sigma$| (and f in case of t). With this table the enumeration room is split into smaller pieces.
+
+\paragraph*{The enumeration algorithm}
+
+\vspace{0.2cm}
+\begin{algorithmic}[1]
+	\Function{SearchUnusedDFA\ }{\#states, minmarkDepth, alphSize, \#accStates}
+	\If {in DB1 $\exists$ unused DFA $A$ with properties matching to all parameters}
+		\State mark $A$ as used in DB1
+		\State \Return $A$
+	\EndIf
+	\State progress $\gets$ fetch based on \#states, alphSize, \#accStates in DB2
+	\While {True}
+		\If {progress is through}
+			\State \Return None
+		\EndIf
+		\State increment progress
+		\State $A_L$ $\gets$ minimize(progress.dfa())
+		\State properties $\gets$ computeProperties($A_L$)
+		\If {$A_L$ not isomorph to any DFA in DB1 with same properties}
+			\If {properties match with parameters}
+				\State save $A_L$ as used in DB1
+				\State update progress in DB2
+				\State \Return $A_L$
+			\Else
+				\State save $A_L$ as unused in DB1
+			\EndIf
+		\EndIf
+	\EndWhile
+	\EndFunction
+\end{algorithmic}
+\vspace{0.2cm}
+
+\vspace{0.2cm}
+\begin{algorithmic}[1]
+	\Function{SearchUnusedDFA2\ }{\#states, minmarkDepth, alphSize, \#accStates}
+		\State matchingUsedDFAs $\gets$ fetch based on all parameters in DB1
+		\State progress $\gets$ fetch based on \#states, alphSize, \#accStates in DB2
+		\While {True}
+			\If {progress is through}
+				\State \Return None
+			\EndIf
+			\State increment progress
+			\State $A_L$ $\gets$ minimize(progress.dfa())
+			\State properties $\gets$ computeProperties($A_L$)
+			\If {properties match with parameters}
+				\If {$A_L$ not isomorph to any in matchingUsedDFAs}
+					\State save $A_L$ as used in DB1
+					\State update progress in DB2
+					\State \Return $A_L$
+				\EndIf
+			\EndIf
+		\EndWhile
+	\EndFunction
+\end{algorithmic}
+\vspace{0.2cm}
+
 \chapter{Extending minimal DFAs}
 
 %First, a systematic study of how to extend minimal DFAs will be done. Afterwards, we will define an extension algorithm, which will use the previously found results. We have the following requirements for this stage:

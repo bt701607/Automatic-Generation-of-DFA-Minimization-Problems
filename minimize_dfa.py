@@ -1,15 +1,31 @@
-from DFA          import DFA
-from copy         import deepcopy
+from DFA import DFA
 
 
 def minimize_dfa(dfa):
     
-    return delete_duplicate_states(delete_unreachable_states(dfa))
+    dfa, min_mark_depth = delete_duplicate_states(delete_unreachable_states(dfa))
+    
+    return delete_useless_symbols(dfa)
+    
+    
+def delete_useless_symbols(dfa):
+
+    for c in dfa.alphabet:
+    
+        found = False
+        
+        for ((q1,s),q2) in dfa.transitions:
+            if s == c:
+                found = True
+                break
+                
+        if not found:
+            dfa.alphabet.remove(c)
+            
+    return dfa
 
 
 def delete_unreachable_states(dfa):
-    
-    dfa = deepcopy(dfa)
                 
     # find unreachable states via breadth-first search
     
@@ -55,8 +71,6 @@ def delete_unreachable_states(dfa):
 
 def delete_duplicate_states(dfa):
     
-    dfa = deepcopy(dfa)
-    
     # find duplicate states via the minimization-mark algorithm
     
     M = set()
@@ -68,6 +82,8 @@ def delete_duplicate_states(dfa):
                 M.add((q,p))
                 
     delta = dict(dfa.transitions)
+    
+    min_mark_depth = 0
                 
     while True:
         
@@ -87,6 +103,8 @@ def delete_duplicate_states(dfa):
         
         if len(N) == 0:
             break
+        else:
+            min_mark_depth += 1
         
     # merge duplicate states
     duplicate_state_pairs = [(p,q) for p in dfa.states for q in dfa.states if (p,q) not in M and p != q]
@@ -128,15 +146,13 @@ def delete_duplicate_states(dfa):
             
     dfa.transitions = list(set(dfa.transitions))
             
-    return dfa
+    return dfa, min_mark_depth
 
 
 # -----------------------------------------------------
 
 
 def minimization_mark_depth(dfa):
-    
-    dfa = deepcopy(dfa)
     
     # find duplicate states via the minimization-mark algorithm
     
@@ -196,7 +212,7 @@ if __name__ == "__main__":
         [4,5]
     )
         
-    test_dfa = DFA(
+    test_dfa2 = DFA(
         ['0','1'],
         ['A','B','C','D','E','F','G'],
         [

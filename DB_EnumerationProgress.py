@@ -167,28 +167,7 @@ class EnumerationProgress(object):
         if addOneReverse(self.transitionsProgress, self.numberOfStates) != None:
             return self
         
-        #threeZeros = lambda i: self.transitionsProgress[i*self.alphabetSize+0] == self.transitionsProgress[i*self.alphabetSize+1] == self.transitionsProgress[i*self.alphabetSize+2] == 0
-        
-        #while True:
-        
-            #if addOneReverse(self.transitionsProgress, self.numberOfStates) == None:
-                #break
-                
-            #hasUnreachableState = False
-                
-            #for i in range(self.numberOfStates):
-                #if threeZeros(i):
-                    #hasUnreachableState = True
-                    #break
-            
-            #if not hasUnreachableState:
-                #return self
-        
-                
-                
         # if transition's end reached, iterate accepting state permutations and reset transition progress
-        
-        self.transitionsProgress = [0 for i in range(self.numberOfTransitions)]
         
         while True:
         
@@ -204,6 +183,7 @@ class EnumerationProgress(object):
                 return self
                 
             if actNumberOfAccStates == self.numberOfAcceptingStates:
+                self.transitionsProgress = [0 for i in range(self.numberOfTransitions)]
                 return self
                 
         

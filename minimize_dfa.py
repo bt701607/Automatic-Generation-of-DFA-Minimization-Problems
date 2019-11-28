@@ -1,9 +1,12 @@
 from DFA import DFA
 
+import copy
 
+
+# returned dfa has minmarkDepth set
 def minimize_dfa(dfa):
     
-    return delete_duplicate_states(delete_unreachable_states(dfa))
+    return __delete_duplicate_states(__delete_unreachable_states(copy.deepcopy(dfa)))
     
     
 # -----------------------------------------------------------
@@ -41,7 +44,7 @@ def has_unreachable_states(dfa):
     return len(undiscovered) > 0
 
 
-def delete_unreachable_states(dfa):
+def __delete_unreachable_states(dfa):
                 
     # find unreachable states via breadth-first search
     
@@ -89,6 +92,7 @@ def delete_unreachable_states(dfa):
 # -----------------------------------------------------------
 
 
+# sets minmarkDepth of dfa
 def has_duplicate_states(dfa):
     
     # find duplicate states via the minimization-mark algorithm
@@ -132,11 +136,14 @@ def has_duplicate_states(dfa):
         for q in dfa.states:
             if p != q and (p,q) not in M:
                 return False
+            
+    dfa.minmarkDepth = min_mark_depth
                 
-    return min_mark_depth
+    return True
 
 
-def delete_duplicate_states(dfa):
+# sets minmarkDepth of dfa
+def __delete_duplicate_states(dfa):
     
     # find duplicate states via the minimization-mark algorithm
     
@@ -211,7 +218,9 @@ def delete_duplicate_states(dfa):
             
     dfa.transitions = list(set(dfa.transitions))
             
-    return dfa, min_mark_depth
+    dfa.minmarkDepth = min_mark_depth
+            
+    return dfa
     
     
 

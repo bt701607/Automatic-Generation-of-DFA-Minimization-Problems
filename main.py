@@ -1,7 +1,8 @@
 from DFA                   import DFA
 from DFABuilderRandomized  import build_random_minimal_dfa
 from DFABuilderEnumerating import build_next_minimal_dfa
-from DFAExtender           import DFAExtender
+from DFAExtender           import extend_minimal_complete_dfa
+from minimize_dfa          import minimize_dfa
 from pdf_from_dfa          import pdf_from_dfa
 from clean                 import clean_code_dir_keep_results
 
@@ -17,25 +18,19 @@ def main():
 
     orig_dfa = None
     
+    alphabetSize = 2
+    numberOfStates = 4
+    numberOfAcceptingStates = 1
+    minMinmarkDepth = 2
+    maxMinmarkDepth = 2
+    
     if CONSTRUCT_ENUMERATED_MINIMAL_DFA:
 
-        orig_dfa = build_next_minimal_dfa(
-            alphabetSize = 2,
-            numberOfStates = 5,
-            numberOfAcceptingStates = 1,
-            minMinmarkDepth = 2,
-            maxMinmarkDepth = 3
-        )
+        orig_dfa = build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth)
 
     elif CONSTRUCT_RANDOM_MINIMAL_DFA:
 
-        orig_dfa = build_random_minimal_dfa(
-            alphabetSize = 2,
-            numberOfStates = 5,
-            numberOfAcceptingStates = 1,
-            minMinmarkDepth = 2,
-            maxMinmarkDepth = 3
-        )
+        orig_dfa = build_random_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth)
 
     else:
 
@@ -76,15 +71,19 @@ def main():
 
     # extend dfa
 
-    task_dfa = DFAExtender(orig_dfa).duplicate(1).outgoing_only(1).dfa()
+    task_dfa, duplicate_states, unreachable_states, equiv_classes = extend_minimal_complete_dfa(orig_dfa, 2, 1)
 
+    # test if duplication and minimization work
+    
+    min_dfa, min_mark_depth = minimize_dfa(task_dfa)
 
     # generate graphical representation of original and extended dfa
 
+    print(duplicate_states, unreachable_states, equiv_classes)
+
     pdf_from_dfa(orig_dfa, "1")
     pdf_from_dfa(task_dfa, "2")
-
-    print(planarity_test_dfa(orig_dfa), planarity_test_dfa(task_dfa))
+    pdf_from_dfa(min_dfa, "3")
 
     # clean up directory
 

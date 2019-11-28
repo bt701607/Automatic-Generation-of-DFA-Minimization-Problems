@@ -1,192 +1,122 @@
-from DFA  import DFA
-
-from copy import deepcopy
+from planarity_test_dfa import planarity_test_dfa
 
 import random
+import copy
 
 
-class DFAExtender():
-    """
-    Implements the 'Builder' design pattern for the 'DFA' class,
-    such that 'sensible' task-DFAs can be created.
 
-    Methods are provided to add states with varying transition modalities.
+def __new_state(dfa, is_accepting):
+    # Helper method for creating new states.
 
-    Decisions upon start/accepting states and number of transitions are made by the class.
+    newState = '0'
+    
+    while newState in dfa.states:
+        newState = chr(ord(newState) + 1)
+   
+    dfa.states.append(newState)
 
-    Notes:
-    - randomness is used to create different DFAs in different run-throughs
-    """
+    if is_accepting:
+        dfa.accepting.append(newState)
 
-    def __init__(self, dfa):
-        """
-        Expects a minimal, complete dfa as input.
+    return newState
+    
+    
+# -------------------------------------------------------------------
+
+
+# dfa is expected to have no unreachable states
+def __add_unreachable_states(dfa, equiv_classes, numberOfUnreachableStates=1):
+    
+    unreachable_states = []
+
+    for i in range(numberOfUnreachableStates):
         
-        Initializes tracking lists for various categories of states
-        and creates an DFA with a start state if non was provided.
-        """
+        newState = __new_state(dfa, random.randint(0,1)) # -------------------------------- here we can enumerate
 
-        self._accepting = deepcopy(dfa.accepting)
-        
-        self._lonely         = []
-        self._ingoing_only   = []
-        self._outgoing_only  = []
-
-        self._unused_symbols = {}
-        
-        if dfa == None:
-
-            self._dfa = DFA()
-            self._connected.append(self._new_state(is_start = True))
-
-        else:
-
-            self._dfa = deepcopy(dfa)
+        availableEndPoints = (q for q in dfa.states if q not in unreachable_states)
             
-            for q in self._dfa.states:
-                    
-                self._unused_symbols[q] = []
-                    
-                for c in self._dfa.alphabet:
-                
-                    ocurrences = len(tuple(filter(lambda t: t[0][0] == q and t[0][1] == c, self._dfa.transitions)))
-                    
-                    if ocurrences == 0:
-                        self._unused_symbols[q].append(c)
-
-        self._equiv_classes = [[state] for state in self._dfa.states]
-        
-        
-    # -------------------------------------------------------------------
-        
-
-    def dfa(self):
-        # Returns the so far constructed DFA.
-
-        return deepcopy(self._dfa)
-
-
-    def _next_free_symbol(self, state):
-        """
-        Returns a symbol of the so far constructed DFA,
-        that is not labelled on an outgoing transition.
-        """
-
-        symbol = random.choice(self._unused_symbols[state])
-        self._unused_symbols[state].remove(symbol)
-        return symbol
-
-
-    def _new_state(self, is_start=False, is_accepting=(random.randint(0,1) == 1)):
-        """
-        Helper method for creating new states.
-        A new state has a 50% chance of being accepting.
-        """
+        for c in dfa.alphabet:
+            dfa.transitions.append(((newState, c), next(availableEndPoints))) # -------------------------------- here we can enumerate
             
-        newState = self._dfa.add_state(is_start, is_accepting)
-                
-        if is_accepting:
-            self._accepting.append(newState)
-
-        self._unused_symbols[newState] = list(self._dfa.alphabet)
-
-        return newState
-
-
-    def _equiv_class_to_state(self, state):
-
-        for equivClass in self._equiv_classes:
-            if state in equivClass:
-                return equivClass
+        unreachable_states.append(newState)
         
+    equiv_classes.append(unreachable_states)
         
-    # -------------------------------------------------------------------
+    return unreachable_states
 
 
-    def outgoing_only(self, number=1):
-        """
-        Adds 'number' states that have outgoing transitions only.
+# dfa is expected to be complete
+def __add_duplicate_states(dfa, equiv_classes, numberOfDuplicateStates=1):
 
-        Transition end points are chosen by a sample of existing states having
-        ingoing transitions.
-        """
+    duplicate_states = []
 
-        for i in range(number):
+    for i in range(numberOfDuplicateStates):
+    
+        # find a fitting state1, that shall be duplicated, and update eq.classes
+        
+        isDuplicatable     = lambda q: len(tuple( t for t in dfa.transitions if t[1] == q )) >= 2
+        duplicatableStates = tuple(filter(isDuplicatable, dfa.states))
+        
+        if not duplicatableStates:
+            print("No state with >= 2 ingoing transitions.")
+            return duplicate_states
+        
+        state1 = random.choice(duplicatableStates) # -------------------------------- here we can enumerate
+        state2 = __new_state(dfa, state1 in dfa.accepting)
+
+        print("Duplicating {} by creating {}.".format(state1,state2))
+
+        for equivClass in equiv_classes:
+            if state1 in equivClass:
+                equivClass.append(state2)
+
+        # split ingoing transitions
+
+        ingoingTransitions = tuple(t for t in dfa.transitions if t[1] == state1)
+        
+        for i in range(len(ingoingTransitions) // 2): # -------------------------------- here we can enumerate
+        
+            (q1,c),q2 = t = ingoingTransitions[i]
+            dfa.transitions.append(((q1,c),state2))
+            dfa.transitions.remove(t)
+
+        # split/duplicate outgoing transitions
+        
+        for (q1,c),q2 in dfa.transitions:
+        
+            if q1 == state1:
             
-            newState = self._new_state()
+                # compute equiv.class to delta(state1, c)
 
-            availableEndPoints = tuple(
-                q
-                for q in self._dfa.states
-                    if q not in self._outgoing_only+self._lonely
-            )
-
-            statesToConnect = random.sample(availableEndPoints, len(self._dfa.alphabet))
+                q2EquivClass = None
                 
-            for state in statesToConnect:
-                self._dfa.transitions.append(((newState, self._next_free_symbol(newState)), state))
+                for equivClass in equiv_classes:
+                    if q2 in equivClass:
+                        q2EquivClass = equivClass
+                        break
                 
-            self._outgoing_only.append(newState)
+                # choose p of [delta(state1,c)] as end point for delta(state2,c)
 
-        return self
-
-
-    def duplicate(self, number=1):
-
-        for i in range(number):
-
-            # make sure that the chosen state has enough ingoing transitions
-            state1 = random.choice(tuple(q for q in self._dfa.states if len(tuple( t for t in self._dfa.transitions if t[1] == q )) >= 2))
-            state2 = self._new_state(is_accepting = state1 in self._dfa.accepting)
-
-            print("Duplicating %s by creating %s." % (state1,state2))
-
-            for equivClass in self._equiv_classes:
-                if state1 in equivClass:
-                    equivClass.append(state2)
-
-            # split ingoing transitions upon state1, state2
-
-            ingoingTransitions  = [ t for t in self._dfa.transitions if t[1] == state1 ]
-
-            if len(ingoingTransitions) < 2:
-                print("len(ingoingTransitions) < 2")
-                break
-
-            ingoingTransitions1 = random.sample(ingoingTransitions, len(ingoingTransitions) // 2)
-
-            for t in ingoingTransitions:
-                if t not in ingoingTransitions1:
-                    (q1,c),q2 = t
-                    self._dfa.transitions.append(((q1,c),state2))
-                    self._dfa.transitions.remove(t)
-
-            # split outgoing transitions if possible
-
-            outgoingTransitions = [ t for t in self._dfa.transitions if t[0][0] == state1 ]
-
-            for t in outgoingTransitions:
-
-                (q1,c),q2 = t
-
-                q2EquivClass = self._equiv_class_to_state(q2)
-
-                if q2EquivClass == None:
-                    print(q2, self._equiv_classes)
-
-                if len(q2EquivClass) >= 2:
-
-                    stateEquivToQ2 = next(q for q in q2EquivClass if q != q2)
-
-                    self._dfa.transitions.append(((state2,c),stateEquivToQ2))
+                dfa.transitions.append(((state2,c), random.choice(q2EquivClass))) # -------------------------------- here we can enumerate
                     
-                    self._unused_symbols[state2].remove(c)
+        duplicate_states.append(state2)
+        
+    return duplicate_states
+    
+    
+def extend_minimal_complete_dfa(dfa, numberOfDuplicateStates, numberOfUnreachableStates):
 
-                else:
+    while True:
 
-                    self._dfa.transitions.append(((state2,c),q2))
-                    
-                    self._unused_symbols[state2].remove(c)
+        newDFA = copy.deepcopy(dfa)
 
-        return self
+        equiv_classes = [[state] for state in dfa.states]
+
+        duplicate_states   = __add_duplicate_states  (newDFA, equiv_classes, numberOfDuplicateStates  )
+        unreachable_states = __add_unreachable_states(newDFA, equiv_classes, numberOfUnreachableStates)
+        
+        if planarity_test_dfa(newDFA):
+
+            return newDFA, duplicate_states, unreachable_states, equiv_classes
+    
 

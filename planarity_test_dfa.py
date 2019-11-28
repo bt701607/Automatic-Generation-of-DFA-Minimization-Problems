@@ -1,3 +1,5 @@
+from DFA import DFA
+
 import pygraph
 
 

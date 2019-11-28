@@ -2,9 +2,13 @@ from DFA 	      import DFA
 from minimize_dfa import *
 
 from isomorphy_test_min_dfas import contains_isomorph_dfa
+from planarity_test_dfa      import planarity_test_dfa
 
 import DB_MinimalDFAs         as db1
 import DB_EnumerationProgress as db2
+
+from pdf_from_dfa       import pdf_from_dfa
+from clean              import clean_code_dir_keep_results
 
 import sqlite3
         
@@ -26,11 +30,11 @@ def build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates
     # DEBUG
     i = 0
     
-    urs = ds = wmmd = him  = 0
+    urs = ds = wmmd = np = him  = 0
     
     def log():
         print(i, enumProgress)
-        print("unreach. states/dupl. states/wrong mmDep./has isom. = {} | {} | {} | {}\n".format(urs, ds, wmmd, him))
+        print("unreach. states/dupl. states/wrong mmDep./not planar/has isom. = {} | {} | {} | {} | {}\n".format(urs, ds, wmmd, np, him))
         
     def finishUp():
         db2.updateEnumerationProgress(dbConn, enumProgress)
@@ -61,19 +65,17 @@ def build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates
                 urs += 1
                 continue
             
-            result = has_duplicate_states(minDFA)
-            
-            if not result:
+            if not has_duplicate_states(minDFA):
                 ds += 1
                 continue
-                
-            minDFA.minmarkDepth = result
                 
             if not (minMinmarkDepth <= minDFA.minmarkDepth <= maxMinmarkDepth):
                 wmmd += 1
                 continue
             
-            # ---
+            if not planarity_test_dfa(minDFA):
+                np += 1
+                continue
                 
             if not contains_isomorph_dfa(minDFA, matchingUsedDFAs):
                 
@@ -92,6 +94,12 @@ def build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates
         
             
 if __name__ == "__main__":
-
+    
     # alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth
-    print(build_next_minimal_dfa(2, 5, 2, 2, 3))
+    dfa = build_next_minimal_dfa(2, 5, 2, 2, 3)
+    
+    print(dfa)
+
+    pdf_from_dfa(dfa, "_enumerated")
+
+    clean_code_dir_keep_results()

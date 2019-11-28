@@ -8,7 +8,6 @@ Dependencies:
 
 * graphviz (pip install graphviz)
 * pyparsing (pip install pyparsing)
-* pygraph (pip install pygraph)
 
 Profiling needs:
 
@@ -17,10 +16,14 @@ Profiling needs:
 The dot2tex library has been obtained from https://github.com/kjellmf/dot2tex .
 It is included here, to be able to apply a fix.
 
+The pygraph library has been obtained from the pip repositories.
+It is included here, to be able to make it python3 compatible.
+
 
 # TODO
 
 * put programmed concepts into writing
+* make DFAExtender enumerating too, save progress in MinimalDFAs table
 * ensure that there are dupl. states possible when building min. dfa (a state is duplicatable, iff it has 0 (unreachable dupl.) or more than 2 ingoing transitions).
 
 This automatically ensured, since the generated DFAs are complete -> pidgeonhole principle. Write that down in thesis.
@@ -52,3 +55,7 @@ https://www.geeksforgeeks.org/find-combinations-k-bit-numbers-n-bits-set-1-n-k-s
 * Use integer instead of integer-lists for enumeration.
 
 * Profile the Code and optimize thus.
+
+
+__new_state(dfa, is_accepting, unused_symbols)
+__equiv_class_to_state(equiv_classes, state)

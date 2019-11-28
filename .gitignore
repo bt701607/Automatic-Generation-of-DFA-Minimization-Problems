@@ -20,3 +20,6 @@
 *.pyc
 
 __pycache__
+
+desktop.ini
+dfa.db

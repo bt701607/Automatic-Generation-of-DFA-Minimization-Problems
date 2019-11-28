@@ -1,6 +1,4 @@
-from DFA                     import DFA
-from minimize_dfa            import minimization_mark_depth, minimize_dfa
-from isomorphy_test_min_dfas import isomorphy_test_min_dfas
+from DFA import DFA
 
 import sqlite3
 
@@ -8,62 +6,56 @@ import sqlite3
 
 def ensureValidity(dbConn):
     
-    dbConn.cursor().execute('''
-        CREATE TABLE IF NOT EXISTS MinimalDFAs 
-        (id INTEGER PRIMARY KEY AUTOINCREMENT, dfa TEXT, numberOfStates INTEGER, minmarkDepth INTEGER, numberOfAcceptingStates INTEGER, alphabetSize INTEGER, used INTEGER)'''
-    )
-    dbConn.commit()
+    with dbConn:
+        dbConn.execute('''
+            CREATE TABLE IF NOT EXISTS MinimalDFAs 
+            (id INTEGER PRIMARY KEY AUTOINCREMENT, dfa TEXT, alphabetSize INT, numberOfStates INT, numberOfAcceptingStates INT, minmarkDepth INT)'''
+        )
     
     
     
 def clear(dbConn):
     
-    dbConn.cursor().execute('''DROP TABLE IF EXISTS MinimalDFAs''')
-    dbConn.commit()
-
-
-
-def fetchMatchingDFAs(dbConn, numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates):
+    with dbConn:
+        dbConn.execute('''DROP TABLE IF EXISTS MinimalDFAs''')
     
-    qFindMatchingDFA = '''SELECT * FROM MinimalDFAs WHERE 
+    
+# -----------------------------------------------------------
+
+
+def fetchMatchingDFAs(dbConn, alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth):
+    
+    qFindMatchingDFA = '''SELECT dfa, minmarkDepth FROM MinimalDFAs WHERE 
+        alphabetSize = ? AND
         numberOfStates = ? AND
-        minmarkDepth >= ? AND
-        minmarkDepth <= ? AND
         numberOfAcceptingStates = ? AND
-        alphabetSize = ?
+        minmarkDepth >= ? AND
+        minmarkDepth <= ?
     '''
     
-    results = dbConn.cursor().execute(qFindMatchingDFA, (numberOfStates, minDepth, maxDepth, numberOfAcceptingStates, alphabetSize))
-    
-    resultList = []
-    
-    for row in results:
-    
-        id, dfa, properties, used = __interpretDBRow(row)
-        
-        resultList.append(dfa)
+    dbTuple = (alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth)
             
-    return resultList
+    dfaList = []
+            
+    for encodedDFA, minmarkDepth in dbConn.execute(qFindMatchingDFA, dbTuple):
+    
+        dfa = __decodeDFA(encodedDFA)
+        dfa.minmarkDepth = minmarkDepth
+        dfaList.append(dfa)
+            
+    return dfaList
             
     
 
-def saveNewDFA(dbConn, dfa, properties, used):
-
-    qSaveDFA = '''INSERT INTO MinimalDFAs VALUES (NULL,?,?,?,?,?,?)'''
+def saveNewDFA(dbConn, dfa):
     
-    row = (__encodeDFA(dfa), properties[0], properties[1], properties[2], properties[3], int(used))
+    dbTuple = (__encodeDFA(dfa), dfa.alphabetSize, dfa.numberOfStates, dfa.numberOfAcceptingStates, dfa.minmarkDepth)
 
-    dbConn.cursor().execute(qSaveDFA, row)
-    dbConn.commit()
-
-        
-        
-def __interpretDBRow(row):
-
-    id, dfa, numberOfStates, minmarkDepth, numberOfAcceptingStates, alphabetSize, used = row
-
-    return id, __decodeDFA(dfa), (numberOfStates, minmarkDepth, numberOfAcceptingStates, alphabetSize), bool(used)
-
+    with dbConn:
+        dbConn.execute('''INSERT INTO MinimalDFAs VALUES (NULL,?,?,?,?,?)''', dbTuple)
+    
+    
+# -----------------------------------------------------------
 
 
 def __encodeDFA(dfa):
@@ -97,12 +89,6 @@ def __encodeDFA(dfa):
     
 def __decodeDFA(encodedDFA):
 
-    def d(e):
-        if e in "0123456789":
-            return int(e)
-        else:
-            return e
-
     encodedElements = encodedDFA.split(";")
     
     alphabet = encodedElements[0].split(",")
@@ -112,22 +98,20 @@ def __decodeDFA(encodedDFA):
     states = encodedElements[1].split(",")
     if '' in states:
         states.remove('')
-    states = [d(e) for e in states]
     
     transitions = encodedElements[2].split(",")
     if '' in transitions:
         transitions.remove('')
     transitions = [t.split(".") for t in transitions]
-    transitions = [((d(q1), c), d(q2)) for (q1,c,q2) in transitions]
+    transitions = [((q1, c), q2) for (q1,c,q2) in transitions]
     
-    start = d(encodedElements[3])
+    start = encodedElements[3]
     
     accepting = encodedElements[4].split(",")
     if '' in accepting:
         accepting.remove('')
-    accepting = [d(e) for e in accepting]
     
-    return DFA(alphabet, states, transitions, start, accepting)
+    return DFA(alphabet, states, transitions, start, accepting, len(alphabet), len(states), len(accepting))
 
 
 
@@ -135,16 +119,16 @@ if __name__ == "__main__":
 
     test_dfa1 = DFA(
         ['a','b','c','d','e'],
-        [1,2,3,4,5],
+        ['1','2','3','4','5'],
         [
-            ((1,'a'),1),
-            ((1,'b'),2),
-            ((2,'c'),4),
-            ((5,'d'),1),
-            ((2,'e'),5)
+            (('1','a'),'1'),
+            (('1','b'),'2'),
+            (('2','c'),'4'),
+            (('5','d'),'1'),
+            (('2','e'),'5')
         ],
-        1,
-        [4,5]
+        '1',
+        ['4','5']
     )
 
     test_dfa2 = DFA(

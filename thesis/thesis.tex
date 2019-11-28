@@ -32,6 +32,7 @@
 \newtheorem*{remark}{Remark}
 
 \algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+
 \newcommand{\MinMark}{\textsc{MinimizationMark}}
 
 % Title Page
@@ -265,7 +266,10 @@ f and t are the encoded final states respectively transitions enumeration progre
 				\State \Return None
 			\EndIf
 			\State increment progress
-			\State $A_L$ $\gets$ minimize(progress.dfa())
+			\State $A_L$ $\gets$ progress.dfa()
+			\If {$A_L$ has unreachable or duplicate states or unused symbols}
+				\State \textbf{continue}
+			\EndIf
 			\State properties $\gets$ computeProperties($A_L$)
 			\If {properties match with parameters}
 				\If {$A_L$ not isomorph to any in matchingUsedDFAs}

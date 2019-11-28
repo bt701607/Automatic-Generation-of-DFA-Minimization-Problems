@@ -1,15 +1,17 @@
 from DFA 	      import DFA
-from minimize_dfa import minimize_dfa, minimization_mark_depth
+from minimize_dfa import minimize_dfa
 
 import random
 
 
-def build_random_minimal_dfa(numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates):
+def build_random_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth):
     
     A = [ chr(i) for i in range(ord('a'), ord('a')+alphabetSize) ]
     Q = [ str(i) for i in range(numberOfStates) ]
     
     is_good = False
+    
+    minDFA = None
     
     while not is_good:
         
@@ -19,16 +21,12 @@ def build_random_minimal_dfa(numberOfStates, minDepth, maxDepth, alphabetSize, n
             for sigma in dfa.alphabet:
                 dfa.transitions.append(random.choice([((q,sigma),p) for p in dfa.states]))
                 
-        min_dfa = minimize_dfa(dfa)
-        #print("----------------------------")
-        #print(dfa)
-        #print(min_dfa)
-        #print("----------------------------")
+        minDFA, minDFAminmarkDepth = minimize_dfa(dfa)
                 
-        if len(minimize_dfa(dfa).states) == len(dfa.states) and minDepth <= minimization_mark_depth(dfa) <= maxDepth:
+        if len(minDFA.states) == numberOfStates and minMinmarkDepth <= minDFAminmarkDepth <= maxMinmarkDepth:
             is_good = True
             
-    return dfa
+    return minDFA
             
     
 if __name__ == "__main__":

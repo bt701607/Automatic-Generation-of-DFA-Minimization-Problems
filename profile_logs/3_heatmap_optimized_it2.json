@@ -1,0 +1,2356 @@
+{
+  "h": {
+    "objectName": "DFABuilderEnumerating.py",
+    "runTime": 8.840983629226685,
+    "heatmaps": [
+      {
+        "name": "D:\\Studium\\Module\\Semester 6\\Bachelor-Arbeit\\Generation-of-DFA-Minimization-Problems\\DFABuilderEnumerating.py",
+        "heatmap": {
+          "1": 0.0,
+          "2": 0.0,
+          "4": 0.0,
+          "6": 0.0,
+          "7": 0.0,
+          "10": 0.0,
+          "11": 0.0,
+          "18": 0.0,
+          "24": 0.0,
+          "37": 0.0,
+          "102": 0.0,
+          "104": 0.0,
+          "39": 0.0040035247802734375,
+          "41": 0.0,
+          "42": 0.0,
+          "46": 0.0,
+          "48": 0.0,
+          "51": 0.0,
+          "53": 0.0,
+          "55": 0.08160614967346191,
+          "60": 0.0730443000793457,
+          "62": 0.07603573799133301,
+          "67": 0.1366567611694336,
+          "71": 0.10970258712768555,
+          "73": 0.1546173095703125,
+          "74": 0.07416057586669922,
+          "63": 0.0,
+          "64": 0.0,
+          "65": 0.001001119613647461
+        },
+        "executionCount": {
+          "1": 1,
+          "2": 1,
+          "4": 1,
+          "6": 1,
+          "7": 1,
+          "10": 1,
+          "11": 1,
+          "18": 1,
+          "24": 1,
+          "37": 1,
+          "102": 1,
+          "104": 1,
+          "39": 1,
+          "41": 1,
+          "42": 1,
+          "46": 1,
+          "48": 1,
+          "51": 1,
+          "53": 1,
+          "55": 50000,
+          "60": 50000,
+          "62": 50000,
+          "67": 49999,
+          "71": 49999,
+          "73": 49999,
+          "74": 49999,
+          "63": 1,
+          "64": 1,
+          "65": 1
+        },
+        "srcCode": [
+          [
+            "line",
+            1,
+            "from DFA \t      import DFA"
+          ],
+          [
+            "line",
+            2,
+            "from minimize_dfa import *"
+          ],
+          [
+            "line",
+            3,
+            ""
+          ],
+          [
+            "line",
+            4,
+            "from isomorphy_test_min_dfas import isomorphy_test_min_dfas"
+          ],
+          [
+            "line",
+            5,
+            ""
+          ],
+          [
+            "line",
+            6,
+            "import DB_MinimalDFAs         as db1"
+          ],
+          [
+            "line",
+            7,
+            "import DB_EnumerationProgress as db2"
+          ],
+          [
+            "line",
+            8,
+            ""
+          ],
+          [
+            "line",
+            9,
+            ""
+          ],
+          [
+            "line",
+            10,
+            "import threading"
+          ],
+          [
+            "line",
+            11,
+            "import sqlite3"
+          ],
+          [
+            "line",
+            12,
+            ""
+          ],
+          [
+            "line",
+            13,
+            ""
+          ],
+          [
+            "line",
+            14,
+            "#DB_MUTEX = threading.Lock()"
+          ],
+          [
+            "line",
+            15,
+            ""
+          ],
+          [
+            "line",
+            16,
+            "    "
+          ],
+          [
+            "line",
+            17,
+            "    "
+          ],
+          [
+            "line",
+            18,
+            "def propertiesMatch(properties, numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates):"
+          ],
+          [
+            "line",
+            19,
+            ""
+          ],
+          [
+            "line",
+            20,
+            "    return properties[0] == numberOfStates and minDepth <= properties[1] <= maxDepth and properties[2] == numberOfAcceptingStates and properties[3] == alphabetSize"
+          ],
+          [
+            "line",
+            21,
+            "        "
+          ],
+          [
+            "line",
+            22,
+            "        "
+          ],
+          [
+            "line",
+            23,
+            "        "
+          ],
+          [
+            "line",
+            24,
+            "def hasIsomorphMatchingDFA(testDFA, l):"
+          ],
+          [
+            "skip",
+            12
+          ],
+          [
+            "line",
+            37,
+            "def build_next_fitting_dfa(numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates):"
+          ],
+          [
+            "line",
+            38,
+            ""
+          ],
+          [
+            "line",
+            39,
+            "    conn = sqlite3.connect('dfa.db')"
+          ],
+          [
+            "line",
+            40,
+            "    "
+          ],
+          [
+            "line",
+            41,
+            "    db1.ensureValidity(conn)"
+          ],
+          [
+            "line",
+            42,
+            "    db2.ensureValidity(conn)"
+          ],
+          [
+            "line",
+            43,
+            "        "
+          ],
+          [
+            "line",
+            44,
+            "    # ---"
+          ],
+          [
+            "line",
+            45,
+            "    "
+          ],
+          [
+            "line",
+            46,
+            "    matchingUsedDFAs = db1.fetchMatchingDFAs(conn, numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates)"
+          ],
+          [
+            "line",
+            47,
+            "    "
+          ],
+          [
+            "line",
+            48,
+            "    enumProgress = db2.fetchEnumerationProgress(conn, numberOfStates, alphabetSize, numberOfAcceptingStates)"
+          ],
+          [
+            "line",
+            49,
+            "    "
+          ],
+          [
+            "line",
+            50,
+            "    # DEBUG"
+          ],
+          [
+            "line",
+            51,
+            "    i = 0"
+          ],
+          [
+            "line",
+            52,
+            "    "
+          ],
+          [
+            "line",
+            53,
+            "    while True:"
+          ],
+          [
+            "line",
+            54,
+            "    "
+          ],
+          [
+            "line",
+            55,
+            "        if enumProgress.finished:"
+          ],
+          [
+            "line",
+            56,
+            "            db2.updateEnumerationProgress(conn, enumProgress)"
+          ],
+          [
+            "line",
+            57,
+            "            conn.close()"
+          ],
+          [
+            "line",
+            58,
+            "            return None"
+          ],
+          [
+            "line",
+            59,
+            "        "
+          ],
+          [
+            "line",
+            60,
+            "        i += 1"
+          ],
+          [
+            "line",
+            61,
+            "        "
+          ],
+          [
+            "line",
+            62,
+            "        if i == 50000:"
+          ],
+          [
+            "line",
+            63,
+            "            db2.updateEnumerationProgress(conn, enumProgress)"
+          ],
+          [
+            "line",
+            64,
+            "            conn.close()"
+          ],
+          [
+            "line",
+            65,
+            "            return None"
+          ],
+          [
+            "line",
+            66,
+            "            "
+          ],
+          [
+            "line",
+            67,
+            "        enumProgress.increment()"
+          ],
+          [
+            "line",
+            68,
+            "        "
+          ],
+          [
+            "line",
+            69,
+            "        # ---"
+          ],
+          [
+            "line",
+            70,
+            "        "
+          ],
+          [
+            "line",
+            71,
+            "        minDFA = enumProgress.dfa()"
+          ],
+          [
+            "line",
+            72,
+            "        "
+          ],
+          [
+            "line",
+            73,
+            "        if has_unreachable_states(minDFA):"
+          ],
+          [
+            "line",
+            74,
+            "            continue"
+          ],
+          [
+            "skip",
+            27
+          ],
+          [
+            "line",
+            102,
+            "if __name__ == \"__main__\":"
+          ],
+          [
+            "line",
+            103,
+            ""
+          ],
+          [
+            "line",
+            104,
+            "    print(build_next_fitting_dfa(6, 2, 3, 2, 2))"
+          ],
+          [
+            "line",
+            105,
+            ""
+          ]
+        ],
+        "runTime": 0.7108280658721924
+      },
+      {
+        "name": "D:\\Studium\\Module\\Semester 6\\Bachelor-Arbeit\\Generation-of-DFA-Minimization-Problems\\DFA.py",
+        "heatmap": {
+          "1": 0.0,
+          "4": 0.0,
+          "15": 0.0,
+          "33": 0.0,
+          "51": 0.0,
+          "69": 0.0,
+          "89": 0.0,
+          "97": 0.0,
+          "6": 0.06461715698242188,
+          "8": 0.043004751205444336,
+          "9": 0.05907893180847168,
+          "10": 0.04704761505126953,
+          "11": 0.04581594467163086,
+          "12": 0.2167365550994873
+        },
+        "executionCount": {
+          "1": 2,
+          "4": 1,
+          "15": 1,
+          "33": 1,
+          "51": 1,
+          "69": 1,
+          "89": 1,
+          "97": 1,
+          "6": 49999,
+          "8": 49999,
+          "9": 49999,
+          "10": 49999,
+          "11": 49999,
+          "12": 49999
+        },
+        "srcCode": [
+          [
+            "line",
+            1,
+            "class DFA(object):"
+          ],
+          [
+            "line",
+            2,
+            "\t"
+          ],
+          [
+            "line",
+            3,
+            "    # states and alphabet-symbols must be chars."
+          ],
+          [
+            "line",
+            4,
+            "    def __init__(self, alphabet=['a'], states=['0'], transition_function=[], start_state='0', accepting_states=[]):"
+          ],
+          [
+            "line",
+            5,
+            ""
+          ],
+          [
+            "line",
+            6,
+            "        self.__state_counter = 0"
+          ],
+          [
+            "line",
+            7,
+            ""
+          ],
+          [
+            "line",
+            8,
+            "        self.alphabet    = alphabet"
+          ],
+          [
+            "line",
+            9,
+            "        self.states      = states"
+          ],
+          [
+            "line",
+            10,
+            "        self.transitions = transition_function"
+          ],
+          [
+            "line",
+            11,
+            "        self.start       = start_state"
+          ],
+          [
+            "line",
+            12,
+            "        self.accepting   = accepting_states"
+          ],
+          [
+            "line",
+            13,
+            "        "
+          ],
+          [
+            "line",
+            14,
+            "        "
+          ],
+          [
+            "line",
+            15,
+            "    def __str__(self):"
+          ],
+          [
+            "skip",
+            17
+          ],
+          [
+            "line",
+            33,
+            "    def add_state(self, start=False, accepting=False):"
+          ],
+          [
+            "skip",
+            17
+          ],
+          [
+            "line",
+            51,
+            "    def add_transition(self, state1, symbol, state2):"
+          ],
+          [
+            "skip",
+            17
+          ],
+          [
+            "line",
+            69,
+            "    def remove_state(self, state_to_remove):"
+          ],
+          [
+            "skip",
+            19
+          ],
+          [
+            "line",
+            89,
+            "    def remove_transition(self, transition_to_remove):"
+          ],
+          [
+            "line",
+            90,
+            ""
+          ],
+          [
+            "line",
+            91,
+            "        if transition_to_remove not in self.transitions:"
+          ],
+          [
+            "line",
+            92,
+            "            raise ValueError(\"Transition to remove does not exist.\")"
+          ],
+          [
+            "line",
+            93,
+            ""
+          ],
+          [
+            "line",
+            94,
+            "        self.transitions.remove(transition_to_remove)"
+          ],
+          [
+            "line",
+            95,
+            ""
+          ],
+          [
+            "line",
+            96,
+            ""
+          ],
+          [
+            "line",
+            97,
+            "    def __next_state(self):"
+          ],
+          [
+            "line",
+            98,
+            ""
+          ],
+          [
+            "line",
+            99,
+            "        while self.__state_counter in self.states or str(self.__state_counter) in self.states:"
+          ],
+          [
+            "line",
+            100,
+            "            self.__state_counter += 1"
+          ],
+          [
+            "line",
+            101,
+            ""
+          ],
+          [
+            "line",
+            102,
+            "        return self.__state_counter"
+          ],
+          [
+            "line",
+            103,
+            ""
+          ]
+        ],
+        "runTime": 0.4763009548187256
+      },
+      {
+        "name": "D:\\Studium\\Module\\Semester 6\\Bachelor-Arbeit\\Generation-of-DFA-Minimization-Problems\\minimize_dfa.py",
+        "heatmap": {
+          "1": 0.0,
+          "4": 0.0,
+          "11": 0.0,
+          "28": 0.0,
+          "45": 0.0,
+          "77": 0.0,
+          "122": 0.0,
+          "169": 0.0,
+          "248": 0.0,
+          "49": 0.12514138221740723,
+          "50": 0.09909939765930176,
+          "52": 0.09659624099731445,
+          "54": 0.10412812232971191,
+          "56": 0.13866734504699707,
+          "58": 0.22812271118164062,
+          "60": 0.15935516357421875,
+          "62": 0.30777883529663086,
+          "63": 0.37839388847351074,
+          "64": 0.13313078880310059,
+          "66": 0.12913751602172852,
+          "67": 0.1672518253326416,
+          "68": 0.1427021026611328,
+          "70": 0.12993144989013672,
+          "71": 0.1396923065185547,
+          "72": 0.10459542274475098,
+          "74": 0.13005685806274414
+        },
+        "executionCount": {
+          "1": 1,
+          "4": 1,
+          "11": 1,
+          "28": 1,
+          "45": 1,
+          "77": 1,
+          "122": 1,
+          "169": 1,
+          "248": 1,
+          "49": 49999,
+          "50": 49999,
+          "52": 49999,
+          "54": 49999,
+          "56": 49999,
+          "58": 149997,
+          "60": 99998,
+          "62": 241662,
+          "63": 241662,
+          "64": 99998,
+          "66": 99998,
+          "67": 99998,
+          "68": 99998,
+          "70": 99998,
+          "71": 99998,
+          "72": 99998,
+          "74": 49999
+        },
+        "srcCode": [
+          [
+            "line",
+            1,
+            "from DFA import DFA"
+          ],
+          [
+            "line",
+            2,
+            ""
+          ],
+          [
+            "line",
+            3,
+            ""
+          ],
+          [
+            "line",
+            4,
+            "def minimize_dfa(dfa):"
+          ],
+          [
+            "line",
+            5,
+            "    "
+          ],
+          [
+            "line",
+            6,
+            "    dfa, min_mark_depth = delete_duplicate_states(delete_unreachable_states(dfa))"
+          ],
+          [
+            "line",
+            7,
+            "    "
+          ],
+          [
+            "line",
+            8,
+            "    return delete_useless_symbols(dfa)"
+          ],
+          [
+            "line",
+            9,
+            "    "
+          ],
+          [
+            "line",
+            10,
+            "    "
+          ],
+          [
+            "line",
+            11,
+            "def has_useless_symbols(dfa):"
+          ],
+          [
+            "skip",
+            16
+          ],
+          [
+            "line",
+            28,
+            "def delete_useless_symbols(dfa):"
+          ],
+          [
+            "skip",
+            16
+          ],
+          [
+            "line",
+            45,
+            "def has_unreachable_states(dfa):"
+          ],
+          [
+            "line",
+            46,
+            "                "
+          ],
+          [
+            "line",
+            47,
+            "    # find unreachable states via breadth-first search"
+          ],
+          [
+            "line",
+            48,
+            "    "
+          ],
+          [
+            "line",
+            49,
+            "    undiscovered = set(dfa.states)"
+          ],
+          [
+            "line",
+            50,
+            "    undiscovered.remove(dfa.start)"
+          ],
+          [
+            "line",
+            51,
+            "    "
+          ],
+          [
+            "line",
+            52,
+            "    observed = set([dfa.start])"
+          ],
+          [
+            "line",
+            53,
+            "    "
+          ],
+          [
+            "line",
+            54,
+            "    discovered = set()"
+          ],
+          [
+            "line",
+            55,
+            "                "
+          ],
+          [
+            "line",
+            56,
+            "    delta = dict(dfa.transitions)"
+          ],
+          [
+            "line",
+            57,
+            "    "
+          ],
+          [
+            "line",
+            58,
+            "    while len(observed) != 0:"
+          ],
+          [
+            "line",
+            59,
+            "        "
+          ],
+          [
+            "line",
+            60,
+            "        new_observed = set()"
+          ],
+          [
+            "line",
+            61,
+            "        "
+          ],
+          [
+            "line",
+            62,
+            "        for q in observed:"
+          ],
+          [
+            "line",
+            63,
+            "            for sigma in dfa.alphabet:"
+          ],
+          [
+            "line",
+            64,
+            "                if (q,sigma) in delta:"
+          ],
+          [
+            "line",
+            65,
+            "                    "
+          ],
+          [
+            "line",
+            66,
+            "                    p = delta[(q,sigma)]"
+          ],
+          [
+            "line",
+            67,
+            "                    if p not in observed.union(discovered):"
+          ],
+          [
+            "line",
+            68,
+            "                        new_observed.add(p)"
+          ],
+          [
+            "line",
+            69,
+            ""
+          ],
+          [
+            "line",
+            70,
+            "        undiscovered.difference_update(new_observed)"
+          ],
+          [
+            "line",
+            71,
+            "        discovered.update(observed)"
+          ],
+          [
+            "line",
+            72,
+            "        observed = new_observed"
+          ],
+          [
+            "line",
+            73,
+            "        "
+          ],
+          [
+            "line",
+            74,
+            "    return undiscovered"
+          ],
+          [
+            "line",
+            75,
+            ""
+          ],
+          [
+            "line",
+            76,
+            ""
+          ],
+          [
+            "line",
+            77,
+            "def delete_unreachable_states(dfa):"
+          ],
+          [
+            "skip",
+            44
+          ],
+          [
+            "line",
+            122,
+            "def minmarkDepth_if_no_duplicate_states(dfa):"
+          ],
+          [
+            "skip",
+            46
+          ],
+          [
+            "line",
+            169,
+            "def delete_duplicate_states(dfa):"
+          ],
+          [
+            "skip",
+            78
+          ],
+          [
+            "line",
+            248,
+            "if __name__ == \"__main__\":"
+          ],
+          [
+            "skip",
+            38
+          ]
+        ],
+        "runTime": 2.7137813568115234
+      },
+      {
+        "name": "D:\\Studium\\Module\\Semester 6\\Bachelor-Arbeit\\Generation-of-DFA-Minimization-Problems\\isomorphy_test_min_dfas.py",
+        "heatmap": {
+          "1": 0.0,
+          "4": 0.0,
+          "68": 0.0
+        },
+        "executionCount": {
+          "1": 1,
+          "4": 1,
+          "68": 1
+        },
+        "srcCode": [
+          [
+            "line",
+            1,
+            "from DFA import DFA"
+          ],
+          [
+            "line",
+            2,
+            ""
+          ],
+          [
+            "line",
+            3,
+            ""
+          ],
+          [
+            "line",
+            4,
+            "def isomorphy_test_min_dfas(dfa1, dfa2):"
+          ],
+          [
+            "skip",
+            63
+          ],
+          [
+            "line",
+            68,
+            "if __name__ == \"__main__\":"
+          ],
+          [
+            "skip",
+            104
+          ]
+        ],
+        "runTime": 0.0
+      },
+      {
+        "name": "D:\\Studium\\Module\\Semester 6\\Bachelor-Arbeit\\Generation-of-DFA-Minimization-Problems\\DB_MinimalDFAs.py",
+        "heatmap": {
+          "1": 0.0,
+          "3": 0.0,
+          "7": 0.0,
+          "17": 0.0,
+          "24": 0.0,
+          "48": 0.0,
+          "59": 0.0,
+          "67": 0.0,
+          "96": 0.0,
+          "124": 0.0,
+          "9": 0.0,
+          "11": 0.0,
+          "13": 0.0,
+          "32": 0.0,
+          "34": 0.0,
+          "36": 0.0,
+          "38": 0.0,
+          "44": 0.001001119613647461
+        },
+        "executionCount": {
+          "1": 1,
+          "3": 1,
+          "7": 1,
+          "17": 1,
+          "24": 1,
+          "48": 1,
+          "59": 1,
+          "67": 1,
+          "96": 1,
+          "124": 1,
+          "9": 1,
+          "11": 1,
+          "13": 1,
+          "32": 1,
+          "34": 1,
+          "36": 1,
+          "38": 1,
+          "44": 1
+        },
+        "srcCode": [
+          [
+            "line",
+            1,
+            "from DFA import DFA"
+          ],
+          [
+            "line",
+            2,
+            ""
+          ],
+          [
+            "line",
+            3,
+            "import sqlite3"
+          ],
+          [
+            "line",
+            4,
+            ""
+          ],
+          [
+            "line",
+            5,
+            ""
+          ],
+          [
+            "line",
+            6,
+            ""
+          ],
+          [
+            "line",
+            7,
+            "def ensureValidity(dbConn):"
+          ],
+          [
+            "line",
+            8,
+            "    "
+          ],
+          [
+            "line",
+            9,
+            "    dbConn.cursor().execute('''"
+          ],
+          [
+            "line",
+            10,
+            "        CREATE TABLE IF NOT EXISTS MinimalDFAs "
+          ],
+          [
+            "line",
+            11,
+            "        (id INTEGER PRIMARY KEY AUTOINCREMENT, dfa TEXT, numberOfStates INTEGER, minmarkDepth INTEGER, numberOfAcceptingStates INTEGER, alphabetSize INTEGER, used INTEGER)'''"
+          ],
+          [
+            "line",
+            12,
+            "    )"
+          ],
+          [
+            "line",
+            13,
+            "    dbConn.commit()"
+          ],
+          [
+            "line",
+            14,
+            "    "
+          ],
+          [
+            "line",
+            15,
+            "    "
+          ],
+          [
+            "line",
+            16,
+            "    "
+          ],
+          [
+            "line",
+            17,
+            "def clear(dbConn):"
+          ],
+          [
+            "line",
+            18,
+            "    "
+          ],
+          [
+            "line",
+            19,
+            "    dbConn.cursor().execute('''DROP TABLE IF EXISTS MinimalDFAs''')"
+          ],
+          [
+            "line",
+            20,
+            "    dbConn.commit()"
+          ],
+          [
+            "line",
+            21,
+            ""
+          ],
+          [
+            "line",
+            22,
+            ""
+          ],
+          [
+            "line",
+            23,
+            ""
+          ],
+          [
+            "line",
+            24,
+            "def fetchMatchingDFAs(dbConn, numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates):"
+          ],
+          [
+            "line",
+            25,
+            "    "
+          ],
+          [
+            "line",
+            26,
+            "    qFindMatchingDFA = '''SELECT * FROM MinimalDFAs WHERE "
+          ],
+          [
+            "line",
+            27,
+            "        numberOfStates = ? AND"
+          ],
+          [
+            "line",
+            28,
+            "        minmarkDepth >= ? AND"
+          ],
+          [
+            "line",
+            29,
+            "        minmarkDepth <= ? AND"
+          ],
+          [
+            "line",
+            30,
+            "        numberOfAcceptingStates = ? AND"
+          ],
+          [
+            "line",
+            31,
+            "        alphabetSize = ?"
+          ],
+          [
+            "line",
+            32,
+            "    '''"
+          ],
+          [
+            "line",
+            33,
+            "    "
+          ],
+          [
+            "line",
+            34,
+            "    results = dbConn.cursor().execute(qFindMatchingDFA, (numberOfStates, minDepth, maxDepth, numberOfAcceptingStates, alphabetSize))"
+          ],
+          [
+            "line",
+            35,
+            "    "
+          ],
+          [
+            "line",
+            36,
+            "    resultList = []"
+          ],
+          [
+            "line",
+            37,
+            "    "
+          ],
+          [
+            "line",
+            38,
+            "    for row in results:"
+          ],
+          [
+            "line",
+            39,
+            "    "
+          ],
+          [
+            "line",
+            40,
+            "        id, dfa, properties, used = __interpretDBRow(row)"
+          ],
+          [
+            "line",
+            41,
+            "        "
+          ],
+          [
+            "line",
+            42,
+            "        resultList.append(dfa)"
+          ],
+          [
+            "line",
+            43,
+            "            "
+          ],
+          [
+            "line",
+            44,
+            "    return resultList"
+          ],
+          [
+            "line",
+            45,
+            "            "
+          ],
+          [
+            "line",
+            46,
+            "    "
+          ],
+          [
+            "line",
+            47,
+            ""
+          ],
+          [
+            "line",
+            48,
+            "def saveNewDFA(dbConn, dfa, properties, used):"
+          ],
+          [
+            "line",
+            49,
+            ""
+          ],
+          [
+            "line",
+            50,
+            "    qSaveDFA = '''INSERT INTO MinimalDFAs VALUES (NULL,?,?,?,?,?,?)'''"
+          ],
+          [
+            "line",
+            51,
+            "    "
+          ],
+          [
+            "line",
+            52,
+            "    row = (__encodeDFA(dfa), properties[0], properties[1], properties[2], properties[3], int(used))"
+          ],
+          [
+            "line",
+            53,
+            ""
+          ],
+          [
+            "line",
+            54,
+            "    dbConn.cursor().execute(qSaveDFA, row)"
+          ],
+          [
+            "line",
+            55,
+            "    dbConn.commit()"
+          ],
+          [
+            "line",
+            56,
+            ""
+          ],
+          [
+            "line",
+            57,
+            "        "
+          ],
+          [
+            "line",
+            58,
+            "        "
+          ],
+          [
+            "line",
+            59,
+            "def __interpretDBRow(row):"
+          ],
+          [
+            "line",
+            60,
+            ""
+          ],
+          [
+            "line",
+            61,
+            "    id, dfa, numberOfStates, minmarkDepth, numberOfAcceptingStates, alphabetSize, used = row"
+          ],
+          [
+            "line",
+            62,
+            ""
+          ],
+          [
+            "line",
+            63,
+            "    return id, __decodeDFA(dfa), (numberOfStates, minmarkDepth, numberOfAcceptingStates, alphabetSize), bool(used)"
+          ],
+          [
+            "line",
+            64,
+            ""
+          ],
+          [
+            "line",
+            65,
+            ""
+          ],
+          [
+            "line",
+            66,
+            ""
+          ],
+          [
+            "line",
+            67,
+            "def __encodeDFA(dfa):"
+          ],
+          [
+            "skip",
+            28
+          ],
+          [
+            "line",
+            96,
+            "def __decodeDFA(encodedDFA):"
+          ],
+          [
+            "skip",
+            27
+          ],
+          [
+            "line",
+            124,
+            "if __name__ == \"__main__\":"
+          ],
+          [
+            "skip",
+            67
+          ]
+        ],
+        "runTime": 0.001001119613647461
+      },
+      {
+        "name": "D:\\Studium\\Module\\Semester 6\\Bachelor-Arbeit\\Generation-of-DFA-Minimization-Problems\\DB_EnumerationProgress.py",
+        "heatmap": {
+          "1": 0.0,
+          "3": 0.0,
+          "7": 0.0,
+          "17": 0.0,
+          "24": 0.0,
+          "32": 0.0,
+          "74": 0.0,
+          "95": 0.0,
+          "97": 0.0,
+          "118": 0.0,
+          "133": 0.0,
+          "138": 0.0,
+          "185": 0.0,
+          "196": 0.0,
+          "9": 0.0,
+          "11": 0.0,
+          "13": 0.0,
+          "34": 0.0,
+          "36": 0.0,
+          "39": 0.0,
+          "40": 0.0,
+          "42": 0.0,
+          "44": 0.0,
+          "64": 0.0,
+          "66": 0.0,
+          "67": 0.0,
+          "68": 0.0,
+          "70": 0.0,
+          "121": 0.0,
+          "124": 0.0,
+          "99": 0.0,
+          "102": 0.0,
+          "103": 0.0,
+          "107": 0.0,
+          "108": 0.0,
+          "110": 0.0,
+          "111": 0.0,
+          "115": 0.0,
+          "126": 0.0,
+          "127": 0.0,
+          "128": 0.0,
+          "130": 0.0,
+          "140": 0.06858992576599121,
+          "155": 0.05906558036804199,
+          "160": 0.10200071334838867,
+          "141": 0.05451536178588867,
+          "142": 0.054030418395996094,
+          "145": 0.07210993766784668,
+          "150": 0.05337977409362793,
+          "151": 0.07917284965515137,
+          "161": 0.11942195892333984,
+          "187": 0.04204416275024414,
+          "188": 0.43198633193969727,
+          "189": 0.8338398933410645,
+          "190": 2.485957622528076,
+          "191": 0.03647875785827637,
+          "192": 0.164475679397583,
+          "146": 0.006005525588989258,
+          "147": 0.010009050369262695,
+          "148": 0.012022256851196289,
+          "143": 0.012017250061035156,
+          "144": 0.015009164810180664,
+          "77": 0.0,
+          "25": 0.0,
+          "26": 0.0,
+          "27": 0.0,
+          "28": 0.0,
+          "78": 0.0,
+          "79": 0.0,
+          "80": 0.0,
+          "81": 0.0,
+          "82": 0.0,
+          "85": 0.0,
+          "88": 0.0,
+          "89": 0.08903646469116211,
+          "91": 0.13790345191955566
+        },
+        "executionCount": {
+          "1": 1,
+          "3": 1,
+          "7": 1,
+          "17": 1,
+          "24": 1,
+          "32": 1,
+          "74": 1,
+          "95": 2,
+          "97": 1,
+          "118": 1,
+          "133": 1,
+          "138": 1,
+          "185": 1,
+          "196": 1,
+          "9": 1,
+          "11": 1,
+          "13": 1,
+          "34": 1,
+          "36": 1,
+          "39": 1,
+          "40": 1,
+          "42": 1,
+          "44": 1,
+          "64": 1,
+          "66": 8,
+          "67": 14,
+          "68": 1,
+          "70": 1,
+          "121": 1,
+          "124": 1,
+          "99": 1,
+          "102": 1,
+          "103": 1,
+          "107": 1,
+          "108": 1,
+          "110": 9,
+          "111": 14,
+          "115": 1,
+          "126": 1,
+          "127": 1,
+          "128": 1,
+          "130": 1,
+          "140": 49999,
+          "155": 49999,
+          "160": 49999,
+          "141": 49999,
+          "142": 49999,
+          "145": 51665,
+          "150": 41666,
+          "151": 41666,
+          "161": 49999,
+          "187": 49999,
+          "188": 199996,
+          "189": 399992,
+          "190": 999980,
+          "191": 49999,
+          "192": 49999,
+          "146": 9999,
+          "147": 9999,
+          "148": 9999,
+          "143": 8333,
+          "144": 8333,
+          "77": 1,
+          "25": 2,
+          "26": 20,
+          "27": 18,
+          "28": 2,
+          "78": 1,
+          "79": 1,
+          "80": 1,
+          "81": 1,
+          "82": 1,
+          "85": 1,
+          "88": 1,
+          "89": 1,
+          "91": 1
+        },
+        "srcCode": [
+          [
+            "line",
+            1,
+            "from DFA import DFA"
+          ],
+          [
+            "line",
+            2,
+            ""
+          ],
+          [
+            "line",
+            3,
+            "import sqlite3"
+          ],
+          [
+            "line",
+            4,
+            ""
+          ],
+          [
+            "line",
+            5,
+            ""
+          ],
+          [
+            "line",
+            6,
+            ""
+          ],
+          [
+            "line",
+            7,
+            "def ensureValidity(dbConn):"
+          ],
+          [
+            "line",
+            8,
+            "    "
+          ],
+          [
+            "line",
+            9,
+            "    dbConn.cursor().execute('''"
+          ],
+          [
+            "line",
+            10,
+            "        CREATE TABLE IF NOT EXISTS EnumerationProgress "
+          ],
+          [
+            "line",
+            11,
+            "        (numberOfStates INTEGER, alphabetSize INTEGER, numberOfAcceptingStates INTEGER, acceptingStatesProgress TEXT, transitionsProgress TEXT, finished INTEGER)'''"
+          ],
+          [
+            "line",
+            12,
+            "    )"
+          ],
+          [
+            "line",
+            13,
+            "    dbConn.commit()"
+          ],
+          [
+            "line",
+            14,
+            "    "
+          ],
+          [
+            "line",
+            15,
+            "    "
+          ],
+          [
+            "line",
+            16,
+            "    "
+          ],
+          [
+            "line",
+            17,
+            "def clear(dbConn):"
+          ],
+          [
+            "line",
+            18,
+            "    "
+          ],
+          [
+            "line",
+            19,
+            "    dbConn.cursor().execute('''DROP TABLE IF EXISTS EnumerationProgress''')"
+          ],
+          [
+            "line",
+            20,
+            "    dbConn.commit()"
+          ],
+          [
+            "line",
+            21,
+            "    "
+          ],
+          [
+            "line",
+            22,
+            "    "
+          ],
+          [
+            "line",
+            23,
+            "    "
+          ],
+          [
+            "line",
+            24,
+            "def __encodeListOfInts(l):"
+          ],
+          [
+            "line",
+            25,
+            "    s = \"\""
+          ],
+          [
+            "line",
+            26,
+            "    for n in l:"
+          ],
+          [
+            "line",
+            27,
+            "        s += str(n) + \",\""
+          ],
+          [
+            "line",
+            28,
+            "    return s[:-1]"
+          ],
+          [
+            "line",
+            29,
+            "    "
+          ],
+          [
+            "line",
+            30,
+            "    "
+          ],
+          [
+            "line",
+            31,
+            "    "
+          ],
+          [
+            "line",
+            32,
+            "def fetchEnumerationProgress(dbConn, numberOfStates, alphabetSize, numberOfAcceptingStates):"
+          ],
+          [
+            "line",
+            33,
+            ""
+          ],
+          [
+            "line",
+            34,
+            "    c = dbConn.cursor()"
+          ],
+          [
+            "line",
+            35,
+            "    "
+          ],
+          [
+            "line",
+            36,
+            "    c.execute('''"
+          ],
+          [
+            "line",
+            37,
+            "        SELECT acceptingStatesProgress, transitionsProgress, finished "
+          ],
+          [
+            "line",
+            38,
+            "        FROM EnumerationProgress "
+          ],
+          [
+            "line",
+            39,
+            "        WHERE numberOfStates = ? AND alphabetSize = ? AND numberOfAcceptingStates = ?''', "
+          ],
+          [
+            "line",
+            40,
+            "        (numberOfStates, alphabetSize, numberOfAcceptingStates)"
+          ],
+          [
+            "line",
+            41,
+            "    )"
+          ],
+          [
+            "line",
+            42,
+            "    result = c.fetchone()"
+          ],
+          [
+            "line",
+            43,
+            "    "
+          ],
+          [
+            "line",
+            44,
+            "    if result == None:"
+          ],
+          [
+            "skip",
+            19
+          ],
+          [
+            "line",
+            64,
+            "        acceptingStatesProgress, transitionsProgress, finished = result"
+          ],
+          [
+            "line",
+            65,
+            "        "
+          ],
+          [
+            "line",
+            66,
+            "        acceptingStatesProgress = [int(i) for i in acceptingStatesProgress.split(\",\")]"
+          ],
+          [
+            "line",
+            67,
+            "        transitionsProgress     = [int(i) for i in transitionsProgress.split(\",\")]"
+          ],
+          [
+            "line",
+            68,
+            "        finished                = bool(finished)"
+          ],
+          [
+            "line",
+            69,
+            "        "
+          ],
+          [
+            "line",
+            70,
+            "        return EnumerationProgress.fromExisting(numberOfStates, alphabetSize, numberOfAcceptingStates, acceptingStatesProgress, transitionsProgress, finished)"
+          ],
+          [
+            "line",
+            71,
+            "            "
+          ],
+          [
+            "line",
+            72,
+            "            "
+          ],
+          [
+            "line",
+            73,
+            "            "
+          ],
+          [
+            "line",
+            74,
+            "def updateEnumerationProgress(dbConn, enumProg):"
+          ],
+          [
+            "line",
+            75,
+            ""
+          ],
+          [
+            "line",
+            76,
+            "    dbTuple = ("
+          ],
+          [
+            "line",
+            77,
+            "        __encodeListOfInts(enumProg.acceptingStatesProgress),"
+          ],
+          [
+            "line",
+            78,
+            "        __encodeListOfInts(enumProg.transitionsProgress),"
+          ],
+          [
+            "line",
+            79,
+            "        int(enumProg.finished),"
+          ],
+          [
+            "line",
+            80,
+            "        enumProg.numberOfStates,"
+          ],
+          [
+            "line",
+            81,
+            "        enumProg.alphabetSize,"
+          ],
+          [
+            "line",
+            82,
+            "        enumProg.numberOfAcceptingStates"
+          ],
+          [
+            "line",
+            83,
+            "    )"
+          ],
+          [
+            "line",
+            84,
+            "    "
+          ],
+          [
+            "line",
+            85,
+            "    dbConn.cursor().execute('''"
+          ],
+          [
+            "line",
+            86,
+            "        UPDATE EnumerationProgress "
+          ],
+          [
+            "line",
+            87,
+            "        SET acceptingStatesProgress = ?, transitionsProgress = ?, finished = ? "
+          ],
+          [
+            "line",
+            88,
+            "        WHERE numberOfStates = ? AND alphabetSize = ? AND numberOfAcceptingStates = ?''',"
+          ],
+          [
+            "line",
+            89,
+            "        dbTuple"
+          ],
+          [
+            "line",
+            90,
+            "    )"
+          ],
+          [
+            "line",
+            91,
+            "    dbConn.commit()"
+          ],
+          [
+            "line",
+            92,
+            "    "
+          ],
+          [
+            "line",
+            93,
+            "    "
+          ],
+          [
+            "line",
+            94,
+            "    "
+          ],
+          [
+            "line",
+            95,
+            "class EnumerationProgress(object):"
+          ],
+          [
+            "line",
+            96,
+            ""
+          ],
+          [
+            "line",
+            97,
+            "    def __init__(self, numberOfStates, alphabetSize, numberOfAcceptingStates):"
+          ],
+          [
+            "line",
+            98,
+            "    "
+          ],
+          [
+            "line",
+            99,
+            "        if numberOfStates < 1:"
+          ],
+          [
+            "line",
+            100,
+            "            raise Exception(\"Number of states must be greater than zero for a DFA.\")"
+          ],
+          [
+            "line",
+            101,
+            "    "
+          ],
+          [
+            "line",
+            102,
+            "        self.numberOfStates = numberOfStates"
+          ],
+          [
+            "line",
+            103,
+            "        self.alphabetSize   = alphabetSize"
+          ],
+          [
+            "line",
+            104,
+            "        "
+          ],
+          [
+            "line",
+            105,
+            "        # ----"
+          ],
+          [
+            "line",
+            106,
+            "        "
+          ],
+          [
+            "line",
+            107,
+            "        self.numberOfTransitions     = numberOfStates * alphabetSize"
+          ],
+          [
+            "line",
+            108,
+            "        self.numberOfAcceptingStates = numberOfAcceptingStates"
+          ],
+          [
+            "line",
+            109,
+            "        "
+          ],
+          [
+            "line",
+            110,
+            "        self.acceptingStatesProgress = [1 for i in range(self.numberOfAcceptingStates)] + [0 for i in range(self.numberOfStates-self.numberOfAcceptingStates)]"
+          ],
+          [
+            "line",
+            111,
+            "        self.transitionsProgress     = [0 for i in range(self.numberOfTransitions)]"
+          ],
+          [
+            "line",
+            112,
+            "        "
+          ],
+          [
+            "line",
+            113,
+            "        # ----"
+          ],
+          [
+            "line",
+            114,
+            "        "
+          ],
+          [
+            "line",
+            115,
+            "        self.finished = False"
+          ],
+          [
+            "line",
+            116,
+            "        "
+          ],
+          [
+            "line",
+            117,
+            "        "
+          ],
+          [
+            "line",
+            118,
+            "    @staticmethod"
+          ],
+          [
+            "line",
+            119,
+            "    def fromExisting(numberOfStates, alphabetSize, numberOfAcceptingStates, acceptingStatesProgress, transitionsProgress, finished):"
+          ],
+          [
+            "line",
+            120,
+            "    "
+          ],
+          [
+            "line",
+            121,
+            "        if numberOfStates < 1:"
+          ],
+          [
+            "line",
+            122,
+            "            raise Exception(\"Number of states must be greater than zero for a DFA.\")"
+          ],
+          [
+            "line",
+            123,
+            "            "
+          ],
+          [
+            "line",
+            124,
+            "        enumProg = EnumerationProgress(numberOfStates, alphabetSize, numberOfAcceptingStates)"
+          ],
+          [
+            "line",
+            125,
+            "        "
+          ],
+          [
+            "line",
+            126,
+            "        enumProg.acceptingStatesProgress = acceptingStatesProgress"
+          ],
+          [
+            "line",
+            127,
+            "        enumProg.transitionsProgress     = transitionsProgress"
+          ],
+          [
+            "line",
+            128,
+            "        enumProg.finished                = finished"
+          ],
+          [
+            "line",
+            129,
+            "        "
+          ],
+          [
+            "line",
+            130,
+            "        return enumProg"
+          ],
+          [
+            "line",
+            131,
+            "        "
+          ],
+          [
+            "line",
+            132,
+            "        "
+          ],
+          [
+            "line",
+            133,
+            "    def __str__(self):"
+          ],
+          [
+            "line",
+            134,
+            "    "
+          ],
+          [
+            "line",
+            135,
+            "        return str((self.numberOfStates, self.alphabetSize, self.numberOfAcceptingStates, self.acceptingStatesProgress, self.transitionsProgress, self.finished))"
+          ],
+          [
+            "line",
+            136,
+            "        "
+          ],
+          [
+            "line",
+            137,
+            "        "
+          ],
+          [
+            "line",
+            138,
+            "    def increment(self):"
+          ],
+          [
+            "line",
+            139,
+            ""
+          ],
+          [
+            "line",
+            140,
+            "        def addOneReverse(n, p):"
+          ],
+          [
+            "line",
+            141,
+            "            i = 0"
+          ],
+          [
+            "line",
+            142,
+            "            if n[i] == 0:"
+          ],
+          [
+            "line",
+            143,
+            "                n[i] = 1"
+          ],
+          [
+            "line",
+            144,
+            "                return n"
+          ],
+          [
+            "line",
+            145,
+            "            while n[i] == p-1:"
+          ],
+          [
+            "line",
+            146,
+            "                n[i] = 0"
+          ],
+          [
+            "line",
+            147,
+            "                i += 1"
+          ],
+          [
+            "line",
+            148,
+            "                if i == len(n):"
+          ],
+          [
+            "line",
+            149,
+            "                    return None"
+          ],
+          [
+            "line",
+            150,
+            "            n[i] += 1"
+          ],
+          [
+            "line",
+            151,
+            "            return n"
+          ],
+          [
+            "line",
+            152,
+            "        "
+          ],
+          [
+            "line",
+            153,
+            "        # ----"
+          ],
+          [
+            "line",
+            154,
+            "        "
+          ],
+          [
+            "line",
+            155,
+            "        if self.finished:"
+          ],
+          [
+            "line",
+            156,
+            "            return None"
+          ],
+          [
+            "line",
+            157,
+            "        "
+          ],
+          [
+            "line",
+            158,
+            "        # further iterate through transitions, if possible"
+          ],
+          [
+            "line",
+            159,
+            "        "
+          ],
+          [
+            "line",
+            160,
+            "        if addOneReverse(self.transitionsProgress, self.numberOfStates) != None:"
+          ],
+          [
+            "line",
+            161,
+            "            return self"
+          ],
+          [
+            "skip",
+            23
+          ],
+          [
+            "line",
+            185,
+            "    def dfa(self):"
+          ],
+          [
+            "line",
+            186,
+            "    "
+          ],
+          [
+            "line",
+            187,
+            "        return DFA("
+          ],
+          [
+            "line",
+            188,
+            "        "
+          ],
+          [
+            "line",
+            189,
+            "            (chr(i)    for i in range(65, 65+self.alphabetSize)), # chr(65) = 'a'"
+          ],
+          [
+            "line",
+            190,
+            "            (chr(48+i) for i in range(self.numberOfStates)),      # chr(48) = '0'"
+          ],
+          [
+            "line",
+            191,
+            "            (((chr(48+i), chr(65+j)), self.transitionsProgress[i * self.alphabetSize + j]) for i in range(self.numberOfStates) for j in range(self.alphabetSize)),"
+          ],
+          [
+            "line",
+            192,
+            "            '0',"
+          ],
+          [
+            "line",
+            193,
+            "            (chr(48+i) for i in range(self.numberOfStates) if self.acceptingStatesProgress[i])"
+          ],
+          [
+            "line",
+            194,
+            "            "
+          ],
+          [
+            "line",
+            195,
+            "        )"
+          ],
+          [
+            "line",
+            196,
+            "    "
+          ],
+          [
+            "skip",
+            24
+          ]
+        ],
+        "runTime": 4.939072132110596
+      }
+    ]
+  },
+  "version": "0.37.6"
+}

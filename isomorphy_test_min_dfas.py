@@ -1,12 +1,23 @@
 from DFA import DFA
+        
+        
+def contains_isomorph_dfa(testDFA, dfaList):
+    
+    for dfa in dfaList:
+
+        if isomorphy_test_min_dfas(testDFA, dfa) == True:
+    
+            return True
+            
+    return False
 
 
 def isomorphy_test_min_dfas(dfa1, dfa2):
 
-    if len(dfa1.states) != len(dfa2.states):
+    if dfa1.numberOfStates != dfa2.numberOfStates:
         return False
 
-    if len(dfa1.accepting) != len(dfa2.accepting):
+    if dfa1.numberOfAcceptingStates != dfa2.numberOfAcceptingStates:
         return False
         
     if dfa1.alphabet != dfa2.alphabet:

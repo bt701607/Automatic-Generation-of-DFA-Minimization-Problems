@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     fileName = "output"
 
-    test_dfa = DFA(
+    testDFA = DFA(
         (1,2,3,4,5),
         (
             ((1,1),'a'),
@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     with open(fileName + ".tex", "w") as outputFile:
 
-        outputFile.write(tex_from_dfa(test_dfa))
+        outputFile.write(tex_from_dfa(testDFA))
 
     os.popen("""pdflatex.exe -synctex=1 -interaction=nonstopmode -shell-escape {}""".format(fileName + ".tex")).read()
     

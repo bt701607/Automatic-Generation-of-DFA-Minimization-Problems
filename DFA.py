@@ -1,6 +1,7 @@
 class DFA(object):
 	
-    def __init__(self, alphabet=['a','b','c'], states=[], transition_function=[], start_state=None, accepting_states=[]):
+    # states and alphabet-symbols must be chars.
+    def __init__(self, alphabet, states, transition_function, start_state, accepting_states, alphabetSize=None, numberOfStates=None, numberOfAcceptingStates=None, minmarkDepth=None):
 
         self.__state_counter = 0
 
@@ -9,6 +10,20 @@ class DFA(object):
         self.transitions = transition_function
         self.start       = start_state
         self.accepting   = accepting_states
+        
+        self.alphabetSize            = alphabetSize
+        self.numberOfStates          = numberOfStates
+        self.numberOfAcceptingStates = numberOfAcceptingStates
+        self.minmarkDepth            = minmarkDepth
+        
+        if alphabetSize == None:
+            self.alphabetSize = len(alphabet)
+            
+        if numberOfStates == None:
+            self.numberOfStates = len(states)
+            
+        if numberOfAcceptingStates == None:
+            self.numberOfAcceptingStates = len(accepting_states)
         
         
     def __str__(self):
@@ -95,7 +110,7 @@ class DFA(object):
 
     def __next_state(self):
 
-        while self.__state_counter in self.states or str(self.__state_counter) in self.states:
+        while str(self.__state_counter) in self.states:
             self.__state_counter += 1
 
-        return self.__state_counter
+        return str(self.__state_counter)

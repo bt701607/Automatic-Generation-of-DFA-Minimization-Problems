@@ -3,26 +3,42 @@ from DFA import DFA
 
 def minimize_dfa(dfa):
     
-    dfa, min_mark_depth = delete_duplicate_states(delete_unreachable_states(dfa))
-    
-    return delete_useless_symbols(dfa)
+    return delete_duplicate_states(delete_unreachable_states(dfa))
     
     
-def delete_useless_symbols(dfa):
+# -----------------------------------------------------------
 
-    for c in dfa.alphabet:
-    
-        found = False
-        
-        for ((q1,s),q2) in dfa.transitions:
-            if s == c:
-                found = True
-                break
+
+def has_unreachable_states(dfa):
                 
-        if not found:
-            dfa.alphabet.remove(c)
-            
-    return dfa
+    # find unreachable states via breadth-first search
+    
+    undiscovered = set(dfa.states)
+    undiscovered.remove(dfa.start)
+    
+    observed = set([dfa.start])
+    
+    discovered = set()
+                
+    delta = dict(dfa.transitions)
+    
+    while len(observed) != 0:
+        
+        new_observed = set()
+        
+        for q in observed:
+            for sigma in dfa.alphabet:
+                if (q,sigma) in delta:
+                    
+                    p = delta[(q,sigma)]
+                    if p not in observed and p not in discovered:
+                        new_observed.add(p)
+
+        undiscovered.difference_update(new_observed)
+        discovered.update(observed)
+        observed = new_observed
+        
+    return len(undiscovered) > 0
 
 
 def delete_unreachable_states(dfa):
@@ -58,15 +74,66 @@ def delete_unreachable_states(dfa):
     
     for q in undiscovered:
         dfa.states.remove(q)
-        
+                
         if q in dfa.accepting:
             dfa.accepting.remove(q)
             
-        transitions_to_remove = [((q1,s),q2) for ((q1,s),q2) in dfa.transitions if q1 == q or q2 == q]
-        for t in transitions_to_remove:
-            dfa.transitions.remove(t)
+        for i in reversed(range(len(dfa.transitions))):
+            t = dfa.transitions[i]
+            if t[0][0] == q or t[1] == q:
+                dfa.transitions.remove(t)
         
     return dfa
+    
+    
+# -----------------------------------------------------------
+
+
+def has_duplicate_states(dfa):
+    
+    # find duplicate states via the minimization-mark algorithm
+    
+    M = set()
+    
+    for q in dfa.accepting:
+        for p in dfa.states:
+            if p not in dfa.accepting:
+                M.add((p,q))
+                M.add((q,p))
+                
+    delta = dict(dfa.transitions)
+    
+    min_mark_depth = 0
+                
+    while True:
+        
+        N = set()
+        
+        for q in dfa.states:
+            for p in dfa.states:
+                if (p,q) not in M:
+                    for sigma in dfa.alphabet:
+                        
+                        if (p,sigma) in delta and (q,sigma) in delta:
+                            if (delta[(p,sigma)], delta[(q,sigma)]) in M:
+                                N.add((p,q))
+                                break
+                            
+        M = M.union(N)
+        
+        if len(N) == 0:
+            break
+        else:
+            min_mark_depth += 1
+            
+    duplicate_state_pairs = [(p,q) for p in dfa.states for q in dfa.states if (p,q) not in M and p != q]
+    
+    for p in dfa.states:
+        for q in dfa.states:
+            if p != q and (p,q) not in M:
+                return False
+                
+    return min_mark_depth
 
 
 def delete_duplicate_states(dfa):
@@ -111,9 +178,7 @@ def delete_duplicate_states(dfa):
     
     while len(duplicate_state_pairs) != 0:
         
-        #print(duplicate_state_pairs)
         (p,q) = duplicate_state_pairs.pop()
-        #print(duplicate_state_pairs)
         
         if p == q:
             continue
@@ -147,73 +212,13 @@ def delete_duplicate_states(dfa):
     dfa.transitions = list(set(dfa.transitions))
             
     return dfa, min_mark_depth
-
-
-# -----------------------------------------------------
-
-
-def minimization_mark_depth(dfa):
-    
-    # find duplicate states via the minimization-mark algorithm
-    
-    M = set()
-    
-    min_mark_depth = 0
-    
-    for q in dfa.accepting:
-        for p in dfa.states:
-            if p not in dfa.accepting:
-                M.add((p,q))
-                M.add((q,p))
-                
-    delta = dict(dfa.transitions)
-                
-    while True:
-        
-        N = set()
-        
-        for q in dfa.states:
-            for p in dfa.states:
-                if (p,q) not in M:
-                    for sigma in dfa.alphabet:
-                        
-                        if (p,sigma) in delta and (q,sigma) in delta:
-                            if (delta[(p,sigma)], delta[(q,sigma)]) in M:
-                                N.add((p,q))
-                                break
-                            
-        M = M.union(N)
-        
-        if len(N) == 0:
-            break
-        else:
-            min_mark_depth += 1
-            
-    return min_mark_depth
     
     
-
-
 
 if __name__ == "__main__":
-
-    test_dfa = DFA(
-        ['a','b','c','d','e'],
-        [1,2,3,4,5,6],
-        [
-            ((1,'a'),1),
-            ((1,'b'),2),
-            ((2,'c'),4),
-            ((5,'d'),1),
-            ((2,'e'),5),
-            ((6,'a'),4)
-        ],
-        1,
-        [4,5]
-    )
         
-    test_dfa2 = DFA(
-        ['0','1'],
+    test_dfa = DFA(
+        ['0','1','2'],
         ['A','B','C','D','E','F','G'],
         [
             (('A','1'),'C'),
@@ -234,15 +239,17 @@ if __name__ == "__main__":
         'A',
         ['C','E']
     )
-        
-    print(minimization_mark_depth(test_dfa))
     
-    print("\n" + str(test_dfa) + "\n")
+    print(str(test_dfa) + "\n")
     
     test_dfa = delete_unreachable_states(test_dfa)
     
     print("\n" + str(test_dfa) + "\n")
     
-    test_dfa = delete_duplicate_states(test_dfa)
+    test_dfa, min_mark_depth = delete_duplicate_states(test_dfa)
+    
+    print("\n" + str(test_dfa) + "\nminmarkDepth = " + str(min_mark_depth))
+    
+    test_dfa = delete_useless_symbols(test_dfa)
     
     print("\n" + str(test_dfa) + "\n")

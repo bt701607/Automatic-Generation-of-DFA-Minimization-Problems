@@ -5,21 +5,6 @@ from copy import deepcopy
 import random
 
 
-def custom_sample(original_list, max_elements):
-    """
-    Returns a sublist with 1 to (max_elements+1) / 2 elements.
-
-    Returns the empty list, if the empty list is passed.
-    """
-
-    if original_list == []:
-        return []
-    elif max_elements > len(original_list):
-        return random.sample(original_list, random.randint(1, len(original_list)))
-    else:
-        return random.sample(original_list, random.randint(1, (max_elements + 1) // 2)) # (max_elements + 1) // 2
-
-
 class DFAExtender():
     """
     Implements the 'Builder' design pattern for the 'DFA' class,
@@ -31,15 +16,14 @@ class DFAExtender():
 
     Notes:
     - randomness is used to create different DFAs in different run-throughs
-    - 'custom sample' shall refer in this context to the semantics defined by the 'custom_sample' method
     """
 
     def __init__(self, dfa):
         """
-        Expects a minimal dfa as input.
+        Expects a minimal, complete dfa as input.
         
         Initializes tracking lists for various categories of states
-        and creates an DFA with a start state.
+        and creates an DFA with a start state if non was provided.
         """
 
         self._accepting = deepcopy(dfa.accepting)
@@ -119,52 +103,12 @@ class DFAExtender():
     # -------------------------------------------------------------------
 
 
-    def lonely(self, number=1):
-        # Adds 'number' states that have no transitions at all.
-
-        for i in range(number):
-            
-            newState = self._new_state()
-            
-            self._lonely.append(newState)
-
-        return self
-
-
-    def ingoing_only(self, number=1):
-        """
-        Adds 'number' non accepting states that have ingoing transitions (at least one) only.
-
-        Transition end points are chosen by a custom sample of existing states
-        having outgoing transitions.
-        """
-
-        for i in range(number):
-            
-            newState = self._new_state(is_accepting = False)
-
-            availableEndPoints = tuple(
-                q
-                for q in self._dfa.states
-                    if self._unused_symbols[q] != [] and q not in self._ingoing_only+self._lonely
-            )
-
-            statesToConnect = custom_sample(availableEndPoints, len(availableEndPoints))
-            
-            for state in statesToConnect:
-                self._dfa.transitions.append(((state, self._next_free_symbol(state)), newState))
-
-            self._ingoing_only.append(newState)
-
-        return self
-
-
     def outgoing_only(self, number=1):
         """
-        Adds 'number' states that have outgoing transitions (at least one) only.
+        Adds 'number' states that have outgoing transitions only.
 
-        Transition end points are chosen by a custom sample of existing states
-        having ingoing transitions.
+        Transition end points are chosen by a sample of existing states having
+        ingoing transitions.
         """
 
         for i in range(number):
@@ -177,36 +121,13 @@ class DFAExtender():
                     if q not in self._outgoing_only+self._lonely
             )
 
-            statesToConnect = custom_sample(availableEndPoints, len(self._dfa.alphabet))
+            statesToConnect = random.sample(availableEndPoints, len(self._dfa.alphabet))
                 
             for state in statesToConnect:
                 self._dfa.transitions.append(((newState, self._next_free_symbol(newState)), state))
                 
             self._outgoing_only.append(newState)
 
-        return self
-        
-        
-    def make_complete(self):
-        """
-        Adds - if needed - a sink state which makes the automaton complete.
-        All states which have not used symbols on outgoing transitions yet,
-        will get an outgoing transition to this sink state.
-        """
-        
-        # check if there are any missing transitions
-        if sum(len(unused_symbols_of_state) for unused_symbols_of_state in self._unused_symbols.values()) == 0:
-            return self
-        
-        newState = self._new_state(is_start=False, is_accepting=False)
-        
-        for state in self._dfa.states:
-            for symbol in self._unused_symbols[state]:
-                self._dfa.transitions.append(((state, symbol), newState))
-            self._unused_symbols[state] = []
-
-        self._ingoing_only.append(newState)
-            
         return self
 
 

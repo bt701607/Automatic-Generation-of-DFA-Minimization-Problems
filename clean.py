@@ -49,6 +49,9 @@ def clean_db():
     db1.clear(conn)
     db2.clear(conn)
     
+    db1.ensureValidity(conn)
+    db2.ensureValidity(conn)
+    
     conn.close()
 
 

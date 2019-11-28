@@ -1,5 +1,0 @@
-https://stackoverflow.com/questions/127704/algorithm-to-return-all-combinations-of-k-elements-from-n
-
-https://stackoverflow.com/questions/1851134/generate-all-binary-strings-of-length-n-with-k-bits-set
-
-https://www.geeksforgeeks.org/find-combinations-k-bit-numbers-n-bits-set-1-n-k-sorted-order/

@@ -1,111 +1,97 @@
 from DFA 	      import DFA
 from minimize_dfa import *
 
-from isomorphy_test_min_dfas import isomorphy_test_min_dfas
+from isomorphy_test_min_dfas import contains_isomorph_dfa
 
 import DB_MinimalDFAs         as db1
 import DB_EnumerationProgress as db2
 
-
-import threading
 import sqlite3
-
-
-#DB_MUTEX = threading.Lock()
-
-    
-    
-def propertiesMatch(properties, numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates):
-
-    return properties[0] == numberOfStates and minDepth <= properties[1] <= maxDepth and properties[2] == numberOfAcceptingStates and properties[3] == alphabetSize
         
         
         
-def hasIsomorphMatchingDFA(testDFA, l):
-    
-    for dfa in l:
+def build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth):
 
-        if isomorphy_test_min_dfas(testDFA, dfa) == True:
+    dbConn = sqlite3.connect('dfa.db')
     
-            return True
-            
-    return False
+    db1.ensureValidity(dbConn)
+    db2.ensureValidity(dbConn)
         
-        
-
-# returns dfa, properties
-def build_next_fitting_dfa(numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates):
-
-    conn = sqlite3.connect('dfa.db')
+    # ---
     
-    db1.ensureValidity(conn)
-    db2.ensureValidity(conn)
+    matchingUsedDFAs = db1.fetchMatchingDFAs(dbConn, alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth)
     
-    # look whether our db of found minimal DFAs has a fitting, unused one
-    
-    #result = db1.findMatchingUnusedMinimalDFA(conn, numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates)
-    
-    #if result != None:
-        #conn.close()
-        #return result
-
-    # 
-    
-    enumProgress = db2.fetchEnumerationProgress(conn, numberOfStates, alphabetSize, numberOfAcceptingStates)
-    
-    matchingUsedDFAs = db1.fetchMatchingDFAs(conn, numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates)
+    enumProgress = db2.fetchEnumerationProgress(dbConn, alphabetSize, numberOfStates, numberOfAcceptingStates)
     
     # DEBUG
-    iEnd = 10000
     i = 0
     
-    while True:
+    urs = ds = wmmd = him  = 0
     
-        # DEBUG
-        if i == iEnd:
-            db2.updateEnumerationProgress(conn, enumProgress)
-            print(i, enumProgress)
-            conn.close()
-            return None
-            
+    def log():
+        print(i, enumProgress)
+        print("unreach. states/dupl. states/wrong mmDep./has isom. = {} | {} | {} | {}\n".format(urs, ds, wmmd, him))
+        
+    def finishUp():
+        db2.updateEnumerationProgress(dbConn, enumProgress)
+        log()
+        dbConn.close()
     
-        if enumProgress.finished:
-            db2.updateEnumerationProgress(conn, enumProgress)
-            conn.close()
-            return None
+    try:
+    
+        while True:
         
-        i += 1
-        if not i % 10000:
-            print(i/iEnd)
+            if enumProgress.finished:
+                print("Enum.progress finished.")
+                finishUp()
+                return None
             
-        enumProgress.increment()
-        
-        # ---
-        
-        reachDFA = delete_unreachable_states(enumProgress.dfa())
-        
-        if len(reachDFA.states) < numberOfStates:
-            continue
-        
-        minDFA, min_mark_depth = delete_duplicate_states(reachDFA)
-        
-        minDFA = delete_useless_symbols(minDFA)
-        
-        
-        minDFAproperties = (len(minDFA.states), min_mark_depth, len(minDFA.accepting), len(minDFA.alphabet))
-        
-        if propertiesMatch(minDFAproperties, numberOfStates, minDepth, maxDepth, alphabetSize, numberOfAcceptingStates):
+            i += 1
             
-            if not hasIsomorphMatchingDFA(minDFA, matchingUsedDFAs):
+            if i % 300000 == 0:
+                log()
                 
-                    db2.updateEnumerationProgress(conn, enumProgress)
-                    db1.saveNewDFA(conn, minDFA, minDFAproperties, used=True)
+            enumProgress.increment()
+            
+            # ---
+            
+            minDFA = enumProgress.dfa()
+            
+            if has_unreachable_states(minDFA):
+                urs += 1
+                continue
+            
+            result = has_duplicate_states(minDFA)
+            
+            if not result:
+                ds += 1
+                continue
+                
+            minDFA.minmarkDepth = result
+                
+            if not (minMinmarkDepth <= minDFA.minmarkDepth <= maxMinmarkDepth):
+                wmmd += 1
+                continue
+            
+            # ---
+                
+            if not contains_isomorph_dfa(minDFA, matchingUsedDFAs):
+                
+                db1.saveNewDFA(dbConn, minDFA)
+                finishUp()
+                return minDFA
                     
-                    conn.close()
-                    
-                    return minDFA
+            else:
+                
+                him += 1
+                        
+    except KeyboardInterrupt:
+        finishUp()
+        exit()
+        
         
             
 if __name__ == "__main__":
 
-    print(build_next_fitting_dfa(7, 2, 3, 3, 2))
+    # alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth
+    print(build_next_minimal_dfa(2, 5, 2, 2, 3))

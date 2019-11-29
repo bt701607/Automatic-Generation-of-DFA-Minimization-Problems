@@ -37,7 +37,7 @@ class DFA(object):
             string += "\t\t" + str(transition) + ",\n"
             
         string += "\t],\n"
-        string += "\t" + str(self.start) + ",\n"
+        string += "\t'" + str(self.start) + "',\n"
         string += "\t" + str(self.accepting) + "\n"
         string += ")\n"
 

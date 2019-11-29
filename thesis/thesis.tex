@@ -267,7 +267,7 @@ f and t are the encoded final states respectively transitions enumeration progre
 			\EndIf
 			\State increment progress
 			\State $A_L$ $\gets$ progress.dfa()
-			\If {$A_L$ has unreachable or duplicate states or unused symbols}
+			\If {$A_L$ has unreachable or duplicate states or unused symbols or is not planar}
 				\State \textbf{continue}
 			\EndIf
 			\State properties $\gets$ computeProperties($A_L$)

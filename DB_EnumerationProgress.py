@@ -114,7 +114,7 @@ class EnumerationProgress(object):
         self.numberOfAcceptingStates = numberOfAcceptingStates
         self.numberOfTransitions     = numberOfStates * alphabetSize
         
-        self.acceptingStatesProgress = [0 for i in range(numberOfStates-numberOfAcceptingStates)] + [1 for i in range(numberOfAcceptingStates)]
+        self.acceptingStatesProgress = [1 for i in range(numberOfAcceptingStates)] + [0 for i in range(numberOfStates-numberOfAcceptingStates)]
         self.transitionsProgress     = [0 for i in range(self.numberOfTransitions)]
         
         # ----
@@ -142,13 +142,10 @@ class EnumerationProgress(object):
         return str((self.alphabetSize, self.numberOfStates, self.numberOfAcceptingStates, self.acceptingStatesProgress, self.transitionsProgress, self.finished))
         
         
-    def increment(self):
+    def nextDFA(self):
 
         def addOneReverse(n, p):
             i = 0
-            if n[i] == 0:
-                n[i] = 1
-                return n
             while n[i] == p-1:
                 n[i] = 0
                 i += 1
@@ -165,29 +162,22 @@ class EnumerationProgress(object):
         # further iterate through transitions, if possible
         
         if addOneReverse(self.transitionsProgress, self.numberOfStates) != None:
-            return self
+            return self.__dfa()
         
         # if transition's end reached, iterate accepting state permutations and reset transition progress
         
         while True:
         
-            addOneReverse(self.acceptingStatesProgress, 2)
-            
-            actNumberOfAccStates = 0
-            for n in self.acceptingStatesProgress:
-                if n == 1:
-                    actNumberOfAccStates += 1
-            
-            if actNumberOfAccStates == self.numberOfStates:
+            if addOneReverse(self.acceptingStatesProgress, 2) == None:
                 self.finished = True
-                return self
+                return None
                 
-            if actNumberOfAccStates == self.numberOfAcceptingStates:
+            if self.acceptingStatesProgress.count(1) == self.numberOfAcceptingStates:
                 self.transitionsProgress = [0 for i in range(self.numberOfTransitions)]
-                return self
+                return self.__dfa()
                 
         
-    def dfa(self):
+    def __dfa(self):
     
         return DFA(
         

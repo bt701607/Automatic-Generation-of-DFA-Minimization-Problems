@@ -72,6 +72,8 @@ def main():
     # extend dfa
 
     task_dfa, duplicate_states, unreachable_states, equiv_classes = extend_minimal_complete_dfa(orig_dfa, 2, 1)
+    
+    print(task_dfa)
 
     # test if duplication and minimization work
     

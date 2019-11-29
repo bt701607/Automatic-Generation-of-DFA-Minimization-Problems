@@ -27,79 +27,59 @@ def build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates
     
     enumProgress = db2.fetchEnumerationProgress(dbConn, alphabetSize, numberOfStates, numberOfAcceptingStates)
     
-    # DEBUG
-    i = 0
-    
     urs = ds = wmmd = np = him  = 0
     
-    def log():
-        print(i, enumProgress)
-        print("unreach. states/dupl. states/wrong mmDep./not planar/has isom. = {} | {} | {} | {} | {}\n".format(urs, ds, wmmd, np, him))
-        
-    def finishUp():
-        db2.updateEnumerationProgress(dbConn, enumProgress)
-        log()
-        dbConn.close()
+    minDFA = None
     
-    try:
+    while True:
     
-        while True:
+        if enumProgress.finished:
+            print("Enum.progress finished.")
+            minDFA = None
+            break
         
-            if enumProgress.finished:
-                print("Enum.progress finished.")
-                finishUp()
-                return None
+        minDFA = enumProgress.nextDFA()
+        
+        if has_unreachable_states(minDFA):
+            urs += 1
+            continue
+        
+        if not has_duplicate_states(minDFA):
+            ds += 1
+            continue
             
-            i += 1
+        if not (minMinmarkDepth <= minDFA.minmarkDepth <= maxMinmarkDepth):
+            wmmd += 1
+            continue
+        
+        if not planarity_test_dfa(minDFA):
+            np += 1
+            continue
             
-            if i % 300000 == 0:
-                log()
-                
-            enumProgress.increment()
+        if contains_isomorph_dfa(minDFA, matchingUsedDFAs):
+            him += 1
+            continue
             
-            # ---
-            
-            minDFA = enumProgress.dfa()
-            
-            if has_unreachable_states(minDFA):
-                urs += 1
-                continue
-            
-            if not has_duplicate_states(minDFA):
-                ds += 1
-                continue
-                
-            if not (minMinmarkDepth <= minDFA.minmarkDepth <= maxMinmarkDepth):
-                wmmd += 1
-                continue
-            
-            if not planarity_test_dfa(minDFA):
-                np += 1
-                continue
-                
-            if not contains_isomorph_dfa(minDFA, matchingUsedDFAs):
-                
-                db1.saveNewDFA(dbConn, minDFA)
-                finishUp()
-                return minDFA
-                    
-            else:
-                
-                him += 1
-                        
-    except KeyboardInterrupt:
-        finishUp()
-        exit()
+        db1.saveNewDFA(dbConn, minDFA)
+        break
+        
+    print(enumProgress)
+    print("unreach. states/dupl. states/wrong mmDep./not planar/has isom. = {} | {} | {} | {} | {}\n".format(urs, ds, wmmd, np, him))
+    
+    db2.updateEnumerationProgress(dbConn, enumProgress)
+    dbConn.close()
+    
+    return minDFA
         
         
             
 if __name__ == "__main__":
     
     # alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth
-    dfa = build_next_minimal_dfa(2, 5, 2, 2, 3)
+    dfa = build_next_minimal_dfa(2, 6, 2, 2, 3)
     
     print(dfa)
 
     pdf_from_dfa(dfa, "_enumerated")
 
-    clean_code_dir_keep_results()
+    #clean_code_dir_keep_results()

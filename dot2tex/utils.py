@@ -83,7 +83,7 @@ def getboolattr(item, key, default):
 
 
 def smart_float(number):
-    number = number.strip('\\\r\n') # ------------------------------------------------------------------- Hotfix was applied here
+    number = str(number).strip('\\\r\n') # ------------------------------------------------------------------- Hotfix was applied here
     number_as_string = "%s" % float(number)
     if 'e' in number_as_string:
         return "%.4f" % float(number)

@@ -34,6 +34,7 @@ So far: isomorphy
 
 Work in progress: minimization, pdf_from_dfa, planarity, DB_Enumeration, DB_Minimal, main
 
+* proper rendering (http://www.graphdrawing.org/books.html, http://gdea.informatik.uni-koeln.de/view/subjects/)
 * optional: create a GUI
 * optional: optimize code further
 

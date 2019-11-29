@@ -289,6 +289,7 @@ def main(run_as_module=False, dotdata=None, options=None):
             log.addHandler(hdlr)
             formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s')
             hdlr.setFormatter(formatter)
+            
         log.setLevel(logging.DEBUG)
         nodebug = False
     else:

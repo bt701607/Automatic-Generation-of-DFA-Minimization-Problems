@@ -17,9 +17,9 @@
 *.ind
 *.synctex(busy)
 
+*.ini
+*.db
+
 *.pyc
 
 __pycache__
-
-desktop.ini
-dfa.db

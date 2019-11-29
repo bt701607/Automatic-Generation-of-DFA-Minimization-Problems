@@ -251,14 +251,10 @@ if __name__ == "__main__":
     
     print(str(test_dfa) + "\n")
     
-    test_dfa = delete_unreachable_states(test_dfa)
+    test_dfa = __delete_unreachable_states(test_dfa)
     
     print("\n" + str(test_dfa) + "\n")
     
-    test_dfa, min_mark_depth = delete_duplicate_states(test_dfa)
+    test_dfa = __delete_duplicate_states(test_dfa)
     
-    print("\n" + str(test_dfa) + "\nminmarkDepth = " + str(min_mark_depth))
-    
-    test_dfa = delete_useless_symbols(test_dfa)
-    
-    print("\n" + str(test_dfa) + "\n")
+    print("\n" + str(test_dfa) + "\nminmarkDepth = " + str(test_dfa.minmarkDepth))

@@ -75,7 +75,7 @@ def main():
 
     # test if duplication and minimization work
     
-    min_dfa, min_mark_depth = minimize_dfa(task_dfa)
+    min_dfa = minimize_dfa(task_dfa)
 
     # generate graphical representation of original and extended dfa
 

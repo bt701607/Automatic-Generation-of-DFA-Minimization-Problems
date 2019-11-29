@@ -28,14 +28,12 @@ It is included here, to be able to make it python3 compatible.
 
 This automatically ensured, since the generated DFAs are complete -> pidgeonhole principle. Write that down in thesis.
 
-* planarity ensurance
 * Proper tests.
 
 So far: isomorphy
 
 Work in progress: minimization, pdf_from_dfa, planarity, DB_Enumeration, DB_Minimal, main
 
-* integrate and refactor code further
 * optional: create a GUI
 * optional: optimize code further
 

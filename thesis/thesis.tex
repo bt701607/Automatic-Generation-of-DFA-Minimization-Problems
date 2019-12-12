@@ -35,6 +35,9 @@
 
 \newcommand{\MinMark}{\textsc{MinimizationMark}}
 
+\newcommand{\gregorColor}{Violet}
+\newcommand{\gregor}[1]{\textcolor{\gregorColor}{\textbf{Gregor:} #1}}
+
 % Title Page
 \title{Generation of DFA Minimization Problems}
 \author{Gregor H. C. Sönnichsen}
@@ -52,6 +55,15 @@
 \tableofcontents
 
 \chapter{Introduction}
+
+\begin{itemize}
+	\item study computer science
+	\item theoretical informatics
+	\item automata theory
+	\item value of this theory
+	\item typical topics, why typical
+	\item why automation
+\end{itemize}
 
 \section{Preliminaries}
 
@@ -117,9 +129,10 @@ Note that the relation $d_A$ is indeed an equivalence relation.
 
 \subsection{The minimization algorithm}
 
-The minimization algorithm requires a complete DFA and works in three major steps.
+The minimization algorithm requires a complete DFA and works in four major steps.
 \begin{enumerate}
-	\item Remove all unreachable states.
+	\item Compute all unreachable states.
+	\item Remove all unreachable states and their transitions.
 	\item Compute $\neg d_A(p, q)$ via the \MinMark-algorithm.
 	\item Merge all node pairs, which are not in $\neg d_A(p, q)$.
 \end{enumerate}
@@ -135,8 +148,6 @@ The minimization algorithm requires a complete DFA and works in three major step
 	\EndFunction
 \end{algorithmic}
 \vspace{0.2cm}
-We will denote the number of iterations $n \in \mathbb{N}$ done by \MinMark\ on an DFA $A$ as $minmarkDepth(A)$.
-
 When looking at \MinMark, one notes, that it computes distinct subsets of $Q \times Q$ on the way. Indeed, one could write it in such a way, that these subsets are explicitly computed in form of a function $m\colon\mathbb{N}\to\mathcal{P}(Q\times Q)$:
 \vspace{0.2cm}
 \begin{algorithmic}[1]
@@ -153,11 +164,21 @@ When looking at \MinMark, one notes, that it computes distinct subsets of $Q \ti
 \vspace{0.2cm}
 Using this redefinition, we can easier refer to the state pairs marked in a certain iteration. We will use both variants in exchange.
 
+We will denote the number of iterations done by \MinMark\ on an DFA $A$ as $minmarkDepth(A)$. Note that $minmarkDepth(A) = \max n \in \mathbb{N}\ |\ m(n) \neq \emptyset$.
 
 
-\section{Problem Definition}
 
-We will call the minimal automaton \emph{original DFA} ($A_{orig}$) and its extension with duplicate states \emph{task DFA} ($A_{task}$).
+\section{Analysis of DFA minimization tasks for students}
+
+\begin{itemize}
+	\item present a typical task and its solution (text, image, table)
+	\item name its elements
+	\item clarify two parts: solution, task
+	\item clarify four parts from task to solution: find unreachables, delete them, find duplicates, merge them
+	\item what are the difficulties of this tasks?
+\end{itemize}
+
+We will call the minimal automaton \emph{solution DFA} ($A_{sol}$) and its extension with duplicate states \emph{task DFA} ($A_{task}$).
 
 heuristic:
 \begin{itemize}
@@ -165,29 +186,30 @@ heuristic:
 	\item $h(A_{min}, A_{task}) = studentfriendliness$
 \end{itemize}
 
-\section{Heuristics for the friendlieness of DFAs}
+\subsection{Requirements and friendliness-heuristics for such tasks}
 
 \begin{itemize}
-	\item $h(A_{min}, A_{task}) = |Q_{task}|\ /\ |Q_{min}|$
+	\item $h(A_{sol}, A_{task}) = |Q_{task}|\ /\ |Q_{sol}|$
 	\item number of transitions
-	\item max degree of a node
-	\item planarity (can be checked in $O(|Q_{task}|)$)
+	\item max degree of a node (Why not this?)
 	\item Does GraphViz have a heuristic?
 	
-	\item[->] number of states in original DFA
-	\item[->] number of \MinMark iterations ($minmarkDepth(A)$)
+	\item[->] number of states in solution DFA
+	\item[->] number of \MinMark\ iterations ($minmarkDepth(A)$)
 	\item[->] alphabet size
-	\item[->] number of accepting states in original DFA
+	\item[->] number of accepting states in solution DFA
+	\item[->] planarity of solution DFA (can be checked in $O(|Q_{sol}|)$)
 	
 	\item[->] number of new states in the task DFA
+	\item[->] planarity of task DFA (can be checked in $O(|Q_{task}|)$)
 \end{itemize}
-We furthermore require the original- and task-DFA to be complete for the \MinMark-algorithm to work.
+We furthermore require the solution- and task-DFA to be complete for the \MinMark-algorithm to work.
 
-We will set $depth\_min(A)$ when building the minimal DFA.
+\section{Approach and general algorithm}
 
-We will add duplicate and unreachable states afterwards.
+In this work we will first build the solution DFA, and - based on that - the task DFA. We will thus set $minmarkDepth(A)$ and language when building the minimal solution DFA and add duplicate and unreachable states afterwards. It follows, that we need to ensure, that adding duplicates and unreachables does neither change $minmarkDepth$ nor language of $A_{task}$ in comparison to $A_{sol}$.
 
-\section{Structure of this Work}
+Here follow problem definitions for the two steps, which specify all needed informations.
 
 
 
@@ -202,7 +224,7 @@ We want an algorithm for DFA generation that fulfills the following conditions:
 Approaches:
 \begin{itemize}
 	\item Generate via trial and error.
-	\item Build $m$ from $m$-\MinMark\ iteratively. (Why would this basically result in running \MinMark all the time?)
+	\item Build $m$ from $m$-\MinMark\ iteratively. (Why would this basically result in running \MinMark\ all the time?)
 \end{itemize}
 
 \section{The trial-and-error method}
@@ -287,14 +309,14 @@ f and t are the encoded final states respectively transitions enumeration progre
 
 %First, a systematic study of how to extend minimal DFAs will be done. Afterwards, we will define an extension algorithm, which will use the previously found results. We have the following requirements for this stage:
 %\begin{itemize}
-%	\item the language of the task DFA is the same as the language of the original DFA
-%	\item $minmarkDepth(A_{orig}) = minmarkDepth(A_{task})$
+%	\item the language of the task DFA is the same as the language of the solution DFA
+%	\item $minmarkDepth(A_{sol}) = minmarkDepth(A_{task})$
 %	\item the number of new elements should be controllable
 %\end{itemize}
 %
 %\section{Adding new elements to DFAs}
 %
-%Our study of DFA extension possibilities will focus on methods, that add or remove transitions or states. A original DFA modified by such methods will be denoted as $A_{orig'}$. In general, we could also change start and accepting nodes, but we will exclude these possibilities here. As a consequence, we may now classify our options as follows:
+%Our study of DFA extension possibilities will focus on methods, that add or remove transitions or states. A solution DFA modified by such methods will be denoted as $A_{sol'}$. In general, we could also change start and accepting nodes, but we will exclude these possibilities here. As a consequence, we may now classify our options as follows:
 %\begin{enumerate}
 %	\item Add states and no transitions
 %	\item Add transitions and no states
@@ -337,16 +359,16 @@ f and t are the encoded final states respectively transitions enumeration progre
 %	\item New states have outgoing transitions only
 %	\item New states have both in- and outgoing transitions
 %\end{enumerate}
-%Adding states $p_0, \ldots, p_n$ with ingoing transitions is okay, if there is a sink-state in $A_{orig}$ and if every $p_i$ is non-accepting and thus a sink-state.
+%Adding states $p_0, \ldots, p_n$ with ingoing transitions is okay, if there is a sink-state in $A_{sol}$ and if every $p_i$ is non-accepting and thus a sink-state.
 %
 %We prove that adding accepting states with ingoing transitions only leads to a NFA or to a DFA with a different language.
 %\begin{proof}
 %	If a new state $p$ is accepting and if w.l.o.g.\ $\delta(q, \sigma) = p$, then there are several cases:
 %	\begin{itemize}
 %		\item $p$ is unreachable: Then we got at least one unreachable sub-graph consisting of more than one states
-%		\item $p$ is reachable: Then the language of the original automaton (call it $A_{orig}$) is not preserved. This is because of the following:
+%		\item $p$ is reachable: Then the language of the solution automaton (call it $A_{sol}$) is not preserved. This is because of the following:
 %		
-%		If $A_{orig}$ were in state $q$ after reading $w \in \Sigma^*$ with $\sigma$ as next Symbol, then there would have to exist a transition $\delta(q, \sigma) = p'$ whereas $p' \in F$ is an accepting state. But this would imply that $A_{orig}$ is an NFA (contradiction).
+%		If $A_{sol}$ were in state $q$ after reading $w \in \Sigma^*$ with $\sigma$ as next Symbol, then there would have to exist a transition $\delta(q, \sigma) = p'$ whereas $p' \in F$ is an accepting state. But this would imply that $A_{sol}$ is an NFA (contradiction).
 %	\end{itemize}
 %\end{proof}
 %
@@ -358,17 +380,20 @@ f and t are the encoded final states respectively transitions enumeration progre
 
 We have the following requirements for this stage:
 \begin{itemize}
-	\item the language of the task DFA is the same as the language of the original DFA
-	\item $minmarkDepth(A_{orig}) = minmarkDepth(A_{task})$
+	\item the language of the task DFA is the same as the language of the solution DFA
+	\item $minmarkDepth(A_{sol}) = minmarkDepth(A_{task})$
 	\item the number of new elements should be controllable
 \end{itemize}
-In order to fulfill these requirements when adding new elements to a given minimal automaton $A_{orig}$, we can simply look at the kind of elements removed by the minimization algorithm. We will show for each class of addable elements, that they do not change the DFAs language and $minmarkDepth$.
+In order to fulfill these requirements when adding new elements to a given minimal automaton $A_{sol}$, we can simply look at the kind of elements removed by the minimization algorithm. We will show for each class of addable elements, that they do not change the DFAs language and $minmarkDepth$.
 
 What kind of elements are removed from a DFA, if the minimization algorithm is applied to it?
-\begin{itemize}
+\begin{enumerate}
 	\item unreachable states
 	\item duplicate states
-\end{itemize}
+\end{enumerate}
+%\gregor{Think about completeness-requirement.}
+As requirement for the new DFAs we have completeness, so whenever we add a new state, we have to ensure it has a transition for every alphabet symbol in the end. Furthermore, since unreachable states are removed first in the minimization algorithm, we may assume that every state, that is duplicated, is reachable.
+%\gregor{Adding unreachable states is essentially just talking about that special equivalence class. Think and tell more about this}
 
 \section{Unreachable states}
 
@@ -391,7 +416,7 @@ From step 1 of the minimization algorithm we can deduce option 1. Unreachable st
 \section{Duplicate states}
 
 %\begin{definition}[Correct duplication]
-%	Let $A = (Q, \Sigma, \delta, s, F)$ be the original DFA and $A' = (Q', \Sigma, \delta', s, F')$ the task DFA with a $q_o, q_d \in Q'$, $q_d \notin Q$. Building such an $A'$ is called a \emph{correct duplication}, iff
+%	Let $A = (Q, \Sigma, \delta, s, F)$ be the solution DFA and $A' = (Q', \Sigma, \delta', s, F')$ the task DFA with a $q_o, q_d \in Q'$, $q_d \notin Q$. Building such an $A'$ is called a \emph{correct duplication}, iff
 %	\[
 %		d_{A'}(q_o, q_d)
 %	\]
@@ -403,34 +428,33 @@ From step 1 of the minimization algorithm we can deduce option 1. Unreachable st
 
 Step 2 and 3 of the minimization algorithm are concerned with detection and elimination of duplicate states. How do we add duplicate states to a DFA?
 
-\paragraph*{Outgoing transitions}
+Consider the properties a duplicate state, say $q_d$, must have. It is in particular duplicate to \emph{another} state, we call it $q_o$. Since we add only one state for now, $q_d$, we can assume that $q_o$ is part of the solution DFA. We call the new, by $q_d$ extended DFA, $A$.
 
-Consider the properties a duplicate state, say $q_d$, must have. It is in particular duplicate to \emph{another} state, we call it $q_o$. Since we add only one state for now, $q_d$, we can assume that $q_o$ is part of the original DFA. We call the new, by $q_d$ extended DFA $A$.
+\paragraph*{Outgoing transitions}
 
 We know that $q_d$, $q_o$ are duplicates, iff $\forall \sigma \in \Sigma \colon [\delta(q_d, \sigma)]_{d_A} = [\delta(q_o, \sigma)]_{d_A}$. Thus, when adding some $q_d$, we have to choose for each symbol $\sigma \in \Sigma$ at least one transition from the following set:
 \[
 	P_\sigma = \{\ ((q_d, \sigma), p)\ |\ p \in [\delta(q_o, \sigma)]_{d_A}\ \}
 \]
-Since the original DFA is complete, we know that every $P_\sigma \neq \emptyset$.
+Since the solution DFA is complete, we know that every $P_\sigma \neq \emptyset$.
+%\gregor{Why does this not affect the eq. class of any other state?}
 
 \paragraph*{Ingoing transitions}
 
-The ingoing transitions of $q_d$ are not directly restricted through the duplicateness of $q_d$ and $q_o$. We can distinguish two cases:
-\begin{enumerate}
-	\item $q_o$ is unreachable. Then we may not give $q_d$ any ingoing transitions too.
+The ingoing transitions of $q_d$ are not directly restricted through the duplicateness of $q_d$ and $q_o$.
+
+First of all, we know, that $q_o$ is reachable. We then need to give $q_d$ at least one ingoing transition. Doing this, we have to ensure, that any state $s$, that gets such an outgoing transition to $q_d$ remains in its solution equivalence class.
 	
-	\item $q_o$ is reachable. We then need to give $q_d$ at least one ingoing transition. Doing this, we have to ensure, that any state $s$, that gets such an outgoing transition to $q_d$ remains in its original equivalence class.
-	
-	Thus a fitting state $s$ has to have a transition to some state in $[q_d]_{d_A} = [q_o]_{d_A}$ already. So, given a state $s$ with $((s, \sigma), t)$ and $t \in [q_o]_{d_A}$, we can add $((s, \sigma), q_d)$.
-	
-	But this would make our new DFA a NFA. As a consequence we have to remove the original transition $((s, \sigma), t)$ each time we add an ingoing transition for a newly created duplicate state.
-	
-	So we have to choose at least one transition of
-	\[
+Thus a fitting state $s$ has to have a transition to some state in $[q_d]_{d_A} = [q_o]_{d_A}$ already. So, given a state $s$ with $((s, \sigma), t)$ and $t \in [q_o]_{d_A}$, we can add $((s, \sigma), q_d)$.
+
+But this would make our new DFA a NFA. As a consequence we have to remove the original transition $((s, \sigma), t)$ each time we add an ingoing transition for a newly created duplicate state.
+
+So we have to choose at least one transition of
+\[
 	\{\ ((s, \sigma), q_d)\ |\ \delta(s,\sigma) \in [q_o]_{d_A}\ \}
-	\]
-	If a $((s, \sigma), q_d)$ is chosen, remove $((s, \sigma), t)$. This leads us to the requirement, that any $q_o$ has to have at least $2$ ingoing transitions.
-\end{enumerate}
+\]
+If a $((s, \sigma), q_d)$ is chosen, remove $((s, \sigma), t)$. This leads us to the requirement, that any $q_o$ has to have at least $2$ ingoing transitions.
+%\gregor{Talk somewhere about eq. automaton and extending it. An eq. class of reach. q's can be max. |$\Sigma$| big. From this can compute the max. number of dupl. states which can be added.}
 
 \subsection{Adding duplicate states does not change a DFAs language}
 

@@ -44,7 +44,7 @@ def build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates
             urs += 1
             continue
         
-        if not has_duplicate_states(minDFA):
+        if not has_duplicate_states(minDFA): # has_duplicate_states sets minDFA.minmarkDepth
             ds += 1
             continue
             

@@ -27,19 +27,23 @@ def build_random_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStat
     
     while True:
     
-        # generate random minimal dfa
+        # generate random dfa with correct alphabetSize, numberOfStates, numberOfAcceptingStates
         
-        dfa = DFA(A, Q, [], '0', random.sample(Q, numberOfAcceptingStates), alphabetSize, numberOfStates, numberOfAcceptingStates)
+        minDFA = DFA(A, Q, [], '0', random.sample(Q, numberOfAcceptingStates), alphabetSize, numberOfStates, numberOfAcceptingStates)
         
-        for q in dfa.states:
-            for sigma in dfa.alphabet:
-                dfa.transitions.append(random.choice([((q,sigma),p) for p in dfa.states]))
+        for q in minDFA.states:
+            for sigma in minDFA.alphabet:
+                minDFA.transitions.append(random.choice([((q,sigma),p) for p in minDFA.states]))
+        
+        # test dfa on properties and check if it was used already
                 
-        minDFA = minimize_dfa(dfa)
+        if has_unreachable_states(minDFA):
+            continue
         
-        # test minimal dfa on properties and check if it was used already
-                
-        if len(minDFA.states) != numberOfStates or not (minMinmarkDepth <= minDFA.minmarkDepth <= maxMinmarkDepth):
+        if not has_duplicate_states(minDFA): # has_duplicate_states sets minDFA.minmarkDepth
+            continue
+            
+        if not (minMinmarkDepth <= minDFA.minmarkDepth <= maxMinmarkDepth):
             continue
         
         if not planarity_test_dfa(minDFA):

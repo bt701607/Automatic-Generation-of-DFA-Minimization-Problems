@@ -65,6 +65,10 @@
 	\item why automation
 \end{itemize}
 
+This work lays out the theory for a program solving this task. As a consequence, parameters, which are sensible as user input, will be incorporated in problem definitions.
+In addition, when evaluating possible algorithms, we will take their usability in a practical use case into account.
+Furthermore additional theory will be discussed, to enhance usability.
+
 \section{Preliminaries}
 
 \begin{itemize}
@@ -199,9 +203,12 @@ heuristic:
 	\item[->] alphabet size
 	\item[->] number of accepting states in solution DFA
 	\item[->] planarity of solution DFA (can be checked in $O(|Q_{sol}|)$)
+	\item[->] generating one DFA at a time
 	
 	\item[->] number of new states in the task DFA
+	\item[->] alphabet size
 	\item[->] planarity of task DFA (can be checked in $O(|Q_{task}|)$)
+	\item[->] generating one DFA at a time
 \end{itemize}
 We furthermore require the solution- and task-DFA to be complete for the \MinMark-algorithm to work.
 
@@ -221,13 +228,33 @@ We want an algorithm for DFA generation that fulfills the following conditions:
 	\item we can control the number of states of the resulting DFA via parameter
 	\item we can control $minmarkDepth$ of the resulting DFA via parameter
 \end{itemize}
-Approaches:
-\begin{itemize}
-	\item Generate via trial and error.
-	\item Build $m$ from $m$-\MinMark\ iteratively. (Why would this basically result in running \MinMark\ all the time?)
-\end{itemize}
 
-\section{The trial-and-error method}
+\section{Building $m(i)$ bottom up}
+
+Build $m$ from $m$-\MinMark\ iteratively. (Why would this basically result in running \MinMark\ all the time?)
+
+\section{Using trial and error}
+
+\subsection{General algorithm}
+
+Dividing the search space, looking only at DFAs with correct alphabetSize, numberOfStates, numberOfAcceptingStates
+
+\subsection{Ensuring $A_{test}$ is minimal and has the correct $minmarkDepth$}
+
+has unreachable states, has duplicate states, computing $minmarkDepth(A)$ as a side effect
+
+\subsection{Ensuring $A_{test}$ is planar}
+
+look up library algorithm, cite some papers
+
+dfa specific planarity test?
+use planarity test information for better drawing?
+
+\subsection{Ensuring $A_{test}$ is unused}
+
+\subsection{Generating $A_{test}$ via Randomness}
+
+\subsection{Generating $A_{test}$ via Enumeration}
 
 Using this method we have a lot of freedom. We will, in addition to the stated conditions, allow to control the alphabet size and the number of accepting states.
 
@@ -304,6 +331,16 @@ f and t are the encoded final states respectively transitions enumeration progre
 	\EndFunction
 \end{algorithmic}
 \vspace{0.2cm}
+
+\subsection{Ideas for more efficiency}
+
+incrementing final state binary faster in enum-alternative
+
+speed up isomorphy test
+
+rewrite everything in C
+
+solve P vs NP
 
 \chapter{Extending minimal DFAs}
 
@@ -581,7 +618,7 @@ p. 159 Hopcroft
 
 
 
-\chapter{Display DFAs}
+\chapter{On Implementation}
 
 
 

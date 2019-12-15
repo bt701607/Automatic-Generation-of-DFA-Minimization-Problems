@@ -1,25 +1,27 @@
 % !TeX spellcheck = en_US
+
 \documentclass[a4paper, oneside, 11pt]{report}
+
+% ----------- packages -------------
 
 \usepackage[a4paper,width=150mm,top=25mm,bottom=25mm]{geometry}
 
-%packages for german language
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 
 \usepackage{graphicx}
-\graphicspath{ {images/} }
+\graphicspath{{images/}}
 
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{amssymb}
 
 \usepackage{algorithm}
-\usepackage[noend]{algpseudocode} % [noend]
+\usepackage[noend]{algpseudocode}
 
-% ------------------------
+% ----------- macros -------------
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{corollary}{Corollary}
@@ -34,603 +36,37 @@
 \algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
 
 \newcommand{\MinMark}{\textsc{MinimizationMark}}
+\newcommand{\mmD}{\mathcal{D}}
 
 \newcommand{\gregorColor}{Violet}
 \newcommand{\gregor}[1]{\textcolor{\gregorColor}{\textbf{Gregor:} #1}}
 
-% Title Page
+% ----------- content -------------
+
 \title{Generation of DFA Minimization Problems}
 \author{Gregor H. C. Sönnichsen}
 
 \begin{document}
-\maketitle
-
-%\begin{abstract}
-%	Abstract goes here
-%\end{abstract}
-
-%\chapter*{Acknowledgements}
-%I want to thank...
-
-\tableofcontents
-
-\chapter{Introduction}
-
-\begin{itemize}
-	\item study computer science
-	\item theoretical informatics
-	\item automata theory
-	\item value of this theory
-	\item typical topics, why typical
-	\item why automation
-\end{itemize}
-
-This work lays out the theory for a program solving this task. As a consequence, parameters, which are sensible as user input, will be incorporated in problem definitions.
-In addition, when evaluating possible algorithms, we will take their usability in a practical use case into account.
-Furthermore additional theory will be discussed, to enhance usability.
-
-\section{Preliminaries}
-
-\begin{itemize}
-	\item def of isomorphic DFAs
-	\item statement that minimal DFA is unique besides isomorphism
-\end{itemize}
-
-\subsection{Finite Automatons}
-
-A 5-tuple $A = (Q, \Sigma, \delta, s, F)$ with $Q$ as set of \emph{states}, $\Sigma$ as \emph{input alphabet}, $\delta \colon\ Q \times \Sigma \to Q$ as \emph{transition function}, $s \in Q$ as \emph{start state} and $F \subseteq Q$ as \emph{finite states} is called \emph{deterministic finite automaton} (DFA).
-
-From now on $\mathcal{A}$ shall denote the set of all DFAs. We will call $\delta(q,\sigma) = p$ a \emph{transition from $q$ to $p$ using symbol $\sigma$}.
-We define the \emph{extended transition function} $\delta^* : Q \times \Sigma^* \to Q$ of a DFA $A = (Q, \Sigma, \delta, s, F)$:
-\begin{itemize}
-	\item $\delta^*(q,\varepsilon) = q$
-	\item $\delta^*(q,w\sigma) = \delta(\delta^*(q,w),\sigma)$ for all $q \in Q$, $w \in \Sigma^*$, $\sigma \in \Sigma$
-\end{itemize}
-Given a DFA $A = (Q, \Sigma, \delta, s, F)$ and a state $q \in Q$. We call all transitions $\delta(q', \sigma) = q$, $q'\in Q$, $\sigma\in\Sigma$, \emph{ingoing transitions of $q$}. All transitions $\delta(q, \sigma) = q'$, $q'\in Q$, $\sigma\in\Sigma$, are called \emph{outgoing transitions of $q$}.
-
-We say a state $q$ is \emph{(un-)reachable} in an DFA $A$, iff there is (no) a word $w \in \Sigma^*$ such that $\delta^*(s, w) = q$.
-
-States that are reachable but have only ingoing transitions are named \emph{sink-states}.
-If a state has neither ingoing nor outgoing transitions, then it is called \emph{lonely}.
-If a transition is of the form $\delta(q, \sigma) = q$, $\sigma\in\Sigma$, then we say that $q$ has a \emph{loop}.
-
-A DFA is called \emph{complete} iff for all states, every symbol of the alphabet is used on an outgoing transition: $\forall q\in Q\colon \forall\sigma\in\Sigma\colon \exists p\in Q\colon \delta(q,\sigma) = p$.
-
-\subsection{Minimal DFAs}
-
-The \emph{Nerode-relation} $\equiv_L\ \subseteq\ \Sigma^* \times \Sigma^*$ of a language $L$ with alphabet $\Sigma$ is defined as follows:
-\begin{displaymath}
-	x \equiv_L y\ \Leftrightarrow_{def}\ \forall z\in\Sigma^*\colon (xz\in L \Leftrightarrow yz\in L)
-\end{displaymath}
-Thus the Nerode-relation of a DFA $A$ is exactly $\equiv_{L(A)}$. If the context makes it clear, than we will shorten the notation of a equivalence class $[x]_{\equiv_L}$ with $[x]$.
-
-\begin{theorem}
-	A language $L$ is regular if and only if the number of equivalence classes of $\equiv_L$ is finite.
-\end{theorem}
-
-The \emph{equivalence class automaton} $A_L = (Q_L, \Sigma_L, \delta_L, s_L, F_L)$ to a regular language $L$ with alphabet $\Sigma$ is defined as follows:
-\begin{itemize}
-	\item $Q_L = \{\ [x]\ |\ x \in \Sigma^*\ \}$
-	\item $\Sigma_L = \Sigma$
-	\item $\delta_L([x], \sigma) = [x\sigma],\ \forall x\in\Sigma^*,\ \forall\sigma\in\Sigma$
-	\item $s = [\varepsilon]$
-	\item $F = \{\ [x]\ |\ x \in L\ \}$
-\end{itemize}
-We call a DFA $A$ \emph{minimal}, if there exists no other automaton with the same language using less states.
-\begin{corollary}
-	Given a language $L$, then the equivalence class automaton $A_L$ is minimal.
-\end{corollary}
-
-\subsection{Duplicate states}
-
-\begin{definition}[Duplicate States]
-	Two states $q_1, q_2 \in Q$ of a finite automaton $A = (Q, \Sigma, \delta, s, F)$ are called \emph{duplicates} of each other, iff $d_A(q_1, q_2)$ is true, whereas
-	\[
-		d_A = \{\ (p, q)\ |\ \forall z \in \Sigma^* \colon\ \delta^*(p, z) \in F \Leftrightarrow \delta^*(q, z) \in F\ \}
-	\]
-\end{definition}
-Note that the relation $d_A$ is indeed an equivalence relation.
-
-\subsection{The minimization algorithm}
-
-The minimization algorithm requires a complete DFA and works in four major steps.
-\begin{enumerate}
-	\item Compute all unreachable states.
-	\item Remove all unreachable states and their transitions.
-	\item Compute $\neg d_A(p, q)$ via the \MinMark-algorithm.
-	\item Merge all node pairs, which are not in $\neg d_A(p, q)$.
-\end{enumerate}
-
-\begin{algorithmic}[1]
-	\Function{MinimizationMark}{$(Q, \Sigma, \delta, s, F)$}
-	\State $M \gets \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}$
-	\Do
-		\State $M' \gets \{ (p,q)\ |\ (p,q) \notin M \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in M \}$
-		\State $M \gets M \cup M'$
-	\doWhile {$M' \neq \emptyset$}
-	\State \Return $M$
-	\EndFunction
-\end{algorithmic}
-\vspace{0.2cm}
-When looking at \MinMark, one notes, that it computes distinct subsets of $Q \times Q$ on the way. Indeed, one could write it in such a way, that these subsets are explicitly computed in form of a function $m\colon\mathbb{N}\to\mathcal{P}(Q\times Q)$:
-\vspace{0.2cm}
-\begin{algorithmic}[1]
-	\Function{$m$-MinimizationMark}{$(Q, \Sigma, \delta, s, F)$}
-	\State $i \gets 0$
-	\State $m(0) \gets \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}$
-	\Do
-		\State $i \gets i + 1$
-		\State $m(i) \gets \{ (p,q)\ |\ (p,q) \notin \bigcup{m(\cdot)} \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in m(i-1) \}$
-	\doWhile {$m(i) \neq \emptyset$}
-	\State \Return $\bigcup{m(\cdot)}$
-	\EndFunction
-\end{algorithmic}
-\vspace{0.2cm}
-Using this redefinition, we can easier refer to the state pairs marked in a certain iteration. We will use both variants in exchange.
-
-We will denote the number of iterations done by \MinMark\ on an DFA $A$ as $minmarkDepth(A)$. Note that $minmarkDepth(A) = \max n \in \mathbb{N}\ |\ m(n) \neq \emptyset$.
-
-
-
-\section{Analysis of DFA minimization tasks for students}
-
-\begin{itemize}
-	\item present a typical task and its solution (text, image, table)
-	\item name its elements
-	\item clarify two parts: solution, task
-	\item clarify four parts from task to solution: find unreachables, delete them, find duplicates, merge them
-	\item what are the difficulties of this tasks?
-\end{itemize}
-
-We will call the minimal automaton \emph{solution DFA} ($A_{sol}$) and its extension with duplicate states \emph{task DFA} ($A_{task}$).
-
-heuristic:
-\begin{itemize}
-	\item $h \colon \mathcal{A} \times \mathcal{A} \to \mathbb{R^+}$
-	\item $h(A_{min}, A_{task}) = studentfriendliness$
-\end{itemize}
-
-\subsection{Requirements and friendliness-heuristics for such tasks}
-
-\begin{itemize}
-	\item $h(A_{sol}, A_{task}) = |Q_{task}|\ /\ |Q_{sol}|$
-	\item number of transitions
-	\item max degree of a node (Why not this?)
-	\item Does GraphViz have a heuristic?
 	
-	\item[->] number of states in solution DFA
-	\item[->] number of \MinMark\ iterations ($minmarkDepth(A)$)
-	\item[->] alphabet size
-	\item[->] number of accepting states in solution DFA
-	\item[->] planarity of solution DFA (can be checked in $O(|Q_{sol}|)$)
-	\item[->] generating one DFA at a time
+	\maketitle
 	
-	\item[->] number of new states in the task DFA
-	\item[->] alphabet size
-	\item[->] planarity of task DFA (can be checked in $O(|Q_{task}|)$)
-	\item[->] generating one DFA at a time
-\end{itemize}
-We furthermore require the solution- and task-DFA to be complete for the \MinMark-algorithm to work.
-
-\section{Approach and general algorithm}
-
-In this work we will first build the solution DFA, and - based on that - the task DFA. We will thus set $minmarkDepth(A)$ and language when building the minimal solution DFA and add duplicate and unreachable states afterwards. It follows, that we need to ensure, that adding duplicates and unreachables does neither change $minmarkDepth$ nor language of $A_{task}$ in comparison to $A_{sol}$.
-
-Here follow problem definitions for the two steps, which specify all needed informations.
-
-
-
-\chapter{Building minimal DFAs}
-
-We want an algorithm for DFA generation that fulfills the following conditions:
-\begin{itemize}
-	\item the resulting DFA is minimal
-	\item we can control the number of states of the resulting DFA via parameter
-	\item we can control $minmarkDepth$ of the resulting DFA via parameter
-\end{itemize}
-
-\section{Building $m(i)$ bottom up}
-
-Build $m$ from $m$-\MinMark\ iteratively. (Why would this basically result in running \MinMark\ all the time?)
-
-\section{Using trial and error}
-
-\subsection{General algorithm}
-
-Dividing the search space, looking only at DFAs with correct alphabetSize, numberOfStates, numberOfAcceptingStates
-
-\subsection{Ensuring $A_{test}$ is minimal and has the correct $minmarkDepth$}
-
-has unreachable states, has duplicate states, computing $minmarkDepth(A)$ as a side effect
-
-\subsection{Ensuring $A_{test}$ is planar}
-
-look up library algorithm, cite some papers
-
-dfa specific planarity test?
-use planarity test information for better drawing?
-
-\subsection{Ensuring $A_{test}$ is unused}
-
-\subsection{Generating $A_{test}$ via Randomness}
-
-\subsection{Generating $A_{test}$ via Enumeration}
-
-Using this method we have a lot of freedom. We will, in addition to the stated conditions, allow to control the alphabet size and the number of accepting states.
-
-The biggest problem we are approaching here is termination.
-
-\paragraph*{DB1 - Found Minimal DFAs}
-
-\begin{tabular}{c c c c c c}
-	dfa\_id & |Q| & minDepth & |F| & |$\Sigma$| & used
-\end{tabular}\\
-dfa\_id is the encoded DFA. This table saves already found minimal DFAs.
-
-\paragraph*{DB2 - Enumeration Progress}
-
-\begin{tabular}{c c c c c}
-	|Q| & |$\Sigma$| & f & t & finished
-\end{tabular}\\
-f and t are the encoded final states respectively transitions enumeration progresses for the given |Q| and |$\Sigma$| (and f in case of t). With this table the enumeration room is split into smaller pieces.
-
-\paragraph*{The enumeration algorithm}
-
-\vspace{0.2cm}
-\begin{algorithmic}[1]
-	\Function{SearchUnusedDFA\ }{\#states, minmarkDepth, alphSize, \#accStates}
-	\If {in DB1 $\exists$ unused DFA $A$ with properties matching to all parameters}
-		\State mark $A$ as used in DB1
-		\State \Return $A$
-	\EndIf
-	\State progress $\gets$ fetch based on \#states, alphSize, \#accStates in DB2
-	\While {True}
-		\If {progress is through}
-			\State \Return None
-		\EndIf
-		\State increment progress
-		\State $A_L$ $\gets$ minimize(progress.dfa())
-		\State properties $\gets$ computeProperties($A_L$)
-		\If {$A_L$ not isomorph to any DFA in DB1 with same properties}
-			\If {properties match with parameters}
-				\State save $A_L$ as used in DB1
-				\State update progress in DB2
-				\State \Return $A_L$
-			\Else
-				\State save $A_L$ as unused in DB1
-			\EndIf
-		\EndIf
-	\EndWhile
-	\EndFunction
-\end{algorithmic}
-\vspace{0.2cm}
-
-\vspace{0.2cm}
-\begin{algorithmic}[1]
-	\Function{SearchUnusedDFA2\ }{\#states, minmarkDepth, alphSize, \#accStates}
-		\State matchingUsedDFAs $\gets$ fetch based on all parameters in DB1
-		\State progress $\gets$ fetch based on \#states, alphSize, \#accStates in DB2
-		\While {True}
-			\If {progress is through}
-				\State \Return None
-			\EndIf
-			\State increment progress
-			\State $A_L$ $\gets$ progress.dfa()
-			\If {$A_L$ has unreachable or duplicate states or unused symbols or is not planar}
-				\State \textbf{continue}
-			\EndIf
-			\State properties $\gets$ computeProperties($A_L$)
-			\If {properties match with parameters}
-				\If {$A_L$ not isomorph to any in matchingUsedDFAs}
-					\State save $A_L$ as used in DB1
-					\State update progress in DB2
-					\State \Return $A_L$
-				\EndIf
-			\EndIf
-		\EndWhile
-	\EndFunction
-\end{algorithmic}
-\vspace{0.2cm}
-
-\subsection{Ideas for more efficiency}
-
-incrementing final state binary faster in enum-alternative
-
-speed up isomorphy test
-
-rewrite everything in C
-
-solve P vs NP
-
-\chapter{Extending minimal DFAs}
-
-%First, a systematic study of how to extend minimal DFAs will be done. Afterwards, we will define an extension algorithm, which will use the previously found results. We have the following requirements for this stage:
-%\begin{itemize}
-%	\item the language of the task DFA is the same as the language of the solution DFA
-%	\item $minmarkDepth(A_{sol}) = minmarkDepth(A_{task})$
-%	\item the number of new elements should be controllable
-%\end{itemize}
-%
-%\section{Adding new elements to DFAs}
-%
-%Our study of DFA extension possibilities will focus on methods, that add or remove transitions or states. A solution DFA modified by such methods will be denoted as $A_{sol'}$. In general, we could also change start and accepting nodes, but we will exclude these possibilities here. As a consequence, we may now classify our options as follows:
-%\begin{enumerate}
-%	\item Add states and no transitions
-%	\item Add transitions and no states
-%	\item Add states and transitions such that
-%	\begin{itemize}
-%		\item At least one state is added
-%		\item No new state has no transitions
-%	\end{itemize}
-%	\item Remove/add states and transitions such that
-%	\begin{itemize}
-%		\item At least one state or transition is removed
-%	\end{itemize}
-%\end{enumerate}
-%Adding states $p_1, \ldots, p_n$ and no transitions leads to the situation, that $p_1, \ldots, p_n$ are lonely states. Since adding lonely states does not affect an automatons language, we can use this as option to extend DFAs.
-%
-%Adding new transitions does not work because of minimal automaton isomorphism \ldots
-%
-%For option 3, we can not tell yet, whether it will generate usable automatons. The two additional conditions guarantee, that the generated automatons are distinct from the ones generated by options 1 and 2 \\
-%
-%\noindent One could imagine, that removing transitions/states and adding new ones again might generate distinct automatons in relation to option 3. However, we can prove, that each automaton generated by this technique is isomorphic to an automaton generated by option 3.
-%
-%\begin{proof}
-%	To a given language $L$ only one minimal automaton $A_L$ (despite isomorphism) exists.
-%	So every "remove-add"-automaton $A_{ra}$ can be transformed to $A_L$ using the minimization algorithm.
-%	The minimization algorithm does in particular delete some states and transitions.
-%	Thus adding these states and transitions to $A_L$ is the way to simulate the generation via "remove-add" through generation via "just-add".
-%\end{proof}
-%\noindent As a consequence, we will discuss from now on only option 3 in more detail.
-%
-%\section{Add states and transitions}
-%
-%We classify several subcases:
-%
-%\begin{enumerate}
-%	\item New states have ingoing transitions only
-%	\begin{enumerate}
-%		\item All new states are non-accepting
-%		\item At least one state is accepting
-%	\end{enumerate}
-%	\item New states have outgoing transitions only
-%	\item New states have both in- and outgoing transitions
-%\end{enumerate}
-%Adding states $p_0, \ldots, p_n$ with ingoing transitions is okay, if there is a sink-state in $A_{sol}$ and if every $p_i$ is non-accepting and thus a sink-state.
-%
-%We prove that adding accepting states with ingoing transitions only leads to a NFA or to a DFA with a different language.
-%\begin{proof}
-%	If a new state $p$ is accepting and if w.l.o.g.\ $\delta(q, \sigma) = p$, then there are several cases:
-%	\begin{itemize}
-%		\item $p$ is unreachable: Then we got at least one unreachable sub-graph consisting of more than one states
-%		\item $p$ is reachable: Then the language of the solution automaton (call it $A_{sol}$) is not preserved. This is because of the following:
-%		
-%		If $A_{sol}$ were in state $q$ after reading $w \in \Sigma^*$ with $\sigma$ as next Symbol, then there would have to exist a transition $\delta(q, \sigma) = p'$ whereas $p' \in F$ is an accepting state. But this would imply that $A_{sol}$ is an NFA (contradiction).
-%	\end{itemize}
-%\end{proof}
-%
-%\noindent 2. leads to the new state being unreachable.
-%
-%Thus we remain with option 3, which states that every new state has at least one ingoing transition and at least one outgoing transition.
-%
-%\section{New states have both in- and outgoing transitions}
-
-We have the following requirements for this stage:
-\begin{itemize}
-	\item the language of the task DFA is the same as the language of the solution DFA
-	\item $minmarkDepth(A_{sol}) = minmarkDepth(A_{task})$
-	\item the number of new elements should be controllable
-\end{itemize}
-In order to fulfill these requirements when adding new elements to a given minimal automaton $A_{sol}$, we can simply look at the kind of elements removed by the minimization algorithm. We will show for each class of addable elements, that they do not change the DFAs language and $minmarkDepth$.
-
-What kind of elements are removed from a DFA, if the minimization algorithm is applied to it?
-\begin{enumerate}
-	\item unreachable states
-	\item duplicate states
-\end{enumerate}
-%\gregor{Think about completeness-requirement.}
-As requirement for the new DFAs we have completeness, so whenever we add a new state, we have to ensure it has a transition for every alphabet symbol in the end. Furthermore, since unreachable states are removed first in the minimization algorithm, we may assume that every state, that is duplicated, is reachable.
-%\gregor{Adding unreachable states is essentially just talking about that special equivalence class. Think and tell more about this}
-
-\section{Unreachable states}
-
-From step 1 of the minimization algorithm we can deduce option 1. Unreachable states can easily be added to a DFA by just adding non-start states with no ingoing transitions (see definition of unreachability). Number and nature of outgoing transitions may be arbitrary.
-
-\begin{lemma}
-	Adding unreachable states to a DFA does not change its language.
-\end{lemma}
-\begin{proof}
-	The language of a DFA $A = (Q, \Sigma, \delta, s, F)$ is defined as $L(A) = \{\ w\ |\ w \in \Sigma^* \land \delta^*(s, w) \in F\ \}$. For any unreachable state $q$ there exists no word $v \in \Sigma^*$ such that $\delta^*(s,v) = q$. Thus such a state cannot be the cause for any word to be in $L(A)$.
-\end{proof}
-
-\begin{lemma}
-	Adding unreachable states to a DFA does not change its $minmarkDepth$ in the context of the minimization algorithm.
-\end{lemma}
-\begin{proof}
-	Since unreachable states are eliminated from the input DFA in the first place, when applying the minimization algorithm to it, we get the same DFA for the \MinMark-algorithm, as if we had not added any unreachable states.
-\end{proof}
-
-\section{Duplicate states}
-
-%\begin{definition}[Correct duplication]
-%	Let $A = (Q, \Sigma, \delta, s, F)$ be the solution DFA and $A' = (Q', \Sigma, \delta', s, F')$ the task DFA with a $q_o, q_d \in Q'$, $q_d \notin Q$. Building such an $A'$ is called a \emph{correct duplication}, iff
-%	\[
-%		d_{A'}(q_o, q_d)
-%	\]
-%	and
-%	\[
-%		\forall q \in Q \colon [q]_{d_{A'}} = [q]_{d_A}
-%	\]
-%\end{definition}
-
-Step 2 and 3 of the minimization algorithm are concerned with detection and elimination of duplicate states. How do we add duplicate states to a DFA?
-
-Consider the properties a duplicate state, say $q_d$, must have. It is in particular duplicate to \emph{another} state, we call it $q_o$. Since we add only one state for now, $q_d$, we can assume that $q_o$ is part of the solution DFA. We call the new, by $q_d$ extended DFA, $A$.
-
-\paragraph*{Outgoing transitions}
-
-We know that $q_d$, $q_o$ are duplicates, iff $\forall \sigma \in \Sigma \colon [\delta(q_d, \sigma)]_{d_A} = [\delta(q_o, \sigma)]_{d_A}$. Thus, when adding some $q_d$, we have to choose for each symbol $\sigma \in \Sigma$ at least one transition from the following set:
-\[
-	P_\sigma = \{\ ((q_d, \sigma), p)\ |\ p \in [\delta(q_o, \sigma)]_{d_A}\ \}
-\]
-Since the solution DFA is complete, we know that every $P_\sigma \neq \emptyset$.
-%\gregor{Why does this not affect the eq. class of any other state?}
-
-\paragraph*{Ingoing transitions}
-
-The ingoing transitions of $q_d$ are not directly restricted through the duplicateness of $q_d$ and $q_o$.
-
-First of all, we know, that $q_o$ is reachable. We then need to give $q_d$ at least one ingoing transition. Doing this, we have to ensure, that any state $s$, that gets such an outgoing transition to $q_d$ remains in its solution equivalence class.
+	%\begin{abstract}
+	%	Abstract goes here
+	%\end{abstract}
 	
-Thus a fitting state $s$ has to have a transition to some state in $[q_d]_{d_A} = [q_o]_{d_A}$ already. So, given a state $s$ with $((s, \sigma), t)$ and $t \in [q_o]_{d_A}$, we can add $((s, \sigma), q_d)$.
-
-But this would make our new DFA a NFA. As a consequence we have to remove the original transition $((s, \sigma), t)$ each time we add an ingoing transition for a newly created duplicate state.
-
-So we have to choose at least one transition of
-\[
-	\{\ ((s, \sigma), q_d)\ |\ \delta(s,\sigma) \in [q_o]_{d_A}\ \}
-\]
-If a $((s, \sigma), q_d)$ is chosen, remove $((s, \sigma), t)$. This leads us to the requirement, that any $q_o$ has to have at least $2$ ingoing transitions.
-%\gregor{Talk somewhere about eq. automaton and extending it. An eq. class of reach. q's can be max. |$\Sigma$| big. From this can compute the max. number of dupl. states which can be added.}
-
-\subsection{Adding duplicate states does not change a DFAs language}
-
-p. 159 Hopcroft
-
-\subsection{Adding duplicate states does not change $minmarkDepth$ of a DFA}
-
-\begin{lemma}
-	\begin{multline*}
-	minmarkDepth(A) =\ n \Rightarrow \\
-	n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon \\
-	|w| = n - 1 \land (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
-	\end{multline*}
-\end{lemma}
-
-\begin{proof}
-	\begin{description}
-		\item
-		
-		Via direct proof.
-		
-		Assume $m$-\MinMark(A) has done $n$ iterations (so $minmarkDepth(A) = n$). We then know, that
-		\begin{itemize}
-			\item $\forall i \in [0,n-1]\colon m(i) \neq \emptyset$
-			\item $m(n)= \emptyset$
-		\end{itemize}
-		$m$-\MinMark(A) terminates iff $m(i) = \emptyset$. If the first point would not hold, then the algorithm would have stopped before.
-		
-		Since the algorithm did $n$ iterations, the internal variable $i$ must be $n$ at the end of the last iteration. The terminating condition is $m(i) \neq \emptyset$; thus follows the second point.
-		
-		\begin{lemma}
-			\begin{multline*}
-			(p,q) \in m(k) \Longleftrightarrow 
-			\exists w\in\Sigma^*\colon |w| = n - 1\ \land \\
-			(\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
-			\end{multline*}
-		\end{lemma}
-		
-		Following this lemma (which can easily be proved by induction) we know that there exists at least one word $w\in\Sigma^*$ with $|w| = n-1$ such that for two $p,q \in Q\colon (\delta^*(p,w) \in F \land \delta^*(q,w) \notin F)$.
-		
-		There cannot be any two states $p',q'\in Q$ and a word $w'\in\Sigma^*$ with $|w'| \ge n-1$ fulfilling this property. We could write $w'$ as $u'v'$ with $|v'| = n$. Then $(p,q)$ should be in $m(n)$, which is contradictory.
-	\end{description}
-\end{proof}
-
-\begin{theorem}[]
-	Adding duplicate states to an automaton $A$ does not increase the number of iterations in the \MinMark-algorithm for $A$.
-\end{theorem}
-
-\begin{proof}
-	\begin{description}
-		\item
-		
-		Proof per contradiction.
-		
-		Let's assume adding a duplicate state $q_d$ to a given automaton $A = (Q, \Sigma, \delta, s, F)$ results in an automaton $A' = (Q', \Sigma, \delta', s, F')$ whereas $minmarkDepth(A) < minmarkDepth(A')$.
-		
-		Concerning $A'$ we can say the following:
-		\begin{itemize}
-			\item $Q' = Q \cup \{ q_d \}$
-			%			\item $\delta \subseteq \delta'$
-			%			\item $F \subseteq F'$
-			\item $\exists q_o \in Q \colon\ d_A'(q_o, q_d)$
-		\end{itemize}
-		Let us furthermore say that $minmarkDepth(A) = i$ and $minmarkDepth(A') = j$.
-		
-		\begin{lemma}
-			\begin{multline*}
-			minmarkDepth(A) =\ n \Rightarrow \\
-			n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon \\
-			|w| = n - 1 \land (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
-			\end{multline*}
-		\end{lemma}
-		According to this lemma there must be a pair $s, t \in Q'$ to which exists a word $w \in \Sigma'^*$, $|w| = j - 1$, such that $\delta'^*(s,w) \in F' \Leftrightarrow \delta'^*(t,w) \notin F'$.
-		
-		Let us split $w$ as $w = uv$, whereas $u,v \in\Sigma'^*$ and $|v| = i$. We can formulate the following statement:
-		\begin{equation}
-		\text{There must exist }p, q \in Q'\text{ such that }\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q,v) \notin F'.
-		\end{equation}
-		%There must exist $p, q \in Q'$ such that $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q,v) \notin F'$.
-		
-		%This means, there exists a minimization word $v$ in $A'$, which is exactly one symbol longer than the longest minimization word of $A$. This word has length $i$ and is detected at minimization depth $i + 1$.
-		
-		We can state, that $p, q \notin Q$, because else $minmarkDepth(A)$ would be higher than $i$ too. 
-		
-		Since $q_d$ is the only new state in $A'$, we can conclude that at least one of both states must be $q_d$. Since $p = q_d = q$ is contradictory, we can conclude that exactly one of both states $p, q$ is $q_d$ and that the other one is not.
-		
-		W.l.o.g.\ we say $q = q_d$ and $p \in Q' \setminus \{q_d\} = Q$ and reformulate our statement above:
-		\begin{equation}
-		\text{There must exist a }p \in Q\text{ such that }\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_d,v) \notin F'.
-		\end{equation}
-		
-		%Therefore we know there exists a state $p \in Q$ such that $\exists v \in \Sigma^*$, $|v| = i$ and $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_d,v) \notin F'$
-		
-		Since for $q_o \in Q$ the relation $d_{A'}(q_o, q_d)$ is given, we know per definition of $d_{A'}$ that $\forall z\in\Sigma'^*\colon \delta'^*(q_o,z) \in F \Leftrightarrow \delta'^*(q_d,z) \in F$.
-		
-		This implies in combination with statement 2.2, that for $p,q_o$ the word $v\in\Sigma'^*$ would fulfill $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_o,v) \notin F'$ too. But this is contradictory to $p,q \notin Q$.
-		
-		%		\begin{lemma}
-		%			\begin{multline*}
-		%				minmarkDepth(A) =\ n \Leftrightarrow \\
-		%				n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon \\
-		%				|w| = n - 1 \land (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
-		%			\end{multline*}
-		%		\end{lemma}
-	\end{description}
-\end{proof}
-
-%\section{The DFA extension algorithm}
-%
-%\subsection{Usable results}
-
-%1. Add states only -> unreachable and sink-state \\
-%2. Add transitions only -> does not increase state number \\
-%3. Add/Remove states and transitions -> generated by 4. too \\
-%4.1. Adding states with ingoing transitions only -> sink-states, NFA or different lang. \\
-%4.2. Adding states with outgoing transitions only -> unreachable \\
-%4.3.1. Adding states and duplicate at least its ingoing transitions -> NFA \\
-%4.3.2. Adding states, split ingoing, duplicate outgoing -> generated by 4.3.2.1. too \\
-%4.3.2.1. Adding states, split ingoing, split outgoing s.t. $[\delta(q', \sigma_i)]_{\equiv_L} = [\delta(q'', \sigma_i)]_{\equiv_L}$ -> Ok
-
-
-%\subsection{The algorithm}
-
-
-
-
-\chapter{On Implementation}
-
-
-
-
-\chapter{Conclusion}
-
-What happens, if we change start and accepting states? \\
-What happens, if we add transitions only?
-
-
-\appendix
-\chapter{List of Figures}
-\chapter{Bibliography}
+	%\chapter*{Acknowledgements}
+	%I want to thank...
+	
+	\tableofcontents
+	
+	\input{./chapters/1-introduction.tex}
+	\input{./chapters/2-build-minimal-dfas.tex}
+	\input{./chapters/3-extending-minimal-dfas.tex}
+	\input{./chapters/4-notes-on-implementation.tex}
+	\input{./chapters/5-conclusion.tex}
+	
+	\appendix
+	\chapter{List of Figures}
+	\chapter{Bibliography}
 
 \end{document}          

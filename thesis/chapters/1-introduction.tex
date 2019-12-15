@@ -1,0 +1,217 @@
+% !TeX spellcheck = en_US
+
+\chapter{Introduction}
+
+\begin{itemize}
+	\item study computer science
+	\item theoretical informatics
+	\item automata theory
+	\item value of this theory
+	\item typical topics, why typical
+	\item why automation
+\end{itemize}
+
+This work lays out the theory for a program solving this task. As a consequence, parameters, which are sensible as user input, will be incorporated in problem definitions.
+In addition, when evaluating possible algorithms, we will take their usability in a practical use case into account.
+Furthermore additional theory will be discussed, to enhance usability.
+
+\section{Preliminaries}
+
+\begin{itemize}
+	\item def of isomorphic DFAs
+	\item statement that minimal DFA is unique besides isomorphism
+\end{itemize}
+
+\subsection{Finite Automatons}
+
+A 5-tuple $A = (Q, \Sigma, \delta, s, F)$ with $Q$ as set of \emph{states}, $\Sigma$ as \emph{input alphabet}, $\delta \colon\ Q \times \Sigma \to Q$ as \emph{transition function}, $s \in Q$ as \emph{start state} and $F \subseteq Q$ as \emph{finite states} is called \emph{deterministic finite automaton} (DFA).
+
+From now on $\mathcal{A}$ shall denote the set of all DFAs. We will call $\delta(q,\sigma) = p$ a \emph{transition from $q$ to $p$ using symbol $\sigma$}.
+We define the \emph{extended transition function} $\delta^* : Q \times \Sigma^* \to Q$ of a DFA $A = (Q, \Sigma, \delta, s, F)$:
+\begin{itemize}
+	\item $\delta^*(q,\varepsilon) = q$
+	\item $\delta^*(q,w\sigma) = \delta(\delta^*(q,w),\sigma)$ for all $q \in Q$, $w \in \Sigma^*$, $\sigma \in \Sigma$
+\end{itemize}
+Given a DFA $A = (Q, \Sigma, \delta, s, F)$ and a state $q \in Q$. We call all transitions $\delta(q', \sigma) = q$, $q'\in Q$, $\sigma\in\Sigma$, \emph{ingoing transitions of $q$}. All transitions $\delta(q, \sigma) = q'$, $q'\in Q$, $\sigma\in\Sigma$, are called \emph{outgoing transitions of $q$}.
+
+We say a state $q$ is \emph{(un-)reachable} in an DFA $A$, iff there is (no) a word $w \in \Sigma^*$ such that $\delta^*(s, w) = q$.
+
+States that are reachable but have only ingoing transitions are named \emph{sink-states}.
+If a state has neither ingoing nor outgoing transitions, then it is called \emph{lonely}.
+If a transition is of the form $\delta(q, \sigma) = q$, $\sigma\in\Sigma$, then we say that $q$ has a \emph{loop}.
+
+A DFA is called \emph{complete} iff for all states, every symbol of the alphabet is used on an outgoing transition: $\forall q\in Q\colon \forall\sigma\in\Sigma\colon \exists p\in Q\colon \delta(q,\sigma) = p$.
+
+\subsection{Minimal DFAs}
+
+The \emph{Nerode-relation} $\equiv_L\ \subseteq\ \Sigma^* \times \Sigma^*$ of a language $L$ with alphabet $\Sigma$ is defined as follows:
+\begin{displaymath}
+	x \equiv_L y\ \Leftrightarrow_{def}\ \forall z\in\Sigma^*\colon (xz\in L \Leftrightarrow yz\in L)
+\end{displaymath}
+Thus the Nerode-relation of a DFA $A$ is exactly $\equiv_{L(A)}$. If the context makes it clear, than we will shorten the notation of a equivalence class $[x]_{\equiv_L}$ with $[x]$.
+
+\begin{theorem}
+	A language $L$ is regular if and only if the number of equivalence classes of $\equiv_L$ is finite.
+\end{theorem}
+
+The \emph{equivalence class automaton} $A_L = (Q_L, \Sigma_L, \delta_L, s_L, F_L)$ to a regular language $L$ with alphabet $\Sigma$ is defined as follows:
+\begin{itemize}
+	\item $Q_L = \{\ [x]\ |\ x \in \Sigma^*\ \}$
+	\item $\Sigma_L = \Sigma$
+	\item $\delta_L([x], \sigma) = [x\sigma],\ \forall x\in\Sigma^*,\ \forall\sigma\in\Sigma$
+	\item $s = [\varepsilon]$
+	\item $F = \{\ [x]\ |\ x \in L\ \}$
+\end{itemize}
+We call a DFA $A$ \emph{minimal}, if there exists no other automaton with the same language using less states.
+\begin{corollary}
+	Given a language $L$, then the equivalence class automaton $A_L$ is minimal.
+\end{corollary}
+
+\subsection{Duplicate states}
+
+\begin{definition}[Duplicate States]
+	Two states $q_1, q_2 \in Q$ of a finite automaton $A = (Q, \Sigma, \delta, s, F)$ are called \emph{duplicates} of each other, iff $d_A(q_1, q_2)$ is true, whereas
+	\[
+		d_A = \{\ (p, q)\ |\ \forall z \in \Sigma^* \colon\ \delta^*(p, z) \in F \Leftrightarrow \delta^*(q, z) \in F\ \}
+	\]
+\end{definition}
+Note that the relation $d_A$ is indeed an equivalence relation.
+
+\subsection{The minimization algorithm}
+
+The minimization algorithm requires a complete DFA and works in four major steps.
+\begin{enumerate}
+	\item Compute all unreachable states.
+	\item Remove all unreachable states and their transitions.
+	\item Compute $\neg d_A(p, q)$ via the \MinMark-algorithm.
+	\item Merge all node pairs, which are not in $\neg d_A(p, q)$.
+\end{enumerate}
+
+\begin{algorithmic}[1]
+	\Function{MinimizationMark}{$(Q, \Sigma, \delta, s, F)$}
+	\State $M \gets \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}$
+	\Do
+		\State $M' \gets \{ (p,q)\ |\ (p,q) \notin M \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in M \}$
+		\State $M \gets M \cup M'$
+	\doWhile {$M' \neq \emptyset$}
+	\State \Return $M$
+	\EndFunction
+\end{algorithmic}
+\vspace{0.2cm}
+When looking at \MinMark, one notes, that it computes distinct subsets of $Q \times Q$ on the way. Indeed, one could write it in such a way, that these subsets are explicitly computed in form of a function $m\colon\mathbb{N}\to\mathcal{P}(Q\times Q)$:
+\vspace{0.2cm}
+\begin{algorithmic}[1]
+	\Function{$m$-MinimizationMark}{$(Q, \Sigma, \delta, s, F)$}
+	\State $i \gets 0$
+	\State $m(0) \gets \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}$
+	\Do
+		\State $i \gets i + 1$
+		\State $m(i) \gets \{ (p,q)\ |\ (p,q) \notin \bigcup{m(\cdot)} \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in m(i-1) \}$
+	\doWhile {$m(i) \neq \emptyset$}
+	\State \Return $\bigcup{m(\cdot)}$
+	\EndFunction
+\end{algorithmic}
+\vspace{0.2cm}
+Using this redefinition, we can easier refer to the state pairs marked in a certain iteration. We will use both variants in exchange.
+
+We will denote the number of iterations done by \MinMark\ on an DFA $A$ as $\mmD(A)$. Note that $\mmD(A) = \max n \in \mathbb{N}\ |\ m(n) \neq \emptyset$.
+
+
+
+\section{Analysis of DFA minimization tasks for students}
+
+\begin{itemize}
+	\item present a typical task and its solution (text, image, table)
+	\item name its elements
+	\item clarify two parts: solution, task
+	\item clarify four parts from task to solution: find unreachables, delete them, find duplicates, merge them
+	\item what are the difficulties of this tasks?
+\end{itemize}
+
+We will call the minimal automaton \emph{solution DFA} ($A_{sol}$) and its extension with duplicate states \emph{task DFA} ($A_{task}$).
+
+heuristic:
+\begin{itemize}
+	\item $h \colon \mathcal{A} \times \mathcal{A} \to \mathbb{R^+}$
+	\item $h(A_{min}, A_{task}) = studentfriendliness$
+\end{itemize}
+
+\subsection{Requirements and friendliness-heuristics for such tasks}
+
+\begin{itemize}
+	\item $h(A_{sol}, A_{task}) = |Q_{task}|\ /\ |Q_{sol}|$
+	\item number of transitions
+	\item max degree of a node (Why not this?)
+	\item Does GraphViz have a heuristic?
+	
+	\item[->] number of states in solution DFA
+	\item[->] number of \MinMark\ iterations ($\mmD(A)$)
+	\item[->] alphabet size
+	\item[->] number of accepting states in solution DFA
+	\item[->] planarity of solution DFA (can be checked in $O(|Q_{sol}|)$)
+	\item[->] generating one DFA at a time
+	
+	\item[->] number of new states in the task DFA
+	\item[->] alphabet size
+	\item[->] planarity of task DFA (can be checked in $O(|Q_{task}|)$)
+	\item[->] generating one DFA at a time
+\end{itemize}
+We furthermore require the solution- and task-DFA to be complete for the \MinMark-algorithm to work.
+
+\section{Approach and general algorithm}
+
+In this work we will first build the solution DFA, and - based on that - the task DFA. We will thus set $\mmD(A)$ and language when building the minimal solution DFA and add duplicate and unreachable states afterwards. It follows, that we need to ensure, that adding duplicates and unreachables does neither change $\mmD$ nor language of $A_{task}$ in comparison to $A_{sol}$.
+
+Here follow problem definitions for the two steps, which specify all needed informations. %The first problem is lain out in a way, such that it does
+
+\begin{definition}[BuildNewMinimalDFA] $ $
+	\begin{description}
+		
+		\item[Given:] $ $
+		
+		$q, a, f, m_{min}, m_{max} \in \mathbb{N},$
+		
+		$p \in \{0,1\}$
+		\item[Request:] $ $
+		
+		Let $A_{sol} = (Q, \Sigma, \delta, s, F)$ be a DFA, such that
+		
+		\qquad $|Q|=q$, $|\Sigma|=a$, $|F|=f$,
+		
+		\qquad $m_{min} \le \mmD(A_{sol}) \le m_{max}$,
+		
+		\qquad $A_{sol}$ is planar iff $p = 1$ and
+		
+		\qquad the language of $L(A)$ is unequal to any DFA used before.
+		
+		Return $A_{sol}$, if it exists, $\bot$ otherwise.
+	\end{description}
+\end{definition}
+
+\begin{definition}[ExtendMinimalDFA] $ $
+	\begin{description}
+		
+		\item[Given:] $ $
+		
+		$A_{sol} = (Q, \Sigma, \delta, s, F) \in \mathcal{A}_{min},$
+		
+		$p \in \{0,1\},$
+		
+		$d, u \in \mathbb{N}$
+		\item[Request:] $ $
+		
+		A DFA $A_{task} = (Q', \Sigma', \delta', s', F')$ with reachable duplicate states $q_1 \ldots q_d$ and unreachable states $p_1 \ldots p_u$, such that
+		
+		$Q = Q' \cup \{ q_1, \ldots q_d, p_1 \ldots p_u \}$,
+		
+		$\Sigma = \Sigma'$, $s = s'$,
+		
+		$F \subseteq F'$,
+		
+		$A_{task}$ is planar iff $p = 1$,
+		
+		$L(A_{sol}) = L(A_{task})$ and $\mmD(A_{sol}) = \mmD(A_{task})$.
+	\end{description}
+\end{definition}
+
+\noindent The general algorithm then will work as follows:

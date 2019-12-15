@@ -1,0 +1,170 @@
+% !TeX spellcheck = en_US
+
+\chapter{Building minimal DFAs}
+
+We want an algorithm for DFA generation that fulfills the following conditions:
+\begin{itemize}
+	\item the resulting DFA is minimal
+	\item we can control the number of states of the resulting DFA via parameter
+	\item we can control $\mmD$ of the resulting DFA via parameter
+\end{itemize}
+
+\section{Using trial and error}
+
+\subsection{General algorithm}
+
+Dividing the search space, looking only at DFAs with correct alphabetSize, numberOfStates, numberOfAcceptingStates
+
+\vspace{0.2cm}
+\begin{algorithmic}[1]
+	\Function{BuildNewMinimalDFA\ }{
+		
+$q, a, f, m_{min}, m_{max} \in \mathbb{N},$
+
+$p \in \{0,1\}$
+
+}
+		\While {True}
+			\State generate DFA $A_L$ with $|Q|, |\Sigma|, |F|$ matching $q, a, f$
+			
+			\If {$A_L$ not minimal}
+				\State \textbf{continue}
+			\EndIf
+			
+			\If {$p = 1$ \textbf{and} $A_L$ is not planar}
+				\State \textbf{continue}
+			\EndIf
+			
+			\If {another DFA with the same language was used before}
+				\State \textbf{continue}
+			\EndIf
+			
+			\State\Return $A_L$
+		\EndWhile
+	\EndFunction
+\end{algorithmic}
+\vspace{0.2cm}
+
+\subsection{Ensuring $A_{test}$ is minimal and $\mmD(A_{test})$ is correct}
+
+has unreachable states, has duplicate states, computing $\mmD(A)$ as a side effect
+
+\vspace{0.2cm}
+\begin{algorithmic}[1]
+	\Function{BuildNewMinimalDFA\ }{$q, a, f, m_{min}, m_{max}, p$}
+		\While {True}
+			\State generate DFA $A_L$ with $|Q|, |\Sigma|, |F|$ matching $q, a, f$
+			
+			\If {$A_L$ has duplicate or unreachable states}
+				\State \textbf{continue}
+			\EndIf
+			
+			\ldots
+		\EndWhile
+	\EndFunction
+\end{algorithmic}
+\vspace{0.2cm}
+
+\subsection{Ensuring $A_{test}$ is planar}
+
+look up library algorithm, cite some papers
+
+dfa specific planarity test?
+use planarity test information for better drawing?
+
+\subsection{Ensuring $A_{test}$ is unused}
+
+\paragraph*{DB1 - Found Minimal DFAs}
+
+\begin{tabular}{c c c c c c}
+	dfa\_id & |Q| & minDepth & |F| & |$\Sigma$| & used
+\end{tabular}\\
+dfa\_id is the encoded DFA. This table saves already found minimal DFAs.
+
+\vspace{0.2cm}
+\begin{algorithmic}[1]
+	\Function{BuildNewMinimalDFA\ }{$q, a, f, m_{min}, m_{max}, p$}
+		\State $l \gets$ load based on all parameters
+		\While {True}
+			\State generate DFA $A_L$ with $|Q|, |\Sigma|, |F|$ matching $q, a, f$
+			
+			\If {$A_L$ not minimal}
+				\State \textbf{continue}
+			\EndIf
+			
+			\If {$p = 1$ \textbf{and} $A_L$ is not planar}
+				\State \textbf{continue}
+			\EndIf
+			
+			\If {$A_L$ isomorph to any DFA in $l$ matching with $q, a, f, m_{min}, m_{max}, p$}
+				\State \textbf{continue}
+			\EndIf
+			
+			\State save $l \cup A_L$
+			\State\Return $A_L$
+		\EndWhile
+	\EndFunction
+\end{algorithmic}
+\vspace{0.2cm}
+
+\subsection{Option 1: Generating $A_{test}$ via Randomness}
+
+\subsection{Option 2: Generating $A_{test}$ via Enumeration}
+
+Using this method we have a lot of freedom. The biggest problem we are approaching here is termination.
+
+\paragraph*{DB2 - Enumeration Progress}
+
+\begin{tabular}{c c c c c}
+	|Q| & |$\Sigma$| & f & t & finished
+\end{tabular}\\
+f and t are the encoded final states respectively transitions enumeration progresses for the given |Q| and |$\Sigma$| (and f in case of t). With this table the enumeration room is split into smaller pieces.
+
+\paragraph*{The enumeration algorithm}
+
+\vspace{0.2cm}
+\begin{algorithmic}[1]
+	\Function{BuildNewMinimalDFA\ }{$q, a, f, m_{min}, m_{max}, p$}
+		\State $l \gets$ load based on all parameters
+		\State $e \gets$ load enumeration progress for $q, a, f, p$
+		\While {True}
+			\If {$e$ is finished}
+				\State save $e$
+				\State\Return $\bot$
+			\EndIf
+			
+			\State $A_L \gets$ next DFA based on $e$
+			
+			\If {$A_L$ not minimal}
+				\State \textbf{continue}
+			\EndIf
+			
+			\If {$p = 1$ \textbf{and} $A_L$ is not planar}
+				\State \textbf{continue}
+			\EndIf
+			
+			\If {$A_L$ isomorph to any DFA in $l$ matching with $q, a, f, m_{min}, m_{max}, p$}
+				\State \textbf{continue}
+			\EndIf
+			
+			\State save $e$
+			\State save $l \cup A_L$
+			\State\Return $A_L$
+		\EndWhile
+	\EndFunction
+\end{algorithmic}
+\vspace{0.2cm}
+
+\subsection{Ideas for more efficiency}
+
+incrementing final state binary faster in enum-alternative
+
+speed up isomorphy test
+
+rewrite everything in C
+
+solve P vs NP
+
+\section{Alternative approach: Building $m(i)$ bottom up}
+
+Build $m$ from $m$-\MinMark\ iteratively. (Why would this basically result in running \MinMark\ all the time?)

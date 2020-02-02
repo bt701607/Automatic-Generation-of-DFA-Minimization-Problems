@@ -1,6 +1,9 @@
 *.pdf
 *.tex
+
 !thesis/**/*.tex
+!thesis/**/*.bib
+!thesis/**/*.pdf
 
 *.aux
 *.log

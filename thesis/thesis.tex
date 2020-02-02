@@ -1,6 +1,6 @@
 % !TeX spellcheck = en_US
 
-\documentclass[a4paper, oneside, 11pt]{report}
+\documentclass[a4paper, oneside, 12pt]{report}
 
 % ----------- packages -------------
 
@@ -21,6 +21,12 @@
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 
+\usepackage{hyperref}
+
+\usepackage[dvipsnames]{xcolor}
+
+\bibliographystyle{plainurl}
+
 % ----------- macros -------------
 
 \newtheorem{theorem}{Theorem}
@@ -36,6 +42,7 @@
 \algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
 
 \newcommand{\MinMark}{\textsc{MinimizationMark}}
+\newcommand{\MinMerge}{\textsc{MinimizationMerge}}
 \newcommand{\mmD}{\mathcal{D}}
 
 \newcommand{\gregorColor}{Violet}
@@ -68,5 +75,9 @@
 	\appendix
 	\chapter{List of Figures}
 	\chapter{Bibliography}
+	
+	\nocite{*}
+	\bibliographystyle{abbrv}
+	\bibliography{thesis}
 
 \end{document}          

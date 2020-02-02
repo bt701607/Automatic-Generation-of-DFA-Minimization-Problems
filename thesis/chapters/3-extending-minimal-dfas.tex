@@ -1,12 +1,16 @@
 % !TeX spellcheck = en_US
 
-\chapter{Extending minimal DFAs}
+\chapter{Extending solution DFAs to task DFAs} \label{ch:3}
 
 We have the following requirements for this stage:
 \begin{itemize}
-	\item the language of the task DFA is the same as the language of the solution DFA
-	\item $\mmD(A_{sol}) = \mmD(A_{task})$
-	\item the number of new elements should be controllable
+	\item[->] $L(A_{sol}) = L(A_{task})$
+	\item[->] $\mmD(A_{sol}) = \mmD(A_{task})$
+	\item[->] number of duplicate states
+	\item[->] number of unreachable states
+	\item[->] alphabet size
+	\item[->] planarity (can be checked in $O(|Q_{task}|)$)
+	\item[->] completeness (for \MinMark-algorithm to work)
 \end{itemize}
 In order to fulfill these requirements when adding new elements to a given minimal automaton $A_{sol}$, we can simply look at the kind of elements removed by the minimization algorithm. We will show for each class of addable elements, that they do not change the DFAs language and its $\mmD$-value.
 
@@ -15,11 +19,11 @@ What kind of elements are removed from a DFA, if the minimization algorithm is a
 	\item unreachable states
 	\item duplicate states
 \end{enumerate}
-%\gregor{Think about completeness-requirement.}
 As requirement for the new DFAs we have completeness, so whenever we add a new state, we have to ensure it has a transition for every alphabet symbol in the end. Furthermore, since unreachable states are removed first in the minimization algorithm, we may assume that every state, that is duplicated, is reachable.
-%\gregor{Adding unreachable states is essentially just talking about that special equivalence class. Think and tell more about this}
 
-\section{Unreachable states}
+\gregor{Adding unreachable states is essentially just talking about that special equivalence class. Think and tell more about this}
+
+\section{Adding unreachable states}
 
 From step 1 of the minimization algorithm we can deduce option 1. Unreachable states can easily be added to a DFA by just adding non-start states with no ingoing transitions (see definition of unreachability). Number and nature of outgoing transitions may be arbitrary.
 
@@ -37,8 +41,9 @@ From step 1 of the minimization algorithm we can deduce option 1. Unreachable st
 	Since unreachable states are eliminated from the input DFA in the first place, when applying the minimization algorithm to it, we get the same DFA for the \MinMark-algorithm, as if we had not added any unreachable states.
 \end{proof}
 
-\section{Duplicate states}
+\section{Adding duplicate states}
 
+\gregor{hidden definition: correct duplication}
 %\begin{definition}[Correct duplication]
 %	Let $A = (Q, \Sigma, \delta, s, F)$ be the solution DFA and $A' = (Q', \Sigma, \delta', s, F')$ the task DFA with a $q_o, q_d \in Q'$, $q_d \notin Q$. Building such an $A'$ is called a \emph{correct duplication}, iff
 %	\[
@@ -61,7 +66,8 @@ We know that $q_d$, $q_o$ are duplicates, iff $\forall \sigma \in \Sigma \colon 
 	P_\sigma = \{\ ((q_d, \sigma), p)\ |\ p \in [\delta(q_o, \sigma)]_{d_A}\ \}
 \]
 Since the solution DFA is complete, we know that every $P_\sigma \neq \emptyset$.
-%\gregor{Why does this not affect the eq. class of any other state?}
+
+\gregor{Why does this not affect the eq. class of any other state?}
 
 \paragraph*{Ingoing transitions}
 
@@ -78,13 +84,14 @@ So we have to choose at least one transition of
 	\{\ ((s, \sigma), q_d)\ |\ \delta(s,\sigma) \in [q_o]_{d_A}\ \}
 \]
 If a $((s, \sigma), q_d)$ is chosen, remove $((s, \sigma), t)$. This leads us to the requirement, that any $q_o$ has to have at least $2$ ingoing transitions.
-%\gregor{Talk somewhere about eq. automaton and extending it. An eq. class of reach. q's can be max. |$\Sigma$| big. From this can compute the max. number of dupl. states which can be added.}
 
-\subsection{Adding duplicate states does not change a DFAs language}
+\gregor{Talk somewhere about eq. automaton and extending it. An eq. class of reach. q's can be max. |$\Sigma$| big. From this can compute the max. number of dupl. states which can be added.}
+
+\subsection{Adding duplicate states does not change L}
 
 p. 159 Hopcroft
 
-\subsection{Adding duplicate states does not change the $\mmD$-value of a DFA}
+\subsection{Adding duplicate states does not change $\mmD$}
 
 \begin{lemma}
 	\begin{multline*}
@@ -153,28 +160,32 @@ p. 159 Hopcroft
 		\end{lemma}
 		According to this lemma there must be a pair $s, t \in Q'$ to which exists a word $w \in \Sigma'^*$, $|w| = j - 1$, such that $\delta'^*(s,w) \in F' \Leftrightarrow \delta'^*(t,w) \notin F'$.
 		
-		Let us split $w$ as $w = uv$, whereas $u,v \in\Sigma'^*$ and $|v| = i$. We can formulate the following statement:
+		Let us split $w$ as $w = uv$, whereas $u,v \in\Sigma'^*$ and $|v| = i$, which is exactly one symbol longer than the longest minimization word of $A$. We can formulate the following statement:
 		\begin{equation}
 		\text{There must exist }p, q \in Q'\text{ such that }\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q,v) \notin F'.
 		\end{equation}
+		\gregor{hidden formulations here}
 		%There must exist $p, q \in Q'$ such that $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q,v) \notin F'$.
 		
-		%This means, there exists a minimization word $v$ in $A'$, which is exactly one symbol longer than the longest minimization word of $A$. This word has length $i$ and is detected at minimization depth $i + 1$.
+		%So there exists a minimization word $v$ in $A'$, which is exactly one symbol longer than the longest minimization word of $A$. This word has length $i$ and is detected at minimization depth $i + 1$.
 		
-		We can state, that $p, q \notin Q$, because else $\mmD(A)$ would be higher than $i$ too. 
+		We can therefore state, that $\neg(p \in Q \land q \in Q)$, because else $\mmD(A)$ would be higher than $i$ too. 
 		
-		Since $q_d$ is the only new state in $A'$, we can conclude that at least one of both states must be $q_d$. Since $p = q_d = q$ is contradictory, we can conclude that exactly one of both states $p, q$ is $q_d$ and that the other one is not.
+		Since $q_d$ is the only new state in $A'$ compared to $A$, we can conclude that at least one of both states must be $q_d$. Since $p = q_d = q$ is contradictory (\gregor{why?}), we can conclude that exactly one of both states $p, q$ is $q_d$ and that the other one is not.
 		
 		W.l.o.g.\ we say $q = q_d$ and $p \in Q' \setminus \{q_d\} = Q$ and reformulate our statement above:
 		\begin{equation}
 		\text{There must exist a }p \in Q\text{ such that }\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_d,v) \notin F'.
 		\end{equation}
+		\gregor{hidden formulations here}
 		
 		%Therefore we know there exists a state $p \in Q$ such that $\exists v \in \Sigma^*$, $|v| = i$ and $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_d,v) \notin F'$
 		
 		Since for $q_o \in Q$ the relation $d_{A'}(q_o, q_d)$ is given, we know per definition of $d_{A'}$ that $\forall z\in\Sigma'^*\colon \delta'^*(q_o,z) \in F \Leftrightarrow \delta'^*(q_d,z) \in F$.
 		
 		This implies in combination with statement 2.2, that for $p,q_o$ the word $v\in\Sigma'^*$ would fulfill $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_o,v) \notin F'$ too. But this is contradictory to $p,q \notin Q$.
+		
+		\gregor{hidden lemma here}
 		
 		%		\begin{lemma}
 		%			\begin{multline*}
@@ -187,6 +198,7 @@ p. 159 Hopcroft
 \end{proof}
 
 
+\gregor{hidden old 'systematic study of how to extend minimal DFAs'}
 %First, a systematic study of how to extend minimal DFAs will be done. Afterwards, we will define an extension algorithm, which will use the previously found results. We have the following requirements for this stage:
 %\begin{itemize}
 %	\item the language of the task DFA is the same as the language of the solution DFA

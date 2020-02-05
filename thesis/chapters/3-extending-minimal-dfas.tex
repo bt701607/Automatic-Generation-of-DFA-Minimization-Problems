@@ -2,7 +2,7 @@
 
 \chapter{Extending solution DFAs to task DFAs} \label{ch:3}
 
-We have the following requirements for this stage:
+Given a solution DFA $A_{sol}$ we have determined the following requirements for generating a task DFA $A_{task}$ in our requirements analysis (see~\ref{ch:1:determined-requirements}):
 \begin{itemize}
 	\item[->] $L(A_{sol}) = L(A_{task})$
 	\item[->] $\mmD(A_{sol}) = \mmD(A_{task})$
@@ -12,36 +12,13 @@ We have the following requirements for this stage:
 	\item[->] planarity (can be checked in $O(|Q_{task}|)$)
 	\item[->] completeness (for \MinMark-algorithm to work)
 \end{itemize}
-In order to fulfill these requirements when adding new elements to a given minimal automaton $A_{sol}$, we can simply look at the kind of elements removed by the minimization algorithm. We will show for each class of addable elements, that they do not change the DFAs language and its $\mmD$-value.
-
-What kind of elements are removed from a DFA, if the minimization algorithm is applied to it?
-\begin{enumerate}
-	\item unreachable states
-	\item duplicate states
-\end{enumerate}
-As requirement for the new DFAs we have completeness, so whenever we add a new state, we have to ensure it has a transition for every alphabet symbol in the end. Furthermore, since unreachable states are removed first in the minimization algorithm, we may assume that every state, that is duplicated, is reachable.
+In order to fulfill these requirements when adding new elements to the given minimal automaton $A_{sol}$, we simply look at how duplicate and unreachable states are removed by the minimization algorithm, such that we can deduce from their properties, which restrictions are given for adding such elements. We will show for both classes of addable elements, that they do not change the DFAs language and its $\mmD$-value.
 
 \gregor{Adding unreachable states is essentially just talking about that special equivalence class. Think and tell more about this}
 
-\section{Adding unreachable states}
-
-From step 1 of the minimization algorithm we can deduce option 1. Unreachable states can easily be added to a DFA by just adding non-start states with no ingoing transitions (see definition of unreachability). Number and nature of outgoing transitions may be arbitrary.
-
-\begin{lemma}
-	Adding unreachable states to a DFA does not change its language.
-\end{lemma}
-\begin{proof}
-	The language of a DFA $A = (Q, \Sigma, \delta, s, F)$ is defined as $L(A) = \{\ w\ |\ w \in \Sigma^* \land \delta^*(s, w) \in F\ \}$. For any unreachable state $q$ there exists no word $v \in \Sigma^*$ such that $\delta^*(s,v) = q$. Thus such a state cannot be the cause for any word to be in $L(A)$.
-\end{proof}
-
-\begin{lemma}
-	Adding unreachable states to a DFA does not change its $\mmD$-value in the context of the minimization algorithm.
-\end{lemma}
-\begin{proof}
-	Since unreachable states are eliminated from the input DFA in the first place, when applying the minimization algorithm to it, we get the same DFA for the \MinMark-algorithm, as if we had not added any unreachable states.
-\end{proof}
-
 \section{Adding duplicate states}
+
+Firstly, let us state that since unreachable states are removed first in the minimization algorithm, we may assume that every state, that is duplicated, is reachable.
 
 \gregor{hidden definition: correct duplication}
 %\begin{definition}[Correct duplication]
@@ -55,9 +32,11 @@ From step 1 of the minimization algorithm we can deduce option 1. Unreachable st
 %	\]
 %\end{definition}
 
-Step 2 and 3 of the minimization algorithm are concerned with detection and elimination of duplicate states. How do we add duplicate states to a DFA?
+Step 3 and 4 of the minimization algorithm are concerned with detection and elimination of duplicate states. How do we add duplicate states to a DFA?
 
-Consider the properties a duplicate state, say $q_d$, must have. It is in particular duplicate to \emph{another} state, we call it $q_o$. Since we add only one state for now, $q_d$, we can assume that $q_o$ is part of the solution DFA. We call the new, by $q_d$ extended DFA, $A$.
+Consider the properties a duplicate state, say $q_d$, must have. It is in particular duplicate to \emph{another} state, we call it $q_o$. We call the new, by $q_d$ extended DFA, $A$.
+
+%  Since we add only one state for now, $q_d$, we can assume that $q_o$ is part of the solution DFA. 
 
 \paragraph*{Outgoing transitions}
 
@@ -83,9 +62,48 @@ So we have to choose at least one transition of
 \[
 	\{\ ((s, \sigma), q_d)\ |\ \delta(s,\sigma) \in [q_o]_{d_A}\ \}
 \]
-If a $((s, \sigma), q_d)$ is chosen, remove $((s, \sigma), t)$. This leads us to the requirement, that any $q_o$ has to have at least $2$ ingoing transitions.
-
+If a $((s, \sigma), q_d)$ is chosen, remove $((s, \sigma), t)$. This leads us to the requirement, that the equivalence class of any $q_o$ has to contain at least one state with at least $2$ ingoing transitions (see fig.~\ref{fig:dfa_add_duplicate_states}).
+\begin{figure}
+	\includegraphics[width=\linewidth]{images/dfa_add_duplicate_states.png}
+	\caption{If an equivalence class (here denoted by the states in the dashed area) contains a state with 2 or more ingoing transitions (in this case $t$), then a state duplicate to any of classes states may be added. Here $q_d$ is duplicate to $q_o$ and is ``stealing'' the ingoing transition $\delta(s, a)$ from $t$.}
+	\label{fig:dfa_add_duplicate_states}
+\end{figure}
 \gregor{Talk somewhere about eq. automaton and extending it. An eq. class of reach. q's can be max. |$\Sigma$| big. From this can compute the max. number of dupl. states which can be added.}
+
+\vspace{0.2cm}
+\begin{algorithmic}[1]
+	\Function{AddDuplicateStates\ }{$A_{sol}, d$}
+	\State $eq\_classes \gets \{\ \{q\}\ |\ q \in Q\ \}$
+	\State $eq\_class(q) = C$ such that $C \in eq\_classes$ and $q \in C$
+	\State
+	\For {$d$ \textbf{times}}
+	
+		\State
+		\State $q_o \gets$ random chosen state from $\{\ q\ |\ q$ has at least to ingoing transitions$\ \}$
+		\If {$q_o = \bot$}
+			\State \Return $\bot$
+		\EndIf
+		
+		\State
+		\State $q_d \gets \max Q + 1$
+		\State $Q \gets Q \cup \{ q_d \}$
+		
+		\State
+		\For {$\sigma$ \textbf{in} $\Sigma$}
+			\State $\delta(q_d, \sigma) =$ random chosen state from $eq\_class(\delta(q_o, \sigma))$
+		\EndFor
+		
+		\State
+		\State $O \gets \{\ ((s, \sigma), q) \in \delta\ |\ \delta(s,\sigma) \in eq\_class(q_o)\ \}$
+		
+		\State $C \gets$ random sample of at least one transition from $O$
+		\State $\delta \gets \delta \setminus C \cup \{\ ((s, \sigma), q_d)\ |\ ((s, \sigma), q) \ in C\ \}$
+	\EndFor
+	
+	\State \Return $A$
+	\EndFunction
+\end{algorithmic}
+\vspace{0.2cm}
 
 \subsection{Adding duplicate states does not change L}
 
@@ -283,3 +301,35 @@ p. 159 Hopcroft
 %4.3.1. Adding states and duplicate at least its ingoing transitions -> NFA \\
 %4.3.2. Adding states, split ingoing, duplicate outgoing -> generated by 4.3.2.1. too \\
 %4.3.2.1. Adding states, split ingoing, split outgoing s.t. $[\delta(q', \sigma_i)]_{\equiv_L} = [\delta(q'', \sigma_i)]_{\equiv_L}$ -> Ok
+
+\section{Adding unreachable states}
+
+From step 1 of the minimization algorithm we can deduce how to add unreachable states. These can easily be added to a DFA by adding non-start states with no ingoing transitions (see def.~\ref{ch:1:unreachable-states}). Number and nature of outgoing transitions may be arbitrary.
+
+\vspace{0.2cm}
+\begin{algorithmic}[1]
+	\Function{AddUnreachableStates\ }{$A, u$}
+	\For {$u$ \textbf{times}}
+		\State $q \gets \max Q + 1$
+		\State $Q \gets Q \cup \{ q \}$
+		\State $R \gets$ random chosen sample of $|\Sigma|$ states from $Q \setminus \{q\}$
+		\For {$\sigma$ \textbf{in} $\Sigma$}
+			\State $q' \in R$
+			\State $R \gets R \setminus \{q'\}$
+			\State $\delta \gets \delta \cup \{ ((q, \sigma), q') \}$
+		\EndFor
+	\EndFor
+	\State \Return $A$
+	\EndFunction
+\end{algorithmic}
+\vspace{0.2cm}
+
+\noindent We have to ensure, that this algorithm does not induce changes in the language.
+\begin{lemma}
+	Adding unreachable states to a DFA does not change its language.
+\end{lemma}
+\begin{proof}
+	Remember that the language of a DFA $A = (Q, \Sigma, \delta, s, F)$ is defined as $L(A) = \{\ w\ |\ w \in \Sigma^* \ \}$. For any unreachable state $q$ there exists no word $v \in \Sigma^*$ such that $\delta^*(s,v) = q$. Thus such a state cannot be the cause for any word to be in $L(A)$.
+\end{proof}
+
+\noindent The question whether adding unreachable states to a DFA changes $\mmD$-value is irrelevant. This is because in the context of the minimization algorithm, unreachable states are eliminated before the \MinMark-algorithm is applied on the task DFA.

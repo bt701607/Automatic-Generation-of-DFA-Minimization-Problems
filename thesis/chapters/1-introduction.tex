@@ -30,11 +30,19 @@ We say $\delta(q,\sigma) = p$ is a transition from $q$ to $p$ using symbol $\sig
 \end{itemize}
 Then, the \emph{language} of that DFA is defined as $L(A) = \{\ w\ |\ \delta^*(w) \in F\ \}$~\cite[pp. 49-50. 52]{hopcroft01}.
 
-Given a state $q \in Q$. We call all transitions $\delta(q', \sigma) = q$ \emph{ingoing} transitions of $q$. All transitions $\delta(q, \sigma) = q'$ are called \emph{outgoing} transitions of $q$.
+Given a state $q \in Q$. We call all transitions $\delta(q', \sigma) = q$ \emph{ingoing} transitions of $q$. All transitions $\delta(q, \sigma) = q'$ are called \emph{outgoing} transitions of $q$. If a transition is of the form $\delta(q, \sigma) = q$, then we say that $q$ has a \emph{loop}.
 
-We say a state $q$ is \emph{(un-)reachable} in an DFA $A$, iff there is (no) a word $w \in \Sigma^*$ such that $\delta^*(s, w) = q$. If a transition is of the form $\delta(q, \sigma) = q$, then we say that $q$ has a \emph{loop}.
+\begin{definition}\label{ch:1:unreachable-states}
+	We say a state $q$ is \emph{(un-)reachable} in an DFA $A$, iff there is (no) a word $w \in \Sigma^*$ such that $\delta^*(s, w) = q$.
+\end{definition}
 
 A DFA is called \emph{complete} iff for all states, every symbol of the alphabet is used on an outgoing transition: $\forall q\in Q\colon \forall\sigma\in\Sigma\colon \exists p\in Q\colon \delta(q,\sigma) = p$. Note, that every incomplete DFA can be converted to a complete one by adding a so called \emph{dead state}~\cite[p. 67]{hopcroft01}. The resulting automaton has the same language. We will from now on only work with complete DFAs.
+
+\begin{figure}
+	\includegraphics[width=\linewidth]{images/dfa.png}
+	\caption{An example DFA and its properties.}
+	\label{fig:dfa}
+\end{figure}
 
 \subsection{Minimal DFAs}
 
@@ -74,8 +82,9 @@ Given two DFAs $A_1 = (Q_1, \Sigma_1, \delta_1, s_1, F_1)$ and $A_2 = (Q_2, \Sig
 \begin{theorem} \textnormal{\cite[p. 45]{schoening01}} 
 	Every minimal DFA is unique except for isomorphy.
 \end{theorem}
-\begin{corollary}
+\begin{corollary}\label{ch:1:cor:all-min-dfa-ism}
 	Every minimal DFA $A$ is isomorph to its corresponding equivalence class automaton $A_{L(A)}$.
+	\gregor{All min. DFAs are ism. to each other, including A\_L}
 \end{corollary}
 
 \subsection{Duplicate states}
@@ -202,6 +211,7 @@ heuristic:
 
 \subsection{Definition and evaluation of possible requirements}
 
+\label{ch:1:determined-requirements}
 Dismissed:
 \begin{itemize}
 	\item $h(A_{sol}, A_{task}) = |Q_{task}|\ /\ |Q_{sol}|$

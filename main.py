@@ -7,9 +7,9 @@ from pdf_from_dfa          import pdf_from_dfa
 from clean                 import clean_code_dir_keep_results
 
 
-CONSTRUCT_RANDOM_MINIMAL_DFA = False
+BUILD_RANDOM_MINIMAL_DFA = False
 
-CONSTRUCT_ENUMERATED_MINIMAL_DFA = True
+BUILD_ENUMERATED_MINIMAL_DFA = True
 
 
 def main():
@@ -23,14 +23,15 @@ def main():
     numberOfAcceptingStates = 1
     minMinmarkDepth = 2
     maxMinmarkDepth = 2
+    planar = True
     
-    if CONSTRUCT_ENUMERATED_MINIMAL_DFA:
+    if BUILD_ENUMERATED_MINIMAL_DFA:
 
-        orig_dfa = build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth)
+        orig_dfa = build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar)
 
-    elif CONSTRUCT_RANDOM_MINIMAL_DFA:
+    elif BUILD_RANDOM_MINIMAL_DFA:
 
-        orig_dfa = build_random_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth)
+        orig_dfa = build_random_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar)
 
     else:
 

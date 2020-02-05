@@ -1,7 +1,7 @@
 class DFA(object):
     
     # states and alphabet-symbols must be chars.
-    def __init__(self, alphabet, states, transition_function, start_state, accepting_states, alphabetSize=None, numberOfStates=None, numberOfAcceptingStates=None, minmarkDepth=None):
+    def __init__(self, alphabet, states, transition_function, start_state, accepting_states, alphabetSize=None, numberOfStates=None, numberOfAcceptingStates=None, minmarkDepth=None, isPlanar=None):
 
         self.__state_counter = 0
 
@@ -14,7 +14,9 @@ class DFA(object):
         self.alphabetSize            = alphabetSize
         self.numberOfStates          = numberOfStates
         self.numberOfAcceptingStates = numberOfAcceptingStates
-        self.minmarkDepth            = minmarkDepth
+        
+        self.minmarkDepth = minmarkDepth
+        self.isPlanar     = isPlanar
         
         if alphabetSize == None:
             self.alphabetSize = len(alphabet)

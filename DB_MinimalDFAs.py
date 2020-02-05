@@ -9,7 +9,7 @@ def ensureValidity(dbConn):
     with dbConn:
         dbConn.execute('''
             CREATE TABLE IF NOT EXISTS MinimalDFAs 
-            (id INTEGER PRIMARY KEY AUTOINCREMENT, dfa TEXT, alphabetSize INT, numberOfStates INT, numberOfAcceptingStates INT, minmarkDepth INT)'''
+            (id INTEGER PRIMARY KEY AUTOINCREMENT, dfa TEXT, alphabetSize INT, numberOfStates INT, numberOfAcceptingStates INT, minmarkDepth INT, isPlanar INT)'''
         )
     
     
@@ -23,17 +23,19 @@ def clear(dbConn):
 # -----------------------------------------------------------
 
 
-def fetchMatchingDFAs(dbConn, alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth):
+# sets dfa.minMinmarkDepth and dfa.isPlanar
+def fetchMatchingDFAs(dbConn, alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar):
     
     qFindMatchingDFA = '''SELECT dfa, minmarkDepth FROM MinimalDFAs WHERE 
         alphabetSize = ? AND
         numberOfStates = ? AND
         numberOfAcceptingStates = ? AND
         minmarkDepth >= ? AND
-        minmarkDepth <= ?
+        minmarkDepth <= ? AND
+        isPlanar = ?
     '''
     
-    dbTuple = (alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth)
+    dbTuple = (alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar)
             
     dfaList = []
             
@@ -41,18 +43,20 @@ def fetchMatchingDFAs(dbConn, alphabetSize, numberOfStates, numberOfAcceptingSta
     
         dfa = __decodeDFA(encodedDFA)
         dfa.minmarkDepth = minmarkDepth
+        dfa.isPlanar     = planar
         dfaList.append(dfa)
             
     return dfaList
             
     
-
+    
+# requires dfa.minMinmarkDepth and dfa.isPlanar to be set
 def saveNewDFA(dbConn, dfa):
     
-    dbTuple = (__encodeDFA(dfa), dfa.alphabetSize, dfa.numberOfStates, dfa.numberOfAcceptingStates, dfa.minmarkDepth)
+    dbTuple = (__encodeDFA(dfa), dfa.alphabetSize, dfa.numberOfStates, dfa.numberOfAcceptingStates, dfa.minmarkDepth, dfa.isPlanar)
 
     with dbConn:
-        dbConn.execute('''INSERT INTO MinimalDFAs VALUES (NULL,?,?,?,?,?)''', dbTuple)
+        dbConn.execute('''INSERT INTO MinimalDFAs VALUES (NULL,?,?,?,?,?,?)''', dbTuple)
     
     
 # -----------------------------------------------------------

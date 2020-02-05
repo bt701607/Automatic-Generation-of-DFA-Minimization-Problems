@@ -164,7 +164,8 @@ class EnumerationProgress(object):
         if addOneReverse(self.transitionsProgress, self.numberOfStates) != None:
             return self.__dfa()
         
-        # if transition's end reached, iterate accepting state permutations and reset transition progress
+        # if transition's end reached, iterate accepting state permutations
+        # and reset transition progress if acceptingStatesProgress could be incremented
         
         while True:
         

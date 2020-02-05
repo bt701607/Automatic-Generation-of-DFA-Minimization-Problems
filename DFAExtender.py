@@ -66,9 +66,12 @@ def __add_duplicate_states(dfa, equiv_classes, numberOfDuplicateStates=1):
 
         print("Duplicating {} by creating {}.".format(state1,state2))
 
+        theirEquivClass = None
+
         for equivClass in equiv_classes:
             if state1 in equivClass:
                 equivClass.append(state2)
+                theirEquivClass = equivClass
 
         # split ingoing transitions
 

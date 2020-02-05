@@ -3,6 +3,7 @@ from DFA import DFA
 import pygraph
 
 
+# sets dfa.isPlanar
 def planarity_test_dfa(dfa):
 
     graph = pygraph.UndirectedGraph()
@@ -15,7 +16,9 @@ def planarity_test_dfa(dfa):
     for ((q1,c),q2) in dfa.transitions:
         graph.new_edge(bijection[q1], bijection[q2])
         
-    return pygraph.is_planar(graph)
+    dfa.isPlanar = pygraph.is_planar(graph)
+        
+    return dfa.isPlanar
 
 
 if __name__ == "__main__":

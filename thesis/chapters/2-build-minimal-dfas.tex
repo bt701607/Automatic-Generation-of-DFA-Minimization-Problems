@@ -84,6 +84,7 @@ We will complete this algorithm by resolving how the tests in lines $4, 6$ and $
 \subsection{Ensuring $A_{test}$ is minimal and $\mmD(A_{test})$ is correct}
 
 In order to test, whether $A_{test}$ is minimal, we could simply use the minimization algorithm and compare the resulting DFA and $A_{test}$ using an isomorphy test. However it is sufficient to ensure, that no duplicate or unreachable states exist.
+\gregor{minimality planarity complete under isomorphy}
 
 To get $\mmD(A_{test})$, we have to run \MinMark\ entirely anyway. Hence we can combine the test for duplicate states with computing the DFAs $\mmD$-value:
 \vspace{0.2cm}

@@ -2,9 +2,7 @@
 
 \chapter{Building solution DFAs} \label{ch:2}
 
-\gregor{argue that and why we make A sol complete}
-
-We want an algorithm for DFA generation that fulfills the following conditions:
+We want an algorithm for DFA generation that fulfills the following conditions (see~\ref{ch:1:determined-requirements}):
 \begin{itemize}
 	\item[->] minimal
 	\item[->] number of states
@@ -12,32 +10,10 @@ We want an algorithm for DFA generation that fulfills the following conditions:
 	\item[->] alphabet size
 	\item[->] number of accepting states
 	\item[->] planarity (can be checked in $O(|Q_{sol}|)$)
+	\item[->] completeness (for easier further processing)
 	\item[->] $A_{sol}$ is unused (regarding all previously generated solution DFAs)
 \end{itemize}
-
-\begin{definition}[BuildNewMinimalDFA] $ $
-	\begin{description}
-		
-		\item[Given:] $ $
-		
-		$q, a, f, m_{min}, m_{max} \in \mathbb{N},$
-		
-		$p \in \{0,1\}$
-		\item[Request:] $ $
-		
-		Let $A_{sol} = (Q, \Sigma, \delta, s, F)$ be a DFA, such that
-		
-		\qquad $|Q|=q$, $|\Sigma|=a$, $|F|=f$,
-		
-		\qquad $m_{min} \le \mmD(A_{sol}) \le m_{max}$,
-		
-		\qquad $A_{sol}$ is planar iff $p = 1$ and
-		
-		\qquad the language of $L(A)$ is unequal to any DFA used before.
-		
-		Return $A_{sol}$, if it exists, $\bot$ otherwise.
-	\end{description}
-\end{definition}
+These conditions have been formally subsumed as BuildNewMinimalDFA-problem (see def.~\ref{ch:1:def:BuildNewMinimalDFA}). We consider different approaches to solve this problem, of which those using trial-and-error will be discussed most broadly. 
 
 \section{Using trial and error}
 

@@ -30,13 +30,14 @@ We say $\delta(q,\sigma) = p$ is a transition from $q$ to $p$ using symbol $\sig
 \end{itemize}
 Then, the \emph{language} of that DFA is defined as $L(A) = \{\ w\ |\ \delta^*(w) \in F\ \}$~\cite[pp. 49-50. 52]{hopcroft01}.
 
-Given a state $q \in Q$. We call all transitions $\delta(q', \sigma) = q$ \emph{ingoing} transitions of $q$. All transitions $\delta(q, \sigma) = q'$ are called \emph{outgoing} transitions of $q$. If a transition is of the form $\delta(q, \sigma) = q$, then we say that $q$ has a \emph{loop}.
+Given a state $q \in Q$. With $d^-(q)$ we denote the set of all \emph{ingoing} transitions $\delta(q', \sigma) = q$ of $q$. With $d^+(q)$ we denote the set of all \emph{outgoing} transitions $\delta(q, \sigma) = q'$ of $q$~\cite[pp. 2-3]{champarnaud05}. If a transition is of the form $\delta(q, \sigma) = q$, then we say that $q$ has a \emph{loop}.
 
 \begin{definition}\label{ch:1:unreachable-states}
-	We say a state $q$ is \emph{(un-)reachable} in an DFA $A$, iff there is (no) a word $w \in \Sigma^*$ such that $\delta^*(s, w) = q$.
+	We say a state $q$ is \emph{(un-)reachable} in a DFA $A$, iff there is (no) a word $w \in \Sigma^*$ such that $\delta^*(s, w) = q$.
 \end{definition}
+\noindent If all states of a DFA $A$ are reachable, then we say $A$ is \emph{accessible}~\cite[p. 2]{champarnaud05}.
 
-A DFA is called \emph{complete} iff for all states, every symbol of the alphabet is used on an outgoing transition: $\forall q\in Q\colon \forall\sigma\in\Sigma\colon \exists p\in Q\colon \delta(q,\sigma) = p$. Note, that every incomplete DFA can be converted to a complete one by adding a so called \emph{dead state}~\cite[p. 67]{hopcroft01}. The resulting automaton has the same language. We will from now on only work with complete DFAs.
+A DFA is called \emph{complete} iff for all states, every symbol of the alphabet is used on an outgoing transition: $\forall q\in Q\colon \forall\sigma\in\Sigma\colon \exists p\in Q\colon \delta(q,\sigma) = p$. Note, that every incomplete DFA can be converted to a complete one by adding a so called \emph{dead state}~\cite[p. 67]{hopcroft01}. The resulting automaton has the same language.
 
 \begin{figure}
 	\includegraphics[width=\linewidth]{images/dfa.png}
@@ -187,28 +188,39 @@ When looking at \MinMark, one notes, that it computes distinct subsets of $Q \ti
 \vspace{0.2cm}
 Using this redefinition, we can easier refer to the state pairs marked in a certain iteration. We will use both variants in exchange.
 
-We will denote the number of iterations done by \MinMark\ on an DFA $A$ as $\mmD(A)$. Note that $\mmD(A) = \max n \in \mathbb{N}\ |\ m(n) \neq \emptyset$.
+We will denote the number of iterations done by \MinMark\ on an DFA $A$ as $\mmD(A)$. Note that $\mmD(A) = \max n \in \mathbb{N}\ |\ m(n) \neq \emptyset$. \gregor{Does that note maybe fit very well to the proof of lemma~\ref{ch:3:semantics-of-D(A)}?}
 
 
 \section{Requirements analysis}
 
+Now that we have introduced all necessary basic definitions, we shall do a short analysis of an example DFA minimization task and its sample solution, as it could have been given to students in an introductory course to automata theory.
+
 \subsection{Example of a DFA minimization task for students}
+
+Figures~\ref{fig:dfa_ex_task} and~\ref{fig:dfa_ex_sol} show such a task and solution. We will call the minimal automaton \emph{solution DFA} ($A_{sol}$) and the DFA given in the task \emph{task DFA} ($A_{task}$).
+
+The table $T$ displayed in the solution is nothing else but a visualization of the function $m$, whereas $T(q_0, q_1) = i \Leftrightarrow (q_0, q_1) \in m(i)$. The solution corresponds with the formal definition of the minimization algorithm, but focuses rather on the concepts than demanding formal breakdown.
 
 \begin{itemize}
 	\item present a typical task and its solution (text, image, table)
+	\item search for typical test in text standard work books
 	\item name its elements
 	\item clarify two parts: solution, task
 	\item clarify four parts from task to solution: find unreachables, delete them, find duplicates, merge them
 	\item what are the difficulties of this tasks?
 \end{itemize}
 
-We will call the minimal automaton \emph{solution DFA} ($A_{sol}$) and its extension with duplicate and unreachable states \emph{task DFA} ($A_{task}$).
+\begin{figure}
+	\includegraphics[width=\linewidth]{images/dfa_ex_task.png}
+	\caption{An example DFA minimization task.}
+	\label{fig:dfa_ex_task}
+\end{figure}
 
-heuristic:
-\begin{itemize}
-	\item $h \colon \mathcal{A} \times \mathcal{A} \to \mathbb{R^+}$
-	\item $h(A_{min}, A_{task}) = studentfriendliness$
-\end{itemize}
+\begin{figure}
+	\includegraphics[width=\linewidth]{images/dfa_ex_sol.png}
+	\caption{Solution to the DFA minimization task in fig.~\ref{fig:dfa_ex_task}.}
+	\label{fig:dfa_ex_sol}
+\end{figure}
 
 \subsection{Definition and evaluation of possible requirements}
 
@@ -228,6 +240,7 @@ Accepted solution DFA criteria:
 	\item[->] alphabet size
 	\item[->] number of accepting states
 	\item[->] planarity (can be checked in $O(|Q_{sol}|)$)
+	\item[->] completeness (for easier further processing)
 	\item[->] $A_{sol}$ is unused (regarding all previously generated solution DFAs)
 	
 	\begin{definition}[Unused DFAs] \label{ch:1:unused-dfa}
@@ -253,7 +266,7 @@ It follows that $\mmD$ and $L$ of both DFAs will be set when building $A_{sol}$.
 
 Here follow problem definitions for the two steps, which specify all needed informations. \gregor{Hidden formulation here} %The first problem is lain out in a way, such that it does
 
-\begin{definition}[BuildNewMinimalDFA] $ $
+\begin{definition}[BuildNewMinimalDFA] \label{ch:1:def:BuildNewMinimalDFA} $ $
 	\begin{description}
 		
 		\item[Given:] $ $
@@ -277,7 +290,7 @@ Here follow problem definitions for the two steps, which specify all needed info
 	\end{description}
 \end{definition}
 
-\begin{definition}[ExtendMinimalDFA] $ $
+\begin{definition}[ExtendMinimalDFA] \label{ch:1:def:ExtendMinimalDFA} $ $
 	\begin{description}
 		
 		\item[Given:] $ $

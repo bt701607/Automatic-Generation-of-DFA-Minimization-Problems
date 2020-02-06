@@ -62,7 +62,10 @@ So we have to choose at least one transition of
 \[
 	\{\ ((s, \sigma), q_d)\ |\ \delta(s,\sigma) \in [q_o]_{d_A}\ \}
 \]
-If a $((s, \sigma), q_d)$ is chosen, remove $((s, \sigma), t)$. This leads us to the requirement, that the equivalence class of any $q_o$ has to contain at least one state with at least $2$ ingoing transitions (see fig.~\ref{fig:dfa_add_duplicate_states}).
+If a $((s, \sigma), q_d)$ is chosen, remove $((s, \sigma), t)$. This leads us to the requirement, that the equivalence class of any $q_o$ has to contain at least one state with at least $2$ ingoing transitions (see fig.~\ref{fig:dfa_add_duplicate_states}). We establish the following notion to pin down this restriction:
+\[
+	duplicatable(q_o) = 1 \Leftrightarrow_{def} (\exists q \in [q_o]_{d_A}\colon |d^-(q)| \geq 2)
+\]
 \begin{figure}
 	\includegraphics[width=\linewidth]{images/dfa_add_duplicate_states.png}
 	\caption{If an equivalence class (here denoted by the states in the dashed area) contains a state with 2 or more ingoing transitions (in this case $t$), then a state duplicate to any of classes states may be added. Here $q_d$ is duplicate to $q_o$ and is ``stealing'' the ingoing transition $\delta(s, a)$ from $t$.}
@@ -75,11 +78,18 @@ If a $((s, \sigma), q_d)$ is chosen, remove $((s, \sigma), t)$. This leads us to
 	\Function{AddDuplicateStates\ }{$A_{sol}, d$}
 	\State $eq\_classes \gets \{\ \{q\}\ |\ q \in Q\ \}$
 	\State $eq\_class(q) = C$ such that $C \in eq\_classes$ and $q \in C$
+	\State $\#_{d^-}(q) = |d^-(q)|$
 	\State
 	\For {$d$ \textbf{times}}
 	
 		\State
-		\State $q_o \gets$ random chosen state from $\{\ q\ |\ q$ has at least to ingoing transitions$\ \}$
+		\State $q_o \gets \bot$
+		\For {$q$ \textbf{in} $C$}
+			\If {$\#_{d^-}(q) \geq 2$}
+				\State $q_0 \gets$ random chosen state from $eq\_class(q)$
+				\State \textbf{break}
+			\EndIf
+		\EndFor
 		\If {$q_o = \bot$}
 			\State \Return $\bot$
 		\EndIf
@@ -94,10 +104,15 @@ If a $((s, \sigma), q_d)$ is chosen, remove $((s, \sigma), t)$. This leads us to
 		\EndFor
 		
 		\State
-		\State $O \gets \{\ ((s, \sigma), q) \in \delta\ |\ \delta(s,\sigma) \in eq\_class(q_o)\ \}$
+		\State $O \gets \{\ ((s, \sigma), t) \in \delta\ |\ t \in eq\_class(q_o) \land \#_{d^-}(t) \geq 2\ \}$
 		
 		\State $C \gets$ random sample of at least one transition from $O$
-		\State $\delta \gets \delta \setminus C \cup \{\ ((s, \sigma), q_d)\ |\ ((s, \sigma), q) \ in C\ \}$
+		\For {$((s, \sigma), t)$ \textbf{in} $C$}
+			\State $\delta \gets \delta \setminus \{((s, \sigma), t)\}$
+			\State $\delta \gets \delta \cup \{((s, \sigma), q_d)\}$
+			\State $\#_{d^-}(t) \gets \#_{d^-}(t) - 1$
+			\State $\#_{d^-}(q_d) \gets \#_{d^-}(q_d) + 1$
+		\EndFor
 	\EndFor
 	
 	\State \Return $A$
@@ -111,11 +126,25 @@ p. 159 Hopcroft
 
 \subsection{Adding duplicate states does not change $\mmD$}
 
-\begin{lemma}
+To prove this statement, we will prove two minor propositions first.
+
+\begin{lemma}[Semantics of $(p,q) \in m(n)$] \label{ch:3:semantics-of-m(n)}
 	\begin{multline*}
-	\mmD(A) =\ n \Rightarrow \\
-	n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon \\
-	|w| = n - 1 \land (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
+	(p,q) \in m(n) \Longleftrightarrow 
+	\exists w\in\Sigma^*\colon |w| = n\ \land \\
+	(\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
+	\end{multline*}
+\end{lemma}
+
+\begin{proof}
+	See TI-Lecture ch. 4 ``Minimization'' p. 18.
+\end{proof}
+
+\begin{lemma}[Semantics of $\mmD(A) = n$] \label{ch:3:semantics-of-D(A)}
+	\begin{multline*}
+		\mmD(A) =\ n \Rightarrow \\
+		n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon |w| = n - 1\ \land \\
+		(\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
 	\end{multline*}
 \end{lemma}
 
@@ -134,17 +163,20 @@ p. 159 Hopcroft
 		
 		Since the algorithm did $n$ iterations, the internal variable $i$ must be $n$ at the end of the last iteration. The terminating condition is $m(i) \neq \emptyset$; thus follows the second point.
 		
-		\begin{lemma}
-			\begin{multline*}
-			(p,q) \in m(k) \Longleftrightarrow 
-			\exists w\in\Sigma^*\colon |w| = n - 1\ \land \\
-			(\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
-			\end{multline*}
-		\end{lemma}
+		Recall the statement from lemma~\ref{ch:3:semantics-of-m(n)}:
+		\begin{multline*}
+		(p,q) \in m(n) \Longleftrightarrow 
+		\exists w\in\Sigma^*\colon |w| = n\ \land \\
+		(\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
+		\end{multline*}
+	
+		% a possible word per definition of D(A), m(i) and lemma
 		
-		Following this lemma (which can easily be proved by induction) we know that there exists at least one word $w\in\Sigma^*$ with $|w| = n-1$ such that for two $p,q \in Q\colon (\delta^*(p,w) \in F \land \delta^*(q,w) \notin F)$.
+		Following this lemma and having $m(n-1) \neq \emptyset$ in mind, we can deduce that there exists at least one word $w\in\Sigma^*$ with $|w| = n-1$ such that for two $p,q \in Q\colon (\delta^*(p,w) \in F \land \delta^*(q,w) \notin F)$.
 		
-		There cannot be any two states $p',q'\in Q$ and a word $w'\in\Sigma^*$ with $|w'| \ge n-1$ fulfilling this property. We could write $w'$ as $u'v'$ with $|v'| = n$. Then $(p,q)$ should be in $m(n)$, which is contradictory.
+		% There is no word longer than that
+		
+		There cannot be any two states $p',q'\in Q$ and a word $w'\in\Sigma^*$ with $|w'| > n-1$ fulfilling this property. We could write $w'$ as $u'v'$ with $|v'| = n$. Then $m(n)$ would be non-empty, which is contradictory.
 	\end{description}
 \end{proof}
 
@@ -158,27 +190,24 @@ p. 159 Hopcroft
 		
 		Proof per contradiction.
 		
-		Let's assume adding a duplicate state $q_d$ to a given automaton $A = (Q, \Sigma, \delta, s, F)$ results in an automaton $A' = (Q', \Sigma, \delta', s, F')$ whereas $\mmD(A) < \mmD(A')$.
+		Let's assume adding duplicate states $q_d^1, \ldots, q_d^n$ to a given automaton $A = (Q, \Sigma, \delta, s, F)$ results in an automaton $A' = (Q', \Sigma, \delta', s, F')$ whereas $\mmD(A) < \mmD(A')$.
 		
 		Concerning $A'$ we can say the following:
 		\begin{itemize}
-			\item $Q' = Q \cup \{ q_d \}$
+			\item $Q' = Q \cup \{ q_d^1, \ldots, q_d^n \}$
 			%			\item $\delta \subseteq \delta'$
 			%			\item $F \subseteq F'$
-			\item $\exists q_o \in Q \colon\ d_A'(q_o, q_d)$
+			\item W.l.o.g. $\exists q_o^1 \in Q \colon \exists q_o^2 \ldots q_o^n \in Q \colon\ d_A'(q_o^1, q_d^1), \ldots, d_A'(q_o^n, q_d^n)$
 		\end{itemize}
-		Let us furthermore say that $\mmD(A) = i$ and $\mmD(A') = j$.
-		
-		\begin{lemma}
-			\begin{multline*}
-			\mmD(A) =\ n \Rightarrow \\
-			n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon \\
-			|w| = n - 1 \land (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
-			\end{multline*}
-		\end{lemma}
+		Let us furthermore say that $\mmD(A) = i$ and $\mmD(A') = j$. Recall now lemma~\ref{ch:3:semantics-of-D(A)}:
+		\begin{multline*}
+		\mmD(A) =\ n \Rightarrow \\
+		n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon |w| = n - 1\ \land \\
+		(\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
+		\end{multline*}
 		According to this lemma there must be a pair $s, t \in Q'$ to which exists a word $w \in \Sigma'^*$, $|w| = j - 1$, such that $\delta'^*(s,w) \in F' \Leftrightarrow \delta'^*(t,w) \notin F'$.
 		
-		Let us split $w$ as $w = uv$, whereas $u,v \in\Sigma'^*$ and $|v| = i$, which is exactly one symbol longer than the longest minimization word of $A$. We can formulate the following statement:
+		Let us split $w$ as $w = uv$ such that $|v| = i$, which is exactly one symbol longer than the longest minimization word of $A$. We can formulate the following statement:
 		\begin{equation}
 		\text{There must exist }p, q \in Q'\text{ such that }\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q,v) \notin F'.
 		\end{equation}
@@ -187,33 +216,90 @@ p. 159 Hopcroft
 		
 		%So there exists a minimization word $v$ in $A'$, which is exactly one symbol longer than the longest minimization word of $A$. This word has length $i$ and is detected at minimization depth $i + 1$.
 		
-		We can therefore state, that $\neg(p \in Q \land q \in Q)$, because else $\mmD(A)$ would be higher than $i$ too. 
+		We can therefore state, that $\neg(p \in Q \land q \in Q)$, because else $\mmD(A)$ would be higher than $i$ too.  So at least one of $p,q$ must be in $Q' \setminus Q$ which is exactly $\{ q_d^1, \ldots, q_d^n \}$.
 		
-		Since $q_d$ is the only new state in $A'$ compared to $A$, we can conclude that at least one of both states must be $q_d$. Since $p = q_d = q$ is contradictory (\gregor{why?}), we can conclude that exactly one of both states $p, q$ is $q_d$ and that the other one is not.
+		\begin{itemize}
+			\item Every $q_d^k$ is $d_{A'}$-equivalent to a $q \in Q$
+			\item In every case, $p,q$ can be $d_{A'}$-exchanged s.t. $p,q \in Q$
+			\item But that's contradictory to $\mmD(A) = n$, because $p,q$ belong to a minimization word $w = n-1$
+		\end{itemize}
 		
-		W.l.o.g.\ we say $q = q_d$ and $p \in Q' \setminus \{q_d\} = Q$ and reformulate our statement above:
-		\begin{equation}
-		\text{There must exist a }p \in Q\text{ such that }\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_d,v) \notin F'.
-		\end{equation}
-		\gregor{hidden formulations here}
-		
-		%Therefore we know there exists a state $p \in Q$ such that $\exists v \in \Sigma^*$, $|v| = i$ and $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_d,v) \notin F'$
-		
-		Since for $q_o \in Q$ the relation $d_{A'}(q_o, q_d)$ is given, we know per definition of $d_{A'}$ that $\forall z\in\Sigma'^*\colon \delta'^*(q_o,z) \in F \Leftrightarrow \delta'^*(q_d,z) \in F$.
-		
-		This implies in combination with statement 2.2, that for $p,q_o$ the word $v\in\Sigma'^*$ would fulfill $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_o,v) \notin F'$ too. But this is contradictory to $p,q \notin Q$.
-		
-		\gregor{hidden lemma here}
-		
-		%		\begin{lemma}
-		%			\begin{multline*}
-		%				\mmD(A) =\ n \Leftrightarrow \\
-		%				n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon \\
-		%				|w| = n - 1 \land (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
-		%			\end{multline*}
-		%		\end{lemma}
+%		Since $q_d$ is the only new state in $A'$ compared to $A$, we can conclude that at least one of both states must be $q_d$. Since $p = q_d = q$ is contradictory (\gregor{why?}), we can conclude that exactly one of both states $p, q$ is $q_d$ and that the other one is not.
+%		
+%		W.l.o.g.\ we say $q = q_d$ and $p \in Q' \setminus \{q_d\} = Q$ and reformulate our statement above:
+%		\begin{equation}
+%		\text{There must exist a }p \in Q\text{ such that }\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_d,v) \notin F'.
+%		\end{equation}
+%		\gregor{hidden formulations here}
+%		
+%		%Therefore we know there exists a state $p \in Q$ such that $\exists v \in \Sigma^*$, $|v| = i$ and $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_d,v) \notin F'$
+%		
+%		Since for $q_o \in Q$ the relation $d_{A'}(q_o, q_d)$ is given, we know per definition of $d_{A'}$ that $\forall z\in\Sigma'^*\colon \delta'^*(q_o,z) \in F \Leftrightarrow \delta'^*(q_d,z) \in F$.
+%		
+%		This implies in combination with statement 2.2, that for $p,q_o$ the word $v\in\Sigma'^*$ would fulfill $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_o,v) \notin F'$ too. But this is contradictory to $p,q \notin Q$.
 	\end{description}
 \end{proof}
+
+\gregor{Old proof for one $q_d$}
+%\begin{proof}
+%	\begin{description}
+%		\item
+%		
+%		Proof per contradiction.
+%		
+%		Let's assume adding a duplicate state $q_d$ to a given automaton $A = (Q, \Sigma, \delta, s, F)$ results in an automaton $A' = (Q', \Sigma, \delta', s, F')$ whereas $\mmD(A) < \mmD(A')$.
+%		
+%		Concerning $A'$ we can say the following:
+%		\begin{itemize}
+%			\item $Q' = Q \cup \{ q_d \}$
+%			%			\item $\delta \subseteq \delta'$
+%			%			\item $F \subseteq F'$
+%			\item $\exists q_o \in Q \colon\ d_A'(q_o, q_d)$
+%		\end{itemize}
+%		Let us furthermore say that $\mmD(A) = i$ and $\mmD(A') = j$. Recall now lemma~\ref{ch:3:semantics-of-D(A)}:
+%		\begin{multline*}
+%			\mmD(A) =\ n \Rightarrow \\
+%			n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon |w| = n - 1\ \land \\
+%			(\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
+%		\end{multline*}
+%		According to this lemma there must be a pair $s, t \in Q'$ to which exists a word $w \in \Sigma'^*$, $|w| = j - 1$, such that $\delta'^*(s,w) \in F' \Leftrightarrow \delta'^*(t,w) \notin F'$.
+%		
+%		Let us split $w$ as $w = uv$, whereas $u,v \in\Sigma'^*$ and $|v| = i$, which is exactly one symbol longer than the longest minimization word of $A$. We can formulate the following statement:
+%		\begin{equation}
+%		\text{There must exist }p, q \in Q'\text{ such that }\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q,v) \notin F'.
+%		\end{equation}
+%		\gregor{hidden formulations here}
+%		%There must exist $p, q \in Q'$ such that $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q,v) \notin F'$.
+%		
+%		%So there exists a minimization word $v$ in $A'$, which is exactly one symbol longer than the longest minimization word of $A$. This word has length $i$ and is detected at minimization depth $i + 1$.
+%		
+%		We can therefore state, that $\neg(p \in Q \land q \in Q)$, because else $\mmD(A)$ would be higher than $i$ too. 
+%		
+%		Since $q_d$ is the only new state in $A'$ compared to $A$, we can conclude that at least one of both states must be $q_d$. Since $p = q_d = q$ is contradictory (\gregor{why?}), we can conclude that exactly one of both states $p, q$ is $q_d$ and that the other one is not.
+%		
+%		W.l.o.g.\ we say $q = q_d$ and $p \in Q' \setminus \{q_d\} = Q$ and reformulate our statement above:
+%		\begin{equation}
+%		\text{There must exist a }p \in Q\text{ such that }\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_d,v) \notin F'.
+%		\end{equation}
+%		\gregor{hidden formulations here}
+%		
+%		%Therefore we know there exists a state $p \in Q$ such that $\exists v \in \Sigma^*$, $|v| = i$ and $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_d,v) \notin F'$
+%		
+%		Since for $q_o \in Q$ the relation $d_{A'}(q_o, q_d)$ is given, we know per definition of $d_{A'}$ that $\forall z\in\Sigma'^*\colon \delta'^*(q_o,z) \in F \Leftrightarrow \delta'^*(q_d,z) \in F$.
+%		
+%		This implies in combination with statement 2.2, that for $p,q_o$ the word $v\in\Sigma'^*$ would fulfill $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_o,v) \notin F'$ too. But this is contradictory to $p,q \notin Q$.
+%		
+%		\gregor{hidden lemma here}
+%		
+%		%		\begin{lemma}
+%		%			\begin{multline*}
+%		%				\mmD(A) =\ n \Leftrightarrow \\
+%		%				n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon \\
+%		%				|w| = n - 1 \land (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
+%		%			\end{multline*}
+%		%		\end{lemma}
+%	\end{description}
+%\end{proof}
 
 
 \gregor{hidden old 'systematic study of how to extend minimal DFAs'}

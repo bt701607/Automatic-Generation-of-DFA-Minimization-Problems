@@ -6,19 +6,19 @@ Given a solution DFA $A_{sol}$ we have determined the following requirements for
 \begin{itemize}
 	\item[->] $L(A_{sol}) = L(A_{task})$
 	\item[->] $\mmD(A_{sol}) = \mmD(A_{task})$
-	\item[->] number of duplicate states
+	\item[->] number of redundant states
 	\item[->] number of unreachable states
 	\item[->] alphabet size
 	\item[->] planarity (can be checked in $O(|Q_{task}|)$)
-	\item[->] completeness (for \MinMark-algorithm to work)
+	\item[->] completeness (for \CompDist-algorithm to work)
 \end{itemize}
-In order to fulfill these requirements when adding new elements to the given minimal automaton $A_{sol}$, we simply look at how duplicate and unreachable states are removed by the minimization algorithm, such that we can deduce from their properties, which restrictions are given for adding such elements. We will show for both classes of addable elements, that they do not change the DFAs language and its $\mmD$-value.
+In order to fulfill these requirements when adding new elements to the given minimal automaton $A_{sol}$, we simply look at how redundant and unreachable states are removed by the minimization algorithm, such that we can deduce from their properties, which restrictions are given for adding such elements. We will show for both classes of addable elements, that they do not change the DFAs language and its $\mmD$-value.
 
 \gregor{Adding unreachable states is essentially just talking about that special equivalence class. Think and tell more about this}
 
-\section{Adding duplicate states}
+\section{Adding redundant states}
 
-Firstly, let us state that since unreachable states are removed first in the minimization algorithm, we may assume that every state, that is duplicated, is reachable.
+Firstly, let us state that since unreachable states are removed first in the minimization algorithm, we may assume that every state, that is redundant, is reachable.
 
 \gregor{hidden definition: correct duplication}
 %\begin{definition}[Correct duplication]
@@ -28,21 +28,21 @@ Firstly, let us state that since unreachable states are removed first in the min
 %	\]
 %	and
 %	\[
-%		\forall q \in Q \colon [q]_{d_{A'}} = [q]_{d_A}
+%		\forall q \in Q \colon [q]_{d_{A'}} = [q]_{\sim_A}
 %	\]
 %\end{definition}
 
-Step 3 and 4 of the minimization algorithm are concerned with detection and elimination of duplicate states. How do we add duplicate states to a DFA?
+Step 3 and 4 of the minimization algorithm are concerned with detection and elimination of redundant states. How do we add redundant states to a DFA?
 
-Consider the properties a duplicate state, say $q_d$, must have. It is in particular duplicate to \emph{another} state, we call it $q_o$. We call the new, by $q_d$ extended DFA, $A$.
+Consider the properties a redundant state, say $q_d$, must have. It is in particular equivalent to another state, we call it $q_o$. We call the new, by $q_d$ extended DFA, $A$.
 
 %  Since we add only one state for now, $q_d$, we can assume that $q_o$ is part of the solution DFA. 
 
 \paragraph*{Outgoing transitions}
 
-We know that $q_d$, $q_o$ are duplicates, iff $\forall \sigma \in \Sigma \colon [\delta(q_d, \sigma)]_{d_A} = [\delta(q_o, \sigma)]_{d_A}$. Thus, when adding some $q_d$, we have to choose for each symbol $\sigma \in \Sigma$ at least one transition from the following set:
+We know that $q_d$, $q_o$ are equivalent, iff $\forall \sigma \in \Sigma \colon [\delta(q_d, \sigma)]_{\sim_A} = [\delta(q_o, \sigma)]_{\sim_A}$. Thus, when adding some $q_d$, we have to choose for each symbol $\sigma \in \Sigma$ at least one transition from the following set:
 \[
-	P_\sigma = \{\ ((q_d, \sigma), p)\ |\ p \in [\delta(q_o, \sigma)]_{d_A}\ \}
+	P_\sigma = \{\ ((q_d, \sigma), p)\ |\ p \in [\delta(q_o, \sigma)]_{\sim_A}\ \}
 \]
 Since the solution DFA is complete, we know that every $P_\sigma \neq \emptyset$.
 
@@ -50,32 +50,32 @@ Since the solution DFA is complete, we know that every $P_\sigma \neq \emptyset$
 
 \paragraph*{Ingoing transitions}
 
-The ingoing transitions of $q_d$ are not directly restricted through the duplicateness of $q_d$ and $q_o$.
+The ingoing transitions of $q_d$ are not directly restricted by the equivalence of $q_d$ and $q_o$.
 
 First of all, we know, that $q_o$ is reachable. We then need to give $q_d$ at least one ingoing transition. Doing this, we have to ensure, that any state $s$, that gets such an outgoing transition to $q_d$ remains in its solution equivalence class.
 	
-Thus a fitting state $s$ has to have a transition to some state in $[q_d]_{d_A} = [q_o]_{d_A}$ already. So, given a state $s$ with $((s, \sigma), t)$ and $t \in [q_o]_{d_A}$, we can add $((s, \sigma), q_d)$.
+Thus a fitting state $s$ has to have a transition to some state in $[q_d]_{\sim_A} = [q_o]_{\sim_A}$ already. So, given a state $s$ with $((s, \sigma), t)$ and $t \in [q_o]_{\sim_A}$, we can add $((s, \sigma), q_d)$.
 
-But this would make our new DFA a NFA. As a consequence we have to remove the original transition $((s, \sigma), t)$ each time we add an ingoing transition for a newly created duplicate state.
+But this would make our new DFA a NFA. As a consequence we have to remove the original transition $((s, \sigma), t)$ each time we add an ingoing transition for a newly created redundant state.
 
 So we have to choose at least one transition of
 \[
-	\{\ ((s, \sigma), q_d)\ |\ \delta(s,\sigma) \in [q_o]_{d_A}\ \}
+	\{\ ((s, \sigma), q_d)\ |\ \delta(s,\sigma) \in [q_o]_{\sim_A}\ \}
 \]
-If a $((s, \sigma), q_d)$ is chosen, remove $((s, \sigma), t)$. This leads us to the requirement, that the equivalence class of any $q_o$ has to contain at least one state with at least $2$ ingoing transitions (see fig.~\ref{fig:dfa_add_duplicate_states}). We establish the following notion to pin down this restriction:
+If a $((s, \sigma), q_d)$ is chosen, remove $((s, \sigma), t)$. This leads us to the requirement, that the equivalence class of any $q_o$ has to contain at least one state with at least $2$ ingoing transitions (see fig.~\ref{fig:dfa_add_redundant_states}). We establish the following notion to pin down this restriction:
 \[
-	duplicatable(q_o) = 1 \Leftrightarrow_{def} (\exists q \in [q_o]_{d_A}\colon |d^-(q)| \geq 2)
+	duplicatable(q_o) = 1 \Leftrightarrow_{def} (\exists q \in [q_o]_{\sim_A}\colon |d^-(q)| \geq 2)
 \]
 \begin{figure}
-	\includegraphics[width=\linewidth]{images/dfa_add_duplicate_states.png}
-	\caption{If an equivalence class (here denoted by the states in the dashed area) contains a state with 2 or more ingoing transitions (in this case $t$), then a state duplicate to any of classes states may be added. Here $q_d$ is duplicate to $q_o$ and is ``stealing'' the ingoing transition $\delta(s, a)$ from $t$.}
-	\label{fig:dfa_add_duplicate_states}
+	\includegraphics[width=\linewidth]{images/dfa_add_redundant_states.png}
+	\caption{If an equivalence class (here denoted by the states in the dashed area) contains a state with 2 or more ingoing transitions (in this case $t$), then a state equivalent to any of the classes states may be added. Here $q_d$ is equivalent to $q_o$ and is ``stealing'' the ingoing transition $\delta(s, a)$ from $t$.}
+	\label{fig:dfa_add_redundant_states}
 \end{figure}
 \gregor{Talk somewhere about eq. automaton and extending it. An eq. class of reach. q's can be max. |$\Sigma$| big. From this can compute the max. number of dupl. states which can be added.}
 
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{AddDuplicateStates\ }{$A_{sol}, d$}
+	\Function{AddRedundantStates\ }{$A_{sol}, d$}
 	\State $eq\_classes \gets \{\ \{q\}\ |\ q \in Q\ \}$
 	\State $eq\_class(q) = C$ such that $C \in eq\_classes$ and $q \in C$
 	\State $\#_{d^-}(q) = |d^-(q)|$
@@ -120,11 +120,11 @@ If a $((s, \sigma), q_d)$ is chosen, remove $((s, \sigma), t)$. This leads us to
 \end{algorithmic}
 \vspace{0.2cm}
 
-\subsection{Adding duplicate states does not change L}
+\subsection{Adding redundant states does not change L}
 
 p. 159 Hopcroft
 
-\subsection{Adding duplicate states does not change $\mmD$}
+\subsection{Adding redundant states does not change $\mmD$}
 
 To prove this statement, we will prove two minor propositions first.
 
@@ -154,12 +154,12 @@ To prove this statement, we will prove two minor propositions first.
 		
 		Via direct proof.
 		
-		Assume $m$-\MinMark(A) has done $n$ iterations (so $\mmD(A) = n$). We then know, that
+		Assume $m$-\CompDist(A) has done $n$ iterations (so $\mmD(A) = n$). We then know, that
 		\begin{itemize}
 			\item $\forall i \in [0,n-1]\colon m(i) \neq \emptyset$
 			\item $m(n)= \emptyset$
 		\end{itemize}
-		$m$-\MinMark(A) terminates iff $m(i) = \emptyset$. If the first point would not hold, then the algorithm would have stopped before.
+		$m$-\CompDist(A) terminates iff $m(i) = \emptyset$. If the first point would not hold, then the algorithm would have stopped before.
 		
 		Since the algorithm did $n$ iterations, the internal variable $i$ must be $n$ at the end of the last iteration. The terminating condition is $m(i) \neq \emptyset$; thus follows the second point.
 		
@@ -181,7 +181,7 @@ To prove this statement, we will prove two minor propositions first.
 \end{proof}
 
 \begin{theorem}[]
-	Adding duplicate states to an automaton $A$ does not increase the number of iterations in the \MinMark-algorithm for $A$.
+	Adding redundant states to an automaton $A$ does not increase the number of iterations in the \CompDist-algorithm for $A$.
 \end{theorem}
 
 \begin{proof}
@@ -190,14 +190,14 @@ To prove this statement, we will prove two minor propositions first.
 		
 		Proof per contradiction.
 		
-		Let's assume adding duplicate states $q_d^1, \ldots, q_d^n$ to a given automaton $A = (Q, \Sigma, \delta, s, F)$ results in an automaton $A' = (Q', \Sigma, \delta', s, F')$ whereas $\mmD(A) < \mmD(A')$.
+		Let's assume adding redundant states $q_d^1, \ldots, q_d^n$ to a given automaton $A = (Q, \Sigma, \delta, s, F)$ results in an automaton $A' = (Q', \Sigma, \delta', s, F')$ whereas $\mmD(A) < \mmD(A')$.
 		
 		Concerning $A'$ we can say the following:
 		\begin{itemize}
 			\item $Q' = Q \cup \{ q_d^1, \ldots, q_d^n \}$
 			%			\item $\delta \subseteq \delta'$
 			%			\item $F \subseteq F'$
-			\item W.l.o.g. $\exists q_o^1 \in Q \colon \exists q_o^2 \ldots q_o^n \in Q \colon\ d_A'(q_o^1, q_d^1), \ldots, d_A'(q_o^n, q_d^n)$
+			\item W.l.o.g. $\exists q_o^1 \in Q \colon \exists q_o^2 \ldots q_o^n \in Q \colon\ \sim_A'(q_o^1, q_d^1), \ldots, \sim_A'(q_o^n, q_d^n)$
 		\end{itemize}
 		Let us furthermore say that $\mmD(A) = i$ and $\mmD(A') = j$. Recall now lemma~\ref{ch:3:semantics-of-D(A)}:
 		\begin{multline*}
@@ -247,14 +247,14 @@ To prove this statement, we will prove two minor propositions first.
 %		
 %		Proof per contradiction.
 %		
-%		Let's assume adding a duplicate state $q_d$ to a given automaton $A = (Q, \Sigma, \delta, s, F)$ results in an automaton $A' = (Q', \Sigma, \delta', s, F')$ whereas $\mmD(A) < \mmD(A')$.
+%		Let's assume adding a redundant state $q_d$ to a given automaton $A = (Q, \Sigma, \delta, s, F)$ results in an automaton $A' = (Q', \Sigma, \delta', s, F')$ whereas $\mmD(A) < \mmD(A')$.
 %		
 %		Concerning $A'$ we can say the following:
 %		\begin{itemize}
 %			\item $Q' = Q \cup \{ q_d \}$
 %			%			\item $\delta \subseteq \delta'$
 %			%			\item $F \subseteq F'$
-%			\item $\exists q_o \in Q \colon\ d_A'(q_o, q_d)$
+%			\item $\exists q_o \in Q \colon\ \sim_A'(q_o, q_d)$
 %		\end{itemize}
 %		Let us furthermore say that $\mmD(A) = i$ and $\mmD(A') = j$. Recall now lemma~\ref{ch:3:semantics-of-D(A)}:
 %		\begin{multline*}
@@ -418,4 +418,4 @@ From step 1 of the minimization algorithm we can deduce how to add unreachable s
 	Remember that the language of a DFA $A = (Q, \Sigma, \delta, s, F)$ is defined as $L(A) = \{\ w\ |\ w \in \Sigma^* \ \}$. For any unreachable state $q$ there exists no word $v \in \Sigma^*$ such that $\delta^*(s,v) = q$. Thus such a state cannot be the cause for any word to be in $L(A)$.
 \end{proof}
 
-\noindent The question whether adding unreachable states to a DFA changes $\mmD$-value is irrelevant. This is because in the context of the minimization algorithm, unreachable states are eliminated before the \MinMark-algorithm is applied on the task DFA.
+\noindent The question whether adding unreachable states to a DFA changes $\mmD$-value is irrelevant. This is because in the context of the minimization algorithm, unreachable states are eliminated before the \CompDist-algorithm is applied on the task DFA.

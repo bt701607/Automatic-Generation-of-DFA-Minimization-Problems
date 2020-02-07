@@ -277,7 +277,11 @@ There are some formal statements and requirements. Firstly, we can state that
 	\item $A_{inter} = \RemUnr(A_{task}, \CompUnr(A_{task}))$ and
 	\item $A_{sol} = \RemEq(A_{inter}, \CompDist(A_{inter}))$
 \end{itemize}
-Therefore $A_{sol}$ has to be minimal regarding $A_{inter}$ and $A_{task}$. Secondly the languages of $A_{task}, A_{inter}$ and $A_{sol}$ must be equal. We know that \CompDist\ requires $A_{inter}$ to be complete and that \RemEq\ preserves completeness, so $A_{sol}$ is complete too.
+Therefore $A_{sol}$ has to be minimal regarding $A_{inter}$ and $A_{task}$. Secondly the languages of $A_{task}, A_{inter}$ and $A_{sol}$ must be equal. We know that \CompDist\ requires $A_{inter}$ to be complete and that \RemEq\ preserves completeness, so $A_{sol}$ is complete too. Furthermore we know that every state of $A_{reach}$ reachable since it is the output of \RemUnr.
+
+\gregor{How to define 'already found DFA sol' as requirement}
+
+\subsection{Difficulty adjustment possibilities}
 
 Concerning the execution of \MinAlg\ we find that its difficulty can be classified through various classification numbers.
 
@@ -303,16 +307,19 @@ The more symbols the alphabet of $A_{task}, A_{inter}$ and $A_{sol}$ has, the mo
 
 Even though \CompUnr\ and \RemUnr\ do not require their input DFA $A_{task}$ to be complete, it is sensible to build it that way. The implications of the completeness-property are - in comparison to the other concepts involved here - rather subtle. This is especially due to its purely representational nature, a DFA has the same language and $\mmD$-value, whether it is represented in its complete form or not. Nonetheless we shall introduce a parameter $c$, that determines if there exist unreachable states, that make $A_{task}$ incomplete. Thus an exercise lecturer could showcase this matter on a DFA and generate according exercises.
 
-\subsection{Definition and evaluation of possible requirements}
+\paragraph*{Planar drawing of $A_{task}$.}
+
+A graph $G$ is \emph{planar} if it can be represented by a drawing in the plane such that its edges do not cross. Such a drawing is then called \emph{planar drawing} of $G$. A visual aid for students would be given, if the task DFA were planar and presented as a planar drawing. In this work libraries will be used to allow the option of planarity, but neither ensuring planarity nor planar drawing will be investigated further theoretically.
+
+\paragraph*{Maximum degree of any state in $A_{task}$.}
+
+The \emph{degree} $deg(q)$ of a state $q \in Q$ in a DFA $A$ is defined as $deg(q) = |d^-(q)| + |d^+(q)|$, so the total number of transitions in which $q$ participates. By capping the maximum degree for all states, the graphical representation of the DFA would be more clear. In this work the inclusion of a maximum degree parameter is omitted.
+
+%Note that $deg(q) \geq |\Sigma|$ for any complete DFA, since states of complete DFAs have to use all alphabet symbols on outgoing transitions.
+
+\subsection{Summary}
 
 \label{ch:1:determined-requirements}
-Dismissed:
-\begin{itemize}
-	\item $h(A_{sol}, A_{task}) = |Q_{task}|\ /\ |Q_{sol}|$
-	\item number of transitions
-	\item max degree of a node (Why not this?)
-	\item Does GraphViz have a heuristic?
-\end{itemize}
 Accepted general criteria:
 \begin{itemize}
 	\item[->] $L(A_{sol}) = L(A_{inter}) = L(A_{task})$
@@ -325,8 +332,7 @@ Accepted solution DFA criteria:
 	\item[->] number of \CompDist\ iterations ($\mmD(A_{sol})$)
 	\item[->] alphabet size
 	\item[->] number of accepting states
-	\item[->] planarity (can be checked in $O(|Q_{sol}|)$)
-	\item[->] completeness (follows)
+	\item[->] planarity
 	\item[->] $A_{sol}$ is new
 	
 	\begin{definition}[New DFAs] \label{ch:1:new-dfa}
@@ -342,7 +348,7 @@ Accepted intermediate DFA criteria:
 Accepted task DFA criteria:
 \begin{itemize}
 	\item[->] number of redundant states
-	\item[->] planarity (can be checked in $O(|Q_{task}|)$)
+	\item[->] planarity
 	\item[->] completeness
 \end{itemize}
 
@@ -387,12 +393,12 @@ Here follow problem definitions for the two steps, which specify all needed info
 		
 		$p \in \{0,1\},$
 		
-		$d, u \in \mathbb{N}$
+		$r, u \in \mathbb{N}$
 		\item[Request:] $ $
 		
-		A DFA $A_{task} = (Q', \Sigma', \delta', s', F')$ with reachable redundant states $q_1 \ldots q_d$ and unreachable states $p_1 \ldots p_u$, such that
+		A DFA $A_{task} = (Q', \Sigma', \delta', s', F')$ with reachable redundant states $q_1 \ldots q_r$ and unreachable states $p_1 \ldots p_u$, such that
 		
-		$Q = Q' \cup \{ q_1, \ldots q_d, p_1 \ldots p_u \}$,
+		$Q = Q' \cup \{ q_1, \ldots q_r, p_1 \ldots p_u \}$,
 		
 		$\Sigma = \Sigma'$, $s = s'$,
 		
@@ -409,7 +415,7 @@ Here follow problem definitions for the two steps, which specify all needed info
 \begin{algorithmic}[1]
 	\Function{GenerateDFAMinimizationProblem}{$q, a, f, m_{min}, m_{max}, p_1, p_2, d, u$}
 	\State $A_{sol} \gets \textsc{BuildNewMinimalDFA}(q, a, f, m_{min}, m_{max}, p_1)$
-	\State $A_{task} \gets \textsc{ExtendMinimalDFA}(A_{sol}, p_2, d, u)$
+	\State $A_{task} \gets \textsc{ExtendMinimalDFA}(A_{sol}, p_2, r, u)$
 	\State \Return $A_{sol}, A_{task}$
 	\EndFunction
 \end{algorithmic}

@@ -1,19 +1,28 @@
 % !TeX spellcheck = en_US
 
-\chapter{Building solution DFAs} \label{ch:2}
+\chapter{Generating minimal DFAs} \label{ch:2}
 
-We want an algorithm for DFA generation that fulfills the following conditions (see~\ref{ch:1:determined-requirements}):
-\begin{itemize}
-	\item[->] minimal
-	\item[->] number of states
-	\item[->] number of \CompDist\ iterations ($\mmD(A_{sol})$)
-	\item[->] alphabet size
-	\item[->] number of accepting states
-	\item[->] planarity (can be checked in $O(|Q_{sol}|)$)
-	\item[->] completeness (for easier further processing)
-	\item[->] $A_{sol}$ is new
-\end{itemize}
-These conditions have been formally subsumed as BuildNewMinimalDFA-problem (see def.~\ref{ch:1:def:BuildNewMinimalDFA}). We consider different approaches to solve this problem, of which those using trial-and-error will be discussed most broadly.
+We seek algorithms for generation of minimal DFAs that fulfilling the conditions defined in the requirements analysis section~\ref{ch:1:determined-requirements}. We formally subsume these conditions via the GenerateNewMinimalDFA-problem:
+\begin{definition}[GenerateNewMinimalDFA] $ $ \\
+	$ $ \vspace{-0.4cm} \\
+	\noindent $\underline{\emph{Given:}}$
+	\vspace{-0.5cm}
+	\begin{align*}
+	\mathfrak{e} \in \mathbb{N}\ \ \ & \emph{number of states} \\
+	a \in \mathbb{N}\ \ \ & \emph{alphabet size} \\
+	f \in \mathbb{N}\ \ \ & \emph{number of final states} \\
+	m_{min}, m_{max} \in \mathbb{N}\ \ \ & \emph{lower and upper bound for $\mmD$-value} \\
+	p \in \{0,1\}\ \ \ & \emph{planarity-bit}
+	\end{align*}
+	\noindent $\underline{\emph{Task:}}$ \emph{Compute, if it exists, a solution DFA $A_{sol}$ with}
+	\begin{itemize}
+		\item $|Q_{sol}|=\mathfrak{e}$, $|\Sigma_{sol}|=a$, $|F_{sol}|=f$
+		\item $m_{min} \le \mmD(A_{sol}) \le m_{max}$
+		\item $A_{sol}$ \emph{being planar iff} $p = 1$
+		\item $A_{sol}$ \emph{being new}
+	\end{itemize}
+\end{definition}
+\noindent We consider different approaches to solve this problem, of which those using trial-and-error will be discussed most broadly.
 
 Note that the presented algorithms will not be able to compute all of $\mathcal{A}_{min}$ since we are going to exclude minimal DFAs that are practical isomorph to already found ones.
 
@@ -29,12 +38,12 @@ By constructing test DFAs with already correct alphabet size and number of (fina
 
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{BuildNewMinimalDFA-1\ }{$q, a, f, m_{min}, m_{max} \in \mathbb{N}, p \in \{0,1\}$}
+	\Function{BuildNewMinimalDFA-1\ }{$\mathfrak{e}, a, f, m_{min}, m_{max} \in \mathbb{N}, p \in \{0,1\}$}
 		\While {True}
 		
 			\vspace{0.2cm}
 		
-			\State generate DFA $A_{test}$ with $|Q|, |\Sigma|, |F|$ matching $q, a, f$
+			\State generate DFA $A_{test}$ with $|Q|, |\Sigma|, |F|$ matching $\mathfrak{e}, a, f$
 			
 			\vspace{0.2cm}
 			
@@ -80,7 +89,7 @@ To get $\mmD(A_{test})$, we have to run \CompDist\ entirely anyway. Hence we can
 	\EndFunction
 \end{algorithmic}
 \vspace{0.2cm}
-Since \CompDist\ computes all distinguishable state pairs $\neg \sim_A$, we test in line $9$, whether there is a pair of distinguishable states not in $\neg \sim_A$.
+Since \CompDist\ basically computes all distinguishable state pairs $\not\sim_A$, we test in line $9$, whether there is a pair of distinguishable states not in $\not\sim_A$.
 
 Regarding the unreachable states, we can just use \CompUnr\ and test whether the computed set is empty:
 \vspace{0.2cm}
@@ -108,11 +117,11 @@ With this scheme we can fetch once all DFAs matching the search parameters. Thus
 A more concrete specification of this proceeding is shown below, embedded in the main algorithm:
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{BuildNewMinimalDFA-2\ }{$q, a, f, m_{min}, m_{max}, p$}
+	\Function{BuildNewMinimalDFA-2\ }{$\mathfrak{e}, a, f, m_{min}, m_{max}, p$}
 	
 		\vspace{0.2cm}
 	
-		\State $l \gets$ all DFAs in DB1 matching $q, a, f, m_{min}, m_{max}, p$
+		\State $l \gets$ all DFAs in DB1 matching $\mathfrak{e}, a, f, m_{min}, m_{max}, p$
 		
 		\vspace{0.2cm}
 		
@@ -138,25 +147,25 @@ A more concrete specification of this proceeding is shown below, embedded in the
 
 We now approach the task of generating a random DFA whereas alphabet and number of (final) states are set.
 
-Corollary~\ref{ch:1:cor:all-min-dfa-ism} tells us, that the states names are irrelevant for the minimality of a DFA, therefore we will give our generated DFAs simply the states $q_0, \ldots, q_{q-1}$. For alphabet symbols this is not given. But since we \gregor{TODO minimality and planarity complete under isomorphy}
+Corollary~\ref{ch:1:cor:all-min-dfa-ism} tells us, that the states names are irrelevant for the minimality of a DFA, therefore we will give our generated DFAs simply the states $e_1, \ldots, e_\mathfrak{e}$. For alphabet symbols this is not given. But since we \gregor{TODO minimality and planarity complete under isomorphy}
 
-We can state, that our start state is $q_0 \in Q$, since we apply an isomorphism to every that, such that its start state is relabeled to $q_0$.
+We can state, that our start state is $e_1 \in Q$, since we can apply an isomorphism to every DFA, such that its start state is renamed to $e_1$.
 
 The remaining elements that need to be defined are $\delta$ and $F$. The set of final states is supposed to have a size of $f$ and be a subset of $Q$. Therefore we can simply choose randomly $f$ distinct states from $Q$.
 
-The transition function has to make the DFA complete, so we have to choose an ``end'' state for every combination in $Q \times \Sigma$. There is no restriction as to what this end state shall be, so given $q \in Q$ and $\sigma \in \Sigma$ we can randomly choose an end state from $Q$.
+The transition function has to make the DFA complete, so we have to choose an ``end'' state for every combination in $Q \times \Sigma$. There is no restriction as to what this end state shall be, so given $e \in Q$ and $\sigma \in \Sigma$ we can randomly choose an end state from $Q$.
 
 With defining how to compute $\delta$ we have covered all elements of a DFA.
 
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{BuildNewMinimalDFA-3a\ }{$q, a, f, m_{min}, m_{max}, p$}
+	\Function{BuildNewMinimalDFA-3a\ }{$\mathfrak{e}, a, f, m_{min}, m_{max}, p$}
 	
 		\vspace{0.2cm}
 	
-		\State $l \gets$ all DFAs in DB1 matching $q, a, f, m_{min}, m_{max}, p$
-		\State $Q \gets \{q_0, \ldots, q_{q-1}\}$
-		\State $\Sigma \gets \{\sigma_0, \ldots, \sigma_{a-1}\}$
+		\State $l \gets$ all DFAs in DB1 matching $\mathfrak{e}, a, f, m_{min}, m_{max}, p$
+		\State $Q \gets \{e_1, \ldots, e_\mathfrak{e}\}$
+		\State $\Sigma \gets \{\sigma_1, \ldots, \sigma_a\}$
 		
 		\vspace{0.2cm}
 		
@@ -165,13 +174,13 @@ With defining how to compute $\delta$ we have covered all elements of a DFA.
 		\vspace{0.2cm}
 		
 			\State $\delta \gets \emptyset$
-			\For {$q$ \textbf{in} $Q$}
+			\For {$e$ \textbf{in} $Q$}
 				\For {$\sigma$ \textbf{in} $\Sigma$}
-					\State $q' \gets$ random chosen state from $Q$
-					\State $\delta \gets \delta \cup \{((q,\sigma),q')\}$
+					\State $e' \gets$ random chosen state from $Q$
+					\State $\delta \gets \delta \cup \{((e,\sigma),e')\}$
 				\EndFor
 			\EndFor
-			\State $s \gets 0$
+			\State $s \gets e_1$
 			\State $F \gets$ random sample of $f$ states from $Q$
 			\State $A_{test} \gets (Q, \Sigma, \delta, s, F)$
 			
@@ -206,37 +215,37 @@ The second method of test DFA generation is based on the idea, that instead of r
 
 % finite enumerations, how many
 
-Both enumerations are finite, given $q$ and $a$. Having a requirement of $f$ final states, then $q$ choose $f$ is the number of possible $F$-configurations. On the other hand there are $q^{qa}$ possible $\delta$-configurations. \gregor{why}
+Both enumerations are finite, given $\mathfrak{e}$ and $a$. Having a requirement of $f$ final states, then $\mathfrak{e}$ choose $f$ is the number of possible $F$-configurations. On the other hand there are $\mathfrak{e}^{\mathfrak{e}*a}$ possible $\delta$-configurations: We have to choose one of $\mathfrak{e}$ possible end states for every combination in $Q\times\Sigma$ - so $\mathfrak{e}*a$ times.
 
-% Two bitfields
+% Two fields
 
-We will represent the state of an enumeration with two bit-fields $b_f$ and $b_t$. The first bit-field shall have $q$ Bits, whereas Bit $b_f[i] \in \{0,1\}$ represents the information, whether $q_i$ is a final state or not. The second bit-field shall have $q*a*\log_2(q)$ Bits, such that Bit $b_t[i * a + j] = k$ says, that $\delta(q_i, \sigma_j) = q_k$. These semantics are illustrated in figure~\ref{fig:dfa_enum_bit_fields}.
+Again we will call our states and symbols w.l.o.g.\ $e_1,\ldots,e_\mathfrak{e}$ resp.\ $\sigma_1,\ldots,\sigma_a$. We will represent the state of an enumeration with two fields $F_F$ and $F_\delta$. The first field shall have $\mathfrak{e}$ Bits, whereas Bit $F_F[i] \in [0,1]$ represents the information, whether $\mathfrak{e}_i$ is a final state or not. The second field shall have $\mathfrak{e}*a$ entries containing state indices, such that entry $F_\delta[i * a + j] = k, k\in[1,\mathfrak{e}]$ says, that $\delta(e_i, \sigma_j) = e_k$. These semantics are illustrated in figure~\ref{fig:dfa_enum_bit_fields}.
 
-% -- EX example of two bitfields and their meaning
+% -- EX example of the two fields and their meaning
 
 \begin{figure}
 	\includegraphics[width=\linewidth]{images/dfa_enum_bit_fields.png}
-	\caption{Example for two possible configurations of the bit-fields $b_f$ and $b_t$ given $q, a$ and $f$. Below the corresponding DFA is drawn.}
+	\caption{Example for two possible configurations of the fields $F_F$ and $F_\delta$ given $\mathfrak{e}, a$ and $f$. Below the corresponding DFA is drawn.}
 	\label{fig:dfa_enum_bit_fields}
 \end{figure}
 
 % how to compute next DFA
 
-Given an enumeration state $b_f, b_t$ and $q, a, f$ we will then compute the next DFA based on this state as follows. We will treat both bit-fields as numbers, $b_f$ as binary and $b_t$ as $\log_2(q)$-ary. To get to the next DFA, we will first increment $b_t$ by $1$. If $b_t = 1 \ldots 1$, then we increment $b_f$ until it contains $f$ ones (again) and set $b_t$ to $0 \ldots 0$. This behaviour is summarized in the following algorithm: \gregor{Clarify what happens at 11111...}
+Given an enumeration state $b_f, b_t$ and $\mathfrak{e}, a, f$ we will then compute the next DFA based on this state as follows. We will treat both bit-fields as numbers, $b_f$ as binary and $b_t$ as $\log_2(\mathfrak{e})$-ary. To get to the next DFA, we will first increment $b_t$ by $1$. If $b_t = 1 \ldots 1$, then we increment $b_f$ until it contains $f$ ones (again) and set $b_t$ to $0 \ldots 0$. This behaviour is summarized in the following algorithm: \gregor{Clarify what happens at 11111...}
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{IncrementEnumProgress\ }{$b_f, b_t, q, a, f$}
-	\State add $1$ to $(b_t)_2$
-	\If {$b_t = 0 \ldots 0$}
-		\While {$\#_1(b_f) \neq f$}
-			\State add $1$ to $(b_f)_2$
-			\If {$b_f = 0\ldots 0$}
+	\Function{IncrementEnumProgress\ }{$F_F, F_\delta, \mathfrak{e}, a, f$}
+	\State add $1$ to $(F_\delta)_\mathfrak{e}$
+	\If {$F_\delta = 0 \ldots 0$}
+		\While {$\#_1(F_F) \neq f$} \Comment{if the number of 1s in $F_F$ is not $f$}
+			\State add $1$ to $(F_F)_2$
+			\If {$F_F = 0\ldots 0$}
 				\State \Return $\bot$
 			\EndIf
-		\State $b_t = 0 \ldots 0$
+		\State $F_\delta = 0 \ldots 0$
 		\EndWhile
 	\EndIf
-	\State \Return $b_f, b_t$
+	\State \Return $F_F, F_\delta$
 	\EndFunction
 \end{algorithmic}
 \vspace{0.2cm}
@@ -246,47 +255,47 @@ The example in figure~\ref{fig:dfa_enum_incr} illustrates such increments.
 
 \begin{figure}
 	\includegraphics[width=\linewidth]{images/dfa_enum_incr.png}
-	\caption{The upper half shows how a $b_t$-increment results in a change in the resulting DFAs transition function: $\delta(q_3, \sigma_1) = q_1$ becomes $\delta(q_3, \sigma_1) = q_2$. The lower half shows what happens, if $b_t$ has reached its end.}
+	\caption{The upper half shows how a $F_\delta$-increment results in a change in the resulting DFAs transition function: $\delta(e_3, \sigma_1) = e_1$ becomes $\delta(e_3, \sigma_1) = e_2$. The lower half shows what happens, if $F_\delta$ has reached its end.}
 	\label{fig:dfa_enum_incr}
 \end{figure}
 
 Based on the incremented bit-fields the new DFA can be build according to the semantics defined above:
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{DFAfromEnumProgress\ }{$b_f, b_t, f$}
-	\State $Q \gets \{q_0, \ldots, q_{q-1}\}$
-	\State $\Sigma \gets \{\sigma_0, \ldots, \sigma_{a-1}\}$
+	\Function{DFAfromEnumProgress\ }{$F_F, F_\delta, \mathfrak{e}, a, f$}
+	\State $Q \gets \{e_1, \ldots, e_\mathfrak{e}\}$
+	\State $\Sigma \gets \{\sigma_1, \ldots, \sigma_a\}$
 	\State $\delta \gets \emptyset$
-	\For {$i$ \textbf{in} $[0, \ldots, q-1]$}
-		\For {$j$ \textbf{in} $[0, \ldots, a-1]$}
-			\State $\delta \gets \delta \cup \{((q_i, \sigma_j), q_{b_t[i * a + j]})\}$
+	\For {$i$ \textbf{in} $[1, \ldots, \mathfrak{e}]$}
+		\For {$j$ \textbf{in} $[1, \ldots, a]$}
+            \State $\delta(e_i, \sigma_j) = e_{F_\delta[i * a + j]}$
 		\EndFor
 	\EndFor
-	\State $s \gets q_0$
-	\State $F \gets \{ q_i | i \in [0, \ldots, q-1] \land b_f[i] = 1 \}$
+	\State $s \gets e_1$
+	\State $F \gets \{\ e_i\ |\ i \in [1, \ldots, \mathfrak{e}] \land F_F[i] = 1\ \}$
 	\State \Return $(Q, \Sigma, \delta, s, F)$
 	\EndFunction
 \end{algorithmic}
 \vspace{0.2cm}
-The initial bit-field values are each time $0\ldots 0$. Note how construction and use of these bit-fields results in DFAs with correct alphabet size and number of (final) states. We define $Q$ and $\Sigma$ as in the random generation method. An enumeration can finish either because a matching DFA has been found or all DFAs have been enumerated \gregor{More, beautiful, explanation. Find proper place.}
+The initial field values are each time $0\ldots 0$. Note how construction and use of these fields results in DFAs with correct alphabet size and number of (final) states. An enumeration can finish either because a matching DFA has been found or all DFAs have been enumerated.
 
 % saving enumProgress for later progression
 
-Once the enumeration within a call of \textsc{BuildNewMinimalDFA} has been finished, it is reasonable to save the progress (meaning the current content of $b_f, b_t$), such that during the next call enumeration can be resumed from that point on. The alternative would mean, that the enumeration is run in its entirety until that point, whereas all so far found DFAs would be found to be not new. Thus we introduce a second database $DB2$ with the following table:
+Once the enumeration within a call of \textsc{BuildNewMinimalDFA} has been finished, it is reasonable to \emph{save} the enumeration progress (meaning the current content of $F_F, F_\delta$), such that during the next call enumeration can be resumed from that point on. The alternative would mean, that the enumeration is run in its entirety until that point again, whereas all so far found DFAs would be found to be not new. Thus we introduce a second database $DB2$ with the following table:
 \begin{center}
 	\begin{tabular}{c c c c c c}
-		$|Q_A|$ & |$\Sigma_A$| & $b_f$ & $b_t$
+		$|Q_A|$ & |$\Sigma_A$| & $F_F$ & $F_\delta$
 	\end{tabular}
 \end{center}
 We reduce the enumeration room for each calculation.
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{BuildNewMinimalDFA-3b\ }{$q, a, f, m_{min}, m_{max}, p$}
+	\Function{BuildNewMinimalDFA-3b\ }{$\mathfrak{e}, a, f, m_{min}, m_{max}, p$}
 	
 		\vspace{0.2cm}
 	
-		\State $l \gets$ all DFAs in DB1 matching $q, a, f, m_{min}, m_{max}, p$
-		\State $b_f, b_t \gets$ load enumeration progress for $q, a, f, p$ from DB2
+		\State $l \gets$ all DFAs in DB1 matching $\mathfrak{e}, a, f, m_{min}, m_{max}, p$
+		\State $F_F, F_\delta \gets$ load enumeration progress for $\mathfrak{e}, a, f, p$ from DB2
 		
 		\vspace{0.2cm}
 		
@@ -294,11 +303,11 @@ We reduce the enumeration room for each calculation.
 		
 			\vspace{0.2cm}
 		
-			\If {$b_f, b_t$ is finished}
-				\State save $b_f, b_t$
+			\If {$F_F, F_\delta$ is finished}
+				\State save $F_F, F_\delta$
 				\State\Return $\bot$
 			\EndIf
-			\State $A_{test} \gets$ next DFA based on $b_f, b_t$
+			\State $A_{test} \gets$ next DFA based on $F_F, F_\delta$
 			
 			\vspace{0.2cm}
 			
@@ -316,7 +325,7 @@ We reduce the enumeration room for each calculation.
 			
 			\vspace{0.2cm}
 			
-			\State save $b_f, b_t$ in DB2
+			\State save $F_F, F_\delta$ in DB2
 			\State save $A_{test}$ and its respective properties in DB1
 			\State\Return $A_{test}$
 		\EndWhile
@@ -334,10 +343,8 @@ rewrite everything in C
 
 solve P vs NP
 
-\section{Building directly minimal DFAs}
+\subsection{Related Research}
 
-\subsection{Research}
-
-\subsection{Building $m(i)$ bottom up}
+\section{Alternative approach: Building $m(i)$ bottom up}
 
 Build $m$ from $m$-\CompDist\ iteratively. (Why would this basically result in running \CompDist\ all the time?)

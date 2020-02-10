@@ -7,8 +7,23 @@
 	\item theoretical informatics
 	\item automata theory
 	\item value of this theory
-	\item typical topics, why typical
-	\item why automation
+	\item typical topics (minimization), why typical
+	\item sketch situation
+	\item why
+	
+	- science
+	
+	- increased clarification which kind of tasks can be generated, and where difficulties of those tasks lie
+	
+	automation allows
+	
+	- freeing time for other things, e.g. research, helping students face-to-face, designing the whole exercise sheet
+	
+	- generation of tasks which lie in a well-defined range
+	
+	- increased predictability and consistency of the generated task properties, which can be adjusted accurately through various parameters
+	
+	- saves human operators from the generating task which involves monotonous work
 \end{itemize}
 
 This work lays out the theory for a program solving this task. As a consequence, parameters, which are sensible as user input, will be incorporated in problem definitions.
@@ -98,26 +113,57 @@ Note that practical isomorphy between two DFAs $A_1, A_2$ does not imply $L(A_1)
 \subsection{Equivalent and distinguishable state pairs}
 
 \begin{definition}[Equivalent and Distinguishable State Pairs]\cite[p. 154]{hopcroft01}
-	A state pair $q_0, q_1 \in Q$ of a DFA $A = (Q, \Sigma, \delta, s, F)$ is called \emph{equivalent}, iff $\sim_A(q_0, q_1)$ is true, whereas
+	A state pair $q_1, q_2 \in Q$ of a DFA $A = (Q, \Sigma, \delta, s, F)$ is called \emph{equivalent}, iff $\sim_A(q_1, q_2)$ is true, whereas
 	\begin{displaymath}
-	q_0\ \sim_A\ q_1\ \Leftrightarrow_{def}\ \forall z \in \Sigma^* \colon\ (\delta^*(q_0, z) \in F \Leftrightarrow \delta^*(q_1, z) \in F)
+	q_1\ \sim_A\ q_2 \Leftrightarrow_{def}\ \forall z \in \Sigma^* \colon\ (\delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)
 	\end{displaymath}
-	If $(q_0, q_1) \notin \sim_A$, then $q_0$ and $q_1$ are called a \emph{distinguishable} state pair.
+	If $q_0 \not\sim_A q_1$, then $q_0$ and $q_1$ are called a \emph{distinguishable} state pair. The relation $\sim_A$ is an equivalence relation
 \end{definition}
-\noindent Note that the relation $\sim_A$ is indeed an equivalence relation.
+%\noindent Note the similarity between $\equiv_{L(A)}$ and $\sim_A$.:
+%\begin{align*}
+%	x\ \equiv_{L(A)}\ y\ \Leftrightarrow&\ \forall z\in\Sigma^*\colon (xz \in L \Leftrightarrow yz \in L) \\
+%	& \\
+%	q_1\ \sim_A\ q_2\ \Leftrightarrow&\ \forall z \in \Sigma^* \colon\ (\delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)
+%\end{align*}
+%We will prove the following statement regarding both relations:
+%\begin{proposition}[Relationship of $\equiv_{L(A)}$ and $\sim_A$] \label{ch:1:prop-ner-eq} $ $ \\
+%    \[
+%    	x \equiv_{L(A)} y\ \Leftrightarrow\ \delta^*(s,x)=q_1\ \land\ \delta^*(s,y)=q_2\ \land\ q_1 \sim_A q_2
+%    \]
+%\end{proposition}
+%\noindent Informally said: $x \equiv_{L(A)} y$ is true if and only if $q_1 \sim_A q_2$ whereas $q_1, q_2$ are reachable via $x,y$.
+%\begin{proof} Via direct proof.
+%    \begin{align*}
+%    \ \delta^*(s,x)=q_1 \land \delta^*(s,y)=q_2\ \land\ & q_1 \sim_A q_2 \\
+%    \Leftrightarrow\ \delta^*(s,x)=q_1 \land \delta^*(s,y)=q_2\ \land\ &(\forall z \in \Sigma^* \colon\ \delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F) \\
+%    \Leftrightarrow\hspace{5.65cm}&\ \forall z \in \Sigma^* \colon\ \delta^*(\delta^*(s,x), z) \in F \Leftrightarrow \delta^*(\delta^*(s,y), z) \in F \\
+%    \Leftrightarrow\hspace{5.65cm}&\ \forall z \in \Sigma^* \colon\ \delta^*(s,xz) \in F \Leftrightarrow \delta^*(s,yz) \in F \\
+%    \Leftrightarrow\hspace{5.65cm}&\ \forall z \in \Sigma^* \colon\ xz \in L(A) \Leftrightarrow yz \in L(A) \\
+%    \Leftrightarrow\hspace{5.65cm}& x \equiv_{L(A)} y
+%    \end{align*}
+%\end{proof}
+%\begin{corollary}
+%    If the DFA $A$ is accessible, then there exists a $1:1$-correspondence between the equivalence classes of $\equiv_{L(A)}$ and $\sim_A$.
+%\end{corollary}
 
-\begin{itemize}
-	\item equivalent state pairs
-	\item equivalent states
-	\item distinguishable state pairs
-	\item distinguishable states
-\end{itemize}
+%\noindent Proposition~\ref{ch:1:prop-ner-eq} can be supplemented by an even stronger declaration. Towards this declaration we first define, analogous to the equivalence class automaton, the \emph{$\sim$-equivalence automaton} $A_{\sim_A} = (Q_{\sim_A}, \Sigma_{\sim_A}, \delta_{\sim_A}, s_{\sim_A}, F_{\sim_A})$ to a DFA $A$:
+%\begin{itemize}
+%    \item $Q_{\sim_A} = \{[q]_{\sim_A} | q \in Q\}$
+%    \item $\Sigma_{\sim_A} = \Sigma$
+%    \item $\delta_{\sim_A}([q]_{\sim_A}, \sigma) = [\delta(q, \sigma)]_{\sim_A}, \forall q \in Q, \sigma \in \Sigma$
+%    \item $s_{\sim_A} = [s]_{\sim_A}$
+%    \item $F_{\sim_A} = \{[q]_{\sim_A} | q \in Q\}$
+%\end{itemize}
+
+%\begin{theorem}
+%    If the DFA $A$ is accessible, then $A_{\sim_A}$ is minimal and thus isomorph to $A_L$.
+%\end{theorem}
 
 \subsection{The minimization algorithm}
 
 This minimization algorithm \MinAlg\ works in four major steps, removing essentially states in such a way, that no unreachable states and no equivalent state pairs are left.
 \begin{enumerate}
-	\item Compute all unreachable states via breadth-first search for example.
+	\item Compute all unreachable states via breadth-first search.
 	
 	\vspace{0.2cm}
 	\begin{algorithmic}[1]
@@ -140,17 +186,12 @@ This minimization algorithm \MinAlg\ works in four major steps, removing essenti
 	\vspace{0.2cm}
 	\begin{algorithmic}[1]
 		\Function{\RemUnr}{$A, U$}
-			\For {$q$ \textbf{in} $U$}
-				\If {$q \in F$}
-					\State $F \gets F \ \{q\}$
-				\EndIf
-				\State $\delta \gets \delta \setminus \{\ ((q_1, \sigma), q_2) \in \delta\ |\ q_1 = q \lor q_2 = q\ \}$
-			\EndFor
-			\State \Return $A$
+            \State $\delta' \gets \delta \setminus \{\ ((q,\sigma),p)\ |\ q\in U\ \lor\ p\in U\ \}$
+			\State \Return $(Q \setminus U, \Sigma, \delta', s, F \setminus U)$
 		\EndFunction
 	\end{algorithmic}
 
-	\item Compute all distinguishable state pairs ($\neg \sim_A(p, q)$).
+	\item Compute all equivalent state pairs ($\sim_A$).
 	
 	\vspace{0.2cm}
 	\begin{algorithmic}[1]
@@ -160,58 +201,39 @@ This minimization algorithm \MinAlg\ works in four major steps, removing essenti
 			\State $M' \gets \{ (p,q)\ |\ (p,q) \notin M \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in M \}$
 			\State $M \gets M \cup M'$
 		\doWhile {$M' \neq \emptyset$}
-		\State \Return $M$
+		\State \Return $Q^2 \setminus M$
 		\EndFunction
 	\end{algorithmic}
 	Note that \CompDist\ requires its input automaton to be complete. \gregor{Why?}
 
-	\item Merge all equivalent state pairs, which are exactly those, that are not in $\neg \sim_A$.
+	\item Merge all equivalent state pairs, which are exactly those in $\sim_A$.
 	
 	\vspace{0.2cm}
 	\begin{algorithmic}[1] \label{ch:1:minmerge}
-		\Function{\RemEq}{$A, \neg \sim_A$}
-			\State $\sim_A \gets Q^2 \setminus \neg \sim_A$
-			\While {$(p,q) \in \sim_A$}
-				\State $\sim_A \gets \sim_A \setminus \{ (p,q) \}$
-				\If {$p = q$}
-					\State \textbf{continue}
-				\EndIf
-				\State
-				\State $Q \gets Q \setminus \{q\}$
-				\If {$q \in F$}
-					\State $F \gets F \setminus \{q\}$
-				\EndIf
-				\For {$((q_0, \sigma),q_1)$ \textbf{in} $\delta$}
-					\If {$q_0 = q$}
-						\State $q_0 \gets p$
-					\EndIf
-					\If {$q_1 = q$}
-						\State $q_1 \gets p$
-					\EndIf
-				\EndFor
-				\State
-				\For {$(q_0,q_1)$ \textbf{in} $\sim_A$}
-					\If {$q_0 = q$}
-						\State $q_0 \gets p$
-					\EndIf
-					\If {$q_1 = q$}
-						\State $q_1 \gets p$
-					\EndIf
-				\EndFor
-				%\State exchange all occurrences of $q$ in $A$ and $\sim_A$ by $p$
-			\EndWhile
-			\State \Return $A$
+		\Function{\RemEq}{$A$, $\sim_A$} \Comment{$[\cdot]_{\sim_A}$ shall be abbreviated $[\cdot]$}
+            \State $Q_E \gets \emptyset$
+            \State $\delta_E \gets \emptyset$
+            \State $F_E \gets \emptyset$
+            \For {$q$ \textbf{in} $Q$}
+                \State Add $[q]$ to $Q_E$
+                \For {$\sigma$ \textbf{in} $\Sigma$}
+                    \State $\delta_E([q], \sigma) = [\delta(q, \sigma)]$
+                \EndFor
+                \If {$q \in F$}
+                    \State Add $[q]$ to $F_E$
+                \EndIf
+            \EndFor
+			\State \Return $(Q_E, \Sigma, \delta_E, [s], F_E)$
 		\EndFunction
 	\end{algorithmic}
-	Note that \RemEq\ preserves completeness, since it does only remove transitions from those state, that are removed anyway from the automaton.
-	\gregor{\RemEq\ constructs possibly nondet. DFAs on its way. Write it more explicit. Probably someone has?}
+	Note that \RemEq\ creates complete automatons.
 \end{enumerate}
-\begin{theorem}
+\begin{theorem}\label{ch:1:min-alg-correct}
 	The minimization algorithm computes a minimal DFA to its input DFA.
 \end{theorem}
-\noindent The definition of this DFA minimization algorithm is inspired by Schöning~\cite[p. 46]{schoening01}.
+\noindent The definition of this DFA minimization algorithm is inspired by Schöning~\cite[p. 46]{schoening01}, Hopcroft~\cite[p. 161]{hopcroft01} and Högberg~\cite[p. 10]{hoegberg20}.
 
-\paragraph*{$m$-\CompDist.}
+\subsection{$m$-\CompDist.}
 
 When looking at \CompDist, one notes, that it computes distinct subsets of $Q \times Q$ on the way. Indeed, one could write the algorithm in such a way, that these subsets are explicitly computed in form of a function $m\colon\mathbb{N}\to\mathcal{P}(Q\times Q)$:
 \vspace{0.2cm}
@@ -231,22 +253,37 @@ Using this redefinition, we can easier refer to the state pairs marked in a cert
 
 We will denote the number of iterations done by \CompDist\ on an DFA $A$ as $\mmD(A)$. Note that $\mmD(A) = \max n \in \mathbb{N}\ |\ m(n) \neq \emptyset$. \gregor{Does that note maybe fit very well to the proof of lemma~\ref{ch:3:semantics-of-D(A)}?}
 
-\subsection{Essential and redundant states}
+%\subsection{\MinAlg-partition of a DFA}
+%
+%When looking at \MinAlg, one may note, that we can partition the states $Q_A$ of any DFA $A$ into three parts:
+%\begin{itemize}
+%	\item a subset of \emph{unreachable} states $U_A = \{\ u_1, \ldots, u_\mathfrak{u}\ \}$ of size $\mathfrak{u}$, found and removed in step 1 and 2
+%	\item a subset of \emph{redundant} states $R_A = \{\ r_1, \ldots, r_\mathfrak{r}\ \}$ of size $\mathfrak{r}$, found and removed in step 3 and 4
+%	\item a subset of \emph{essential} states $E_A = \{\ e_1, \ldots, e_\mathfrak{e}\ \}$ of size $\mathfrak{e}$, which are left over after applying the algorithm
+%\end{itemize}
+%Note that the set of essential states to a DFA is dependent on the implementation of \RemEq, but we know, that there will always be states left over, and for a given DFA the number will always be the same \gregor{why}.
 
-When looking at \CompDist\ and \RemEq\ one furthermore notes, that they essentially
-\begin{enumerate}
-	\item compute the equivalence classes of $\sim_A$ (by exploring for each state pair whether its equivalent)
-	
-	$eq\_classes(\sim_A) = \{ [q]_{\sim_A} | q \in Q \} = \{C_0,\ldots,C_n\}$
-	\item choose one state $e_i$ of each equivalence class $C_i$ and merge all other states towards it (\RemEq\ never creates new states, but transfers transitions)
-\end{enumerate}
-These dedicated states $e_0, \ldots, e_n$ then correspond exactly to the states of the equivalence automaton - each state represents one equivalence class, and every equivalence class is represented by one state.
+%\gregor{Example: In~\ref{fig:dfa_ex_task} and~\ref{fig:dfa_ex_sol} the state pairs $(A,D), (C,E)$ are equivalent and all others distinguishable. The states $A, G, C, B$ are essential, for they show up in the minimized automaton. The states $D, E$ are therefore redundant.}
 
-Since \MinAlg\ can be applied to any DFA, we can be sure that there exist states $e_0, \ldots, e_n$ in every automaton $A$, which would remain as set of states for the automaton \MinAlg($A$). We shall name these states \emph{essential} states. All states that will not be part of the by \MinAlg\ minimized DFA will be called \emph{redundant} states.
+\subsection{Another equivalence automaton}
 
-\gregor{Example: In~\ref{fig:dfa_ex_task} and~\ref{fig:dfa_ex_sol} the state pairs $(A,D), (C,E)$ are equivalent and all others distinguishable. The states $A, G, C, B$ are essential, for they show up in the minimized automaton. The states $D, E$ are therefore redundant.}
+Consider step 3 and 4 of \MinAlg. A view on these algorithms reveal, that they are essentially collapsing each $\sim$-equivalence class of a DFA $A$ into one state.
 
-As a consequence saying that \RemEq\ \emph{merges equivalent state pairs} is equivalent to saying it \emph{removes redundant states}.
+\begin{definition}[$\sim_A$-equivalence automaton] \label{ch:1:sim-eq-dfa}
+    We will call the automaton $E_A = (Q_E, \Sigma_E, \delta_E, s_E, F_E)$ created by \CompDist\ and \RemEq($A$)\ the \emph{$\sim_A$-equivalence automaton} of $A$. It has the following properties:
+    \begin{itemize}
+        \item $Q_E = \{\ [q]\ |\ q \in Q\ \}$
+        \item $\Sigma_E = \Sigma$
+        \item $\delta_E([q], \sigma) = [\delta(q, \sigma)], \forall q \in Q, \sigma \in \Sigma$
+        \item $s_E = [s]_\sim$
+        \item $F_E = \{\ [q]\ |\ q \in Q\ \}$
+    \end{itemize}
+    Note, that we know by theorem~\ref{ch:1:min-alg-correct} that $E_A$ is guaranteed to be a minimal automaton to $A$, if $A$ has no unreachable states.
+\end{definition}
+
+%Note moreover that, since $A_{sol}$ is minimal, there exists an isomorphism renaming $e_1,\ldots,e_\mathfrak{e}$ such that they correspond to the equivalence classes of $\equiv_{L(A_{task})}\ = \ \equiv_{L(A_{re})}$ and $\sim_{A_{re}}$.
+%
+%However there might exist no isomorphism connecting $e_1,\ldots,e_\mathfrak{e}$ and the equivalence classes of $\sim_{A_{task}}$, since possible unreachable states might form $\sim$-equivalence classes that are distinct to those of the reachable states.
 
 \section{Requirements analysis}
 
@@ -254,9 +291,7 @@ Now that we have introduced all necessary basic definitions, we shall do a short
 
 \subsection{Example of a DFA minimization task for students}
 
-\begin{itemize}
-	\item search for typical test in text standard work books
-\end{itemize}
+\gregor{search for typical task in standard text books}
 
 \begin{figure}
 \includegraphics[width=\linewidth]{images/dfa_ex_task.png}
@@ -270,16 +305,16 @@ Now that we have introduced all necessary basic definitions, we shall do a short
 \label{fig:dfa_ex_sol}
 \end{figure}
 
-\noindent Figures and~\ref{fig:dfa_ex_sol} show such a task and solution. In a DFA minimization task (fig.~\ref{fig:dfa_ex_task}) students are confronted with a \emph{task DFA} $A_{task}$, that is to be minimized by eliminating unreachable states (thus gaining the \emph{intermediate DFA} $A_{inter}$) and merging equivalent state pairs towards a \emph{solution DFA} $A_{sol}$ using the minimization algorithm. The table $T$ displayed in the solution is nothing else but a visualization of the function $m$, whereas $T(q_0, q_1) = i \Leftrightarrow (q_0, q_1) \in m(i)$. 
+\noindent Figures~\ref{fig:dfa_ex_task} and~\ref{fig:dfa_ex_sol} show such a task and solution. The students are confronted with a \emph{task DFA} $A_{task}$. Firstly, unreachable states have to be eliminated, we then gain the \emph{reachable DFA} $A_{re}$. Secondly equivalent state pairs of $A_{re}$ are merged such that the minimal \emph{solution DFA} $A_{sol}$ is found. The table $T$ displayed in figure~\ref{fig:dfa_ex_sol} is nothing else but a visualization of the function $m$, whereas $T(q_0, q_1) = i \Leftrightarrow (q_0, q_1) \in m(i)$.
 
-There are some formal statements and requirements. Firstly, we can state that
+We do some rather formal statements and requirements. Firstly, we can state that
 \begin{itemize}
-	\item $A_{inter} = \RemUnr(A_{task}, \CompUnr(A_{task}))$ and
-	\item $A_{sol} = \RemEq(A_{inter}, \CompDist(A_{inter}))$
+	\item $A_{re} = \RemUnr(A_{task}, \CompUnr(A_{task}))$ and
+	\item $A_{sol} = \RemEq(A_{re}, \CompDist(A_{re}))$
 \end{itemize}
-Therefore $A_{sol}$ has to be minimal regarding $A_{inter}$ and $A_{task}$. Secondly the languages of $A_{task}, A_{inter}$ and $A_{sol}$ must be equal. We know that \CompDist\ requires $A_{inter}$ to be complete and that \RemEq\ preserves completeness, so $A_{sol}$ is complete too. Furthermore we know that every state of $A_{reach}$ reachable since it is the output of \RemUnr.
+Therefore $A_{sol}$ is minimal regarding $A_{re}$ and $A_{task}$. Secondly the languages of $A_{task}, A_{re}$ and $A_{sol}$ are be equal. We know that \CompDist\ requires $A_{re}$ to be complete and that \RemEq\ creates complete DFAs, so $A_{sol}$ is complete too. Furthermore we know that every state of $A_{re}$ is reachable since it is the output of \RemUnr.
 
-\gregor{How to define 'already found DFA sol' as requirement}
+\gregor{How to define 'already found DFA sol' as requirement. Final states argument missing.}
 
 \subsection{Difficulty adjustment possibilities}
 
@@ -291,17 +326,19 @@ Consider the computation of the sets $m(i)$ in \CompDist. Determining $m(0)$ is 
 
 It would therefore be sensible if $\mmD(A_{task})$ could be adjusted for example by parameters $m_{min}, m_{max}$ which give lower and upper bounds for that value.
 
-\paragraph*{Number of unreachable and redundant states.}
+\paragraph*{Number of states.}
 
-The task DFA contains $u$ unreachable states and $r$ redundant states. It is sensible to have $u > 1, r > 1$, such that \RemUnr\ and \RemEq\ will not be skipped. A exercise instructor will find it useful, to control exactly how big $u$ and $r$ are: The higher $u, r$, the more states have to be eliminated and merged.
-
-\paragraph*{Number of states alltogether ($|Q_{task}|$).}
-
-The more states $A_{task}$ has, the higher is the number of state pairs, which have to be checked. Thus a possiblity to adjust also the number of reachable and redundant states, denoted $q$, would be useful. Note that $|Q_{task}| = |Q_{inter}| + d = |Q_{sol}| + u + d$ so $q = |Q_{sol}|$.
+To control the number of states in $A_{task}, A_{re}$ and $A_{sol}$, we will introduce three parameters: $\mathfrak{e}, \mathfrak{r}, \mathfrak{u} \in \mathbb{N}$. These parameters get their meaning by the following equations:
+\begin{align*}
+    |Q_{sol}| &= \mathfrak{e} \\
+    |Q_{re}| &= \mathfrak{e} + \mathfrak{r} \\
+    |Q_{task}| &= \mathfrak{e} + \mathfrak{r} + \mathfrak{u}
+\end{align*}
+It is sensible to have $\mathfrak{u} > 1, \mathfrak{r} > 1$, such that \RemUnr\ and \RemEq\ will not be skipped. To not make the task trivial, $\mathfrak{e} > 2$ is sensible. An exercise instructor will find it useful, to control exactly how big $\mathfrak{u}$, $\mathfrak{r}$ and $\mathfrak{e}$ are: The higher $\mathfrak{u}, \mathfrak{r}$, the more states have to be eliminated and merged. The higher $\mathfrak{e} + \mathfrak{r}$, the more state pairs have to be checked during \CompDist.
 
 \paragraph*{Alphabet size ($|\Sigma|$).}
 
-The more symbols the alphabet of $A_{task}, A_{inter}$ and $A_{sol}$ has, the more transitions have to be followed when checking whether $(\delta(q,\sigma),\delta(p,\sigma))\in m(i-1)$ is true for each state pair $p,q$.
+The more symbols the alphabet of $A_{task}, A_{re}$ and $A_{sol}$ has (note how \MinAlg\ does not change the alphabet), the more transitions have to be followed when checking whether $(\delta(q,\sigma),\delta(p,\sigma))\in m(i-1)$ is true for each state pair $p,q$.
 
 \paragraph*{Completeness of $A_{task}$.}
 
@@ -309,7 +346,7 @@ Even though \CompUnr\ and \RemUnr\ do not require their input DFA $A_{task}$ to 
 
 \paragraph*{Planar drawing of $A_{task}$.}
 
-A graph $G$ is \emph{planar} if it can be represented by a drawing in the plane such that its edges do not cross. Such a drawing is then called \emph{planar drawing} of $G$. A visual aid for students would be given, if the task DFA were planar and presented as a planar drawing. In this work libraries will be used to allow the option of planarity, but neither ensuring planarity nor planar drawing will be investigated further theoretically.
+A graph $G$ is \emph{planar} if it can be represented by a drawing in the plane such that its edges do not cross. Such a drawing is then called \emph{planar drawing} of $G$. A visual aid for students would be given, if the task DFA were planar and presented as a planar drawing. In this work libraries and parameters $p_1, p_2 \in \{0,1\}$ (toggling planarity of $A_{sol}, A_{task}$) will be used to allow the option of planarity, but neither ensuring planarity nor planar drawing will be investigated further theoretically.
 
 \paragraph*{Maximum degree of any state in $A_{task}$.}
 
@@ -317,18 +354,18 @@ The \emph{degree} $deg(q)$ of a state $q \in Q$ in a DFA $A$ is defined as $deg(
 
 %Note that $deg(q) \geq |\Sigma|$ for any complete DFA, since states of complete DFAs have to use all alphabet symbols on outgoing transitions.
 
-\subsection{Summary}
+\subsection{Summary of found criteria}
 
 \label{ch:1:determined-requirements}
 Accepted general criteria:
 \begin{itemize}
-	\item[->] $L(A_{sol}) = L(A_{inter}) = L(A_{task})$
-	\item[->] $\mmD(A_{sol}) = \mmD(A_{inter}) = \mmD(A_{task})$
+	\item[->] $L(A_{sol}) = L(A_{re}) = L(A_{task})$
+	\item[->] $\mmD(A_{sol}) = \mmD(A_{re}) = \mmD(A_{task})$
 \end{itemize}
 Accepted solution DFA criteria:
 \begin{itemize}
 	\item[->] has to be minimal, complete
-	\item[->] number of states
+	\item[->] number of essential states
 	\item[->] number of \CompDist\ iterations ($\mmD(A_{sol})$)
 	\item[->] alphabet size
 	\item[->] number of accepting states
@@ -339,7 +376,7 @@ Accepted solution DFA criteria:
 		A DFA $A_{sol}$ is \emph{new} if it is not practically isomorph to any previously generated solution DFA.
 	\end{definition}
 \end{itemize}
-Accepted intermediate DFA criteria:
+Accepted reachable DFA criteria:
 \begin{itemize}
 	\item[->] has to be complete
 	\item[->] number of unreachable states
@@ -354,68 +391,16 @@ Accepted task DFA criteria:
 
 \section{Approach and general algorithm}
 
-In this work we will first build the solution DFA (step 1), and - based on that - the task DFA by adding unreachable and redundant states(step 2). Both steps will fulfill all criteria chosen above and are covered in depth in chapter~\ref{ch:2} respectively chapter~\ref{ch:3}.
+In this work we will first build the solution DFA (step 1), and - based on that - the task DFA by adding unreachable and redundant states (step 2). Both steps will fulfill all criteria chosen above and are covered in depth in chapter~\ref{ch:2} respectively chapter~\ref{ch:3}.
 
-It follows that $\mmD$ and $L$ of both DFAs will be set when building $A_{sol}$. As a consequence we need to ensure that adding redundant and unreachable state does neither change $\mmD(A_{task})$ nor $L(A_{task})$ in comparison to $A_{sol}$. We will do this during the discussion of step 2.
+It follows that $\mmD$ and $L$ of both DFAs will be set when building $A_{sol}$. We know that adding redundant and unreachable states does not change $L(A_{task})$ in comparison to $A_{sol}$, else \MinAlg\ would not work (a minimal DFA has in particular the same language as the original DFA). However we must ensure, that adding those states does not change $\mmD$. Since unreachable states are eliminated before \CompDist\ is applied, we need only to ensure, that adding redundant states does not change the $\mmD$-value. We will do this during the discussion of step 2, more specifically in section~\ref{ch:3:sec-D-proof}.
 
-Here follow problem definitions for the two steps, which specify all needed informations. \gregor{Hidden formulation here} %The first problem is lain out in a way, such that it does
-
-\begin{definition}[BuildNewMinimalDFA] \label{ch:1:def:BuildNewMinimalDFA} $ $
-	\begin{description}
-		
-		\item[Given:] $ $
-		
-		$q, a, f, m_{min}, m_{max} \in \mathbb{N},$
-		
-		$p \in \{0,1\}$
-		\item[Request:] $ $
-		
-		Let $A_{sol} = (Q, \Sigma, \delta, s, F)$ be a DFA, such that
-		
-		\qquad $|Q|=q$, $|\Sigma|=a$, $|F|=f$,
-		
-		\qquad $m_{min} \le \mmD(A_{sol}) \le m_{max}$,
-		
-		\qquad $A_{sol}$ is planar iff $p = 1$ and
-		
-		\qquad $A$ is new
-		
-		Return $A_{sol}$, if it exists, $\bot$ otherwise.
-	\end{description}
-\end{definition}
-
-\begin{definition}[ExtendMinimalDFA] \label{ch:1:def:ExtendMinimalDFA} $ $
-	\begin{description}
-		
-		\item[Given:] $ $
-		
-		$A_{sol} = (Q, \Sigma, \delta, s, F) \in \mathcal{A}_{min},$
-		
-		$p \in \{0,1\},$
-		
-		$r, u \in \mathbb{N}$
-		\item[Request:] $ $
-		
-		A DFA $A_{task} = (Q', \Sigma', \delta', s', F')$ with reachable redundant states $q_1 \ldots q_r$ and unreachable states $p_1 \ldots p_u$, such that
-		
-		$Q = Q' \cup \{ q_1, \ldots q_r, p_1 \ldots p_u \}$,
-		
-		$\Sigma = \Sigma'$, $s = s'$,
-		
-		$F \subseteq F'$,
-		
-		$A_{task}$ is planar iff $p = 1$,
-		
-		$L(A_{sol}) = L(A_{task})$ and $\mmD(A_{sol}) = \mmD(A_{task})$.
-	\end{description}
-\end{definition}
-
-\noindent The main algorithm will then simply be:
+At the beginning of chapter 2 and 3, we will provide formal problem definitions for both steps, that specify precisely all requirements. Here we shall content ourselves with the definition of the main algorithm:
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{GenerateDFAMinimizationProblem}{$q, a, f, m_{min}, m_{max}, p_1, p_2, d, u$}
-	\State $A_{sol} \gets \textsc{BuildNewMinimalDFA}(q, a, f, m_{min}, m_{max}, p_1)$
-	\State $A_{task} \gets \textsc{ExtendMinimalDFA}(A_{sol}, p_2, r, u)$
+	\Function{GenerateDFAMinimizationProblem}{$\mathfrak{e}, a, f, m_{min}, m_{max}, p_1, p_2, \mathfrak{r},\mathfrak{u}$}
+	\State $A_{sol} \gets \textsc{GenerateNewMinimalDFA}(\mathfrak{e}, a, f, m_{min}, m_{max}, p_1)$
+	\State $A_{task} \gets \textsc{ExtendMinimalDFA}(A_{sol}, p_2, \mathfrak{r},\mathfrak{u})$
 	\State \Return $A_{sol}, A_{task}$
 	\EndFunction
 \end{algorithmic}

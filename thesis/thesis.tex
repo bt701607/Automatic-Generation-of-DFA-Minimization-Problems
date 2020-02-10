@@ -17,6 +17,7 @@
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{amssymb}
+\usepackage{wasysym}
 
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
@@ -34,6 +35,7 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{corollary}{Corollary}
 \newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
@@ -44,10 +46,10 @@
 \algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
 
 \newcommand{\MinAlg}{\textsc{MinimizeDFA}}
-\newcommand{\CompUnr}{\textsc{ComputeUnreachables}}
-\newcommand{\RemUnr}{\textsc{RemoveUnreachables}}
-\newcommand{\CompDist}{\textsc{ComputeDistinguishablePairs}}
-\newcommand{\RemEq}{\textsc{RemoveEquivalentPairs}}
+\newcommand{\CompUnr}{\textsc{ComUnreachables}}
+\newcommand{\RemUnr}{\textsc{RemUnreachables}}
+\newcommand{\CompDist}{\textsc{ComEquivPairs}}
+\newcommand{\RemEq}{\textsc{RemEquivPairs}}
 \newcommand{\mmD}{\mathcal{D}}
 
 \newcommand{\gregorColor}{Violet}
@@ -56,19 +58,25 @@
 % ----------- content -------------
 
 \title{Generation of DFA Minimization Problems}
-\author{Gregor H. C. Sönnichsen}
+\author{Gregor Hans Christian Sönnichsen}
 
 \begin{document}
 	
 	\maketitle
 	
-	%\begin{abstract}
-	%	Abstract goes here
-	%\end{abstract}
+	\begin{abstract}
+		Abstract$\ldots$
+	\end{abstract}
+
+	\renewcommand{\abstractname}{Generierung von DFA Minimierungsproblemen\\-\\Zusammenfassung}
+	\begin{abstract}
+		Zusammenfassung$\ldots$
+	\end{abstract}
 	
 	%\chapter*{Acknowledgements}
 	%I want to thank...
 	
+	\renewcommand{\contentsname}{Table of Contents}
 	\tableofcontents
 	
 	\input{./chapters/1-introduction.tex}
@@ -78,11 +86,17 @@
 	\input{./chapters/5-conclusion.tex}
 	
 	\appendix
-	%\chapter{List of Figures}
-	%\chapter{Bibliography}
+	% List of figures, theorems/lemmas/etc., bibliography, index
 	
 	\nocite{*}
 	\bibliographystyle{abbrv}
 	\bibliography{thesis}
+	
+	\chapter*{Erklärung}
+	
+	Hiermit versichere ich, Gregor Hans Christian Sönnichsen, dass ich die vorliegende Arbeit selbständig angefertigt und	ohne fremde Hilfe verfasst habe, keine außer den von mir angegebenen Hilfsmitteln und Quellen dazu verwendet habe und die den benutzten Werken inhaltlich oder wörtlich entnommenen Stellen als solche kenntlich gemacht habe. \\
+	
+	\noindent Bayreuth, den 8.\ Februar 2020. \\\\\\\\\\\\\\
+	\noindent Gregor Hans Christian Sönnichsen
 
 \end{document}          

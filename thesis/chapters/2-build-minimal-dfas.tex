@@ -8,7 +8,7 @@ We seek algorithms for generation of minimal DFAs that fulfilling the conditions
 	\noindent $\underline{\emph{Given:}}$
 	\vspace{-0.5cm}
 	\begin{align*}
-	\mathfrak{e} \in \mathbb{N}\ \ \ & \emph{number of states} \\
+	\mathcal{Q}_{sol} \in \mathbb{N}\ \ \ & \emph{number of states} \\
 	a \in \mathbb{N}\ \ \ & \emph{alphabet size} \\
 	f \in \mathbb{N}\ \ \ & \emph{number of final states} \\
 	m_{min}, m_{max} \in \mathbb{N}\ \ \ & \emph{lower and upper bound for $\mmD$-value} \\
@@ -16,7 +16,7 @@ We seek algorithms for generation of minimal DFAs that fulfilling the conditions
 	\end{align*}
 	\noindent $\underline{\emph{Task:}}$ \emph{Compute, if it exists, a solution DFA $A_{sol}$ with}
 	\begin{itemize}
-		\item $|Q_{sol}|=\mathfrak{e}$, $|\Sigma_{sol}|=a$, $|F_{sol}|=f$
+		\item $|Q_{sol}|=\mathcal{Q}_{sol}$, $|\Sigma_{sol}|=a$, $|F_{sol}|=f$
 		\item $m_{min} \le \mmD(A_{sol}) \le m_{max}$
 		\item $A_{sol}$ \emph{being planar iff} $p = 1$
 		\item $A_{sol}$ \emph{being new}
@@ -24,7 +24,7 @@ We seek algorithms for generation of minimal DFAs that fulfilling the conditions
 \end{definition}
 \noindent We consider different approaches to solve this problem, of which those using trial-and-error will be discussed most broadly.
 
-Note that the presented algorithms will not be able to compute all of $\mathcal{A}_{min}$ since we are going to exclude minimal DFAs that are practical isomorph to already found ones.
+Note that the presented algorithms will not be able to compute all of $\mathfrak{A}_{min}$ since we are going to exclude minimal DFAs that are practical isomorph to already found ones.
 
 \section{Using trial and error}
 
@@ -38,12 +38,12 @@ By constructing test DFAs with already correct alphabet size and number of (fina
 
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{BuildNewMinimalDFA-1\ }{$\mathfrak{e}, a, f, m_{min}, m_{max} \in \mathbb{N}, p \in \{0,1\}$}
+	\Function{BuildNewMinimalDFA-1\ }{$\mathcal{Q}_{sol}, a, f, m_{min}, m_{max} \in \mathbb{N}, p \in \{0,1\}$}
 		\While {True}
 		
 			\vspace{0.2cm}
 		
-			\State generate DFA $A_{test}$ with $|Q|, |\Sigma|, |F|$ matching $\mathfrak{e}, a, f$
+			\State generate DFA $A_{test}$ with $|Q|, |\Sigma|, |F|$ matching $\mathcal{Q}_{sol}, a, f$
 			
 			\vspace{0.2cm}
 			
@@ -70,13 +70,13 @@ We will complete this algorithm by resolving how the tests in lines $4, 6$ and $
 
 \subsection{Ensuring $A_{test}$ is minimal and $\mmD(A_{test})$ is correct}
 
-In order to test, whether $A_{test}$ is minimal, we could simply use the minimization algorithm and compare the resulting DFA and $A_{test}$ using an isomorphy test. However it is sufficient to ensure, that no redundant or unreachable states exist.
+In order to test, whether $A_{test}$ is minimal, we could simply use the minimization algorithm and compare the resulting DFA and $A_{test}$ using an isomorphy test. However it is sufficient to ensure, that no equivalent or unreachable states exist.
 \gregor{minimality planarity complete under isomorphy}
 
-To get $\mmD(A_{test})$, we have to run \CompDist\ entirely anyway. Hence we can combine the test for redundant states with computing the DFAs $\mmD$-value:
+To get $\mmD(A_{test})$, we have to run \CompDist\ entirely anyway. Hence we can combine the test for equivalent states with computing the DFAs $\mmD$-value:
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{HasRedundantStates}{$A$}
+	\Function{HasEquivalentStates}{$A$}
 		\State $depth \gets 0$
 		\State $M \gets \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}$
 		\Do
@@ -102,7 +102,7 @@ Regarding the unreachable states, we can just use \CompUnr\ and test whether the
 
 \subsection{Ensuring $A_{test}$ is planar}
 
-There exist several algorithms for planarity testing of graphs. In this work, the library \emph{pygraph}\footnote{\url{https://github.com/jciskey/pygraph}} has been used, which implements the Hopcroft-Tarjan planarity algorithm. More information on this can be found for example in this~\cite{kocay93} introduction from William Kocay. The original paper describing the algorithm is~\cite{hopcroft74}.
+There exist several algorithms for planarity testing of graphs. In this work, the library \emph{pygraph}\footnote{\url{https://github.com/jciskey/pygraph}} has been used, which implements the Hopcroft-Tarjan planarity algorithm. More information on this can be found for example in this~\cite{kocay93} introduction from William Kocay. The original paper describing the algorithm is~\cite{hopcroft74Planarity}.
 
 \subsection{Ensuring $A_{test}$ is new}
 
@@ -117,11 +117,11 @@ With this scheme we can fetch once all DFAs matching the search parameters. Thus
 A more concrete specification of this proceeding is shown below, embedded in the main algorithm:
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{BuildNewMinimalDFA-2\ }{$\mathfrak{e}, a, f, m_{min}, m_{max}, p$}
+	\Function{BuildNewMinimalDFA-2\ }{$\mathcal{Q}_{sol}, a, f, m_{min}, m_{max}, p$}
 	
 		\vspace{0.2cm}
 	
-		\State $l \gets$ all DFAs in DB1 matching $\mathfrak{e}, a, f, m_{min}, m_{max}, p$
+		\State $l \gets$ all DFAs in DB1 matching $\mathcal{Q}_{sol}, a, f, m_{min}, m_{max}, p$
 		
 		\vspace{0.2cm}
 		
@@ -147,7 +147,7 @@ A more concrete specification of this proceeding is shown below, embedded in the
 
 We now approach the task of generating a random DFA whereas alphabet and number of (final) states are set.
 
-Corollary~\ref{ch:1:cor:all-min-dfa-ism} tells us, that the states names are irrelevant for the minimality of a DFA, therefore we will give our generated DFAs simply the states $e_1, \ldots, e_\mathfrak{e}$. For alphabet symbols this is not given. But since we \gregor{TODO minimality and planarity complete under isomorphy}
+Corollary~\ref{ch:1:cor:all-min-dfa-ism} tells us, that the states names are irrelevant for the minimality of a DFA, therefore we will give our generated DFAs simply the states $e_1, \ldots, e_{\mathcal{Q}_{sol}}$. For alphabet symbols this is not given. But since we \gregor{TODO minimality and planarity complete under isomorphy}
 
 We can state, that our start state is $e_1 \in Q$, since we can apply an isomorphism to every DFA, such that its start state is renamed to $e_1$.
 
@@ -159,12 +159,12 @@ With defining how to compute $\delta$ we have covered all elements of a DFA.
 
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{BuildNewMinimalDFA-3a\ }{$\mathfrak{e}, a, f, m_{min}, m_{max}, p$}
+	\Function{BuildNewMinimalDFA-3a\ }{$\mathcal{Q}_{sol}, a, f, m_{min}, m_{max}, p$}
 	
 		\vspace{0.2cm}
 	
-		\State $l \gets$ all DFAs in DB1 matching $\mathfrak{e}, a, f, m_{min}, m_{max}, p$
-		\State $Q \gets \{e_1, \ldots, e_\mathfrak{e}\}$
+		\State $l \gets$ all DFAs in DB1 matching $\mathcal{Q}_{sol}, a, f, m_{min}, m_{max}, p$
+		\State $Q \gets \{e_1, \ldots, e_{\mathcal{Q}_{sol}}\}$
 		\State $\Sigma \gets \{\sigma_1, \ldots, \sigma_a\}$
 		
 		\vspace{0.2cm}
@@ -215,27 +215,27 @@ The second method of test DFA generation is based on the idea, that instead of r
 
 % finite enumerations, how many
 
-Both enumerations are finite, given $\mathfrak{e}$ and $a$. Having a requirement of $f$ final states, then $\mathfrak{e}$ choose $f$ is the number of possible $F$-configurations. On the other hand there are $\mathfrak{e}^{\mathfrak{e}*a}$ possible $\delta$-configurations: We have to choose one of $\mathfrak{e}$ possible end states for every combination in $Q\times\Sigma$ - so $\mathfrak{e}*a$ times.
+Both enumerations are finite, given $\mathcal{Q}_{sol}$ and $a$. Having a requirement of $f$ final states, then $\mathcal{Q}_{sol}$ choose $f$ is the number of possible $F$-configurations. On the other hand there are ${\mathcal{Q}_{sol}}^{\mathcal{Q}_{sol}*a}$ possible $\delta$-configurations: We have to choose one of $\mathcal{Q}_{sol}$ possible end states for every combination in $Q\times\Sigma$ - so $\mathcal{Q}_{sol}*a$ times.
 
 % Two fields
 
-Again we will call our states and symbols w.l.o.g.\ $e_1,\ldots,e_\mathfrak{e}$ resp.\ $\sigma_1,\ldots,\sigma_a$. We will represent the state of an enumeration with two fields $F_F$ and $F_\delta$. The first field shall have $\mathfrak{e}$ Bits, whereas Bit $F_F[i] \in [0,1]$ represents the information, whether $\mathfrak{e}_i$ is a final state or not. The second field shall have $\mathfrak{e}*a$ entries containing state indices, such that entry $F_\delta[i * a + j] = k, k\in[1,\mathfrak{e}]$ says, that $\delta(e_i, \sigma_j) = e_k$. These semantics are illustrated in figure~\ref{fig:dfa_enum_bit_fields}.
+Again we will call our states and symbols w.l.o.g.\ $e_1,\ldots,e_{\mathcal{Q}_{sol}}$ resp.\ $\sigma_1,\ldots,\sigma_a$. We will represent the state of an enumeration with two fields $F_F$ and $F_\delta$. The first field shall have $\mathcal{Q}_{sol}$ Bits, whereas Bit $F_F[i] \in [0,1]$ represents the information, whether $e_i$ is a final state or not. The second field shall have $\mathcal{Q}_{sol}*a$ entries containing state indices, such that entry $F_\delta[i * a + j] = k, k\in[1,\mathcal{Q}_{sol}]$ says, that $\delta(e_i, \sigma_j) = e_k$. These semantics are illustrated in figure~\ref{fig:dfa_enum_bit_fields}.
 
 % -- EX example of the two fields and their meaning
 
 \begin{figure}
 	\includegraphics[width=\linewidth]{images/dfa_enum_bit_fields.png}
-	\caption{Example for two possible configurations of the fields $F_F$ and $F_\delta$ given $\mathfrak{e}, a$ and $f$. Below the corresponding DFA is drawn.}
+	\caption{Example for two possible configurations of the fields $F_F$ and $F_\delta$ given $\mathcal{Q}_{sol}, a$ and $f$. Below the corresponding DFA is drawn.}
 	\label{fig:dfa_enum_bit_fields}
 \end{figure}
 
 % how to compute next DFA
 
-Given an enumeration state $b_f, b_t$ and $\mathfrak{e}, a, f$ we will then compute the next DFA based on this state as follows. We will treat both bit-fields as numbers, $b_f$ as binary and $b_t$ as $\log_2(\mathfrak{e})$-ary. To get to the next DFA, we will first increment $b_t$ by $1$. If $b_t = 1 \ldots 1$, then we increment $b_f$ until it contains $f$ ones (again) and set $b_t$ to $0 \ldots 0$. This behaviour is summarized in the following algorithm: \gregor{Clarify what happens at 11111...}
+Given an enumeration state $b_f, b_t$ and $\mathcal{Q}_{sol}, a, f$ we will then compute the next DFA based on this state as follows. We will treat both fields as numbers, $F_f$ as binary and $F_\delta$ as $\mathcal{Q}_{sol}$-ary. To get to the next DFA, we will first increment $F_\delta$ by $1$. If $F_\delta = 1 \ldots 1$, then we increment $F_F$ until it contains $f$ ones (again) and set $F_\delta$ to $0 \ldots 0$. This behavior is summarized in the following algorithm: \gregor{Clarify what happens at 11111...}
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{IncrementEnumProgress\ }{$F_F, F_\delta, \mathfrak{e}, a, f$}
-	\State add $1$ to $(F_\delta)_\mathfrak{e}$
+	\Function{IncrementEnumProgress\ }{$F_F, F_\delta, \mathcal{Q}_{sol}, a, f$}
+	\State add $1$ to $(F_\delta)_{\mathcal{Q}_{sol}}$
 	\If {$F_\delta = 0 \ldots 0$}
 		\While {$\#_1(F_F) \neq f$} \Comment{if the number of 1s in $F_F$ is not $f$}
 			\State add $1$ to $(F_F)_2$
@@ -262,17 +262,17 @@ The example in figure~\ref{fig:dfa_enum_incr} illustrates such increments.
 Based on the incremented bit-fields the new DFA can be build according to the semantics defined above:
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{DFAfromEnumProgress\ }{$F_F, F_\delta, \mathfrak{e}, a, f$}
-	\State $Q \gets \{e_1, \ldots, e_\mathfrak{e}\}$
+	\Function{DFAfromEnumProgress\ }{$F_F, F_\delta, \mathcal{Q}_{sol}, a, f$}
+	\State $Q \gets \{e_1, \ldots, e_{\mathcal{Q}_{sol}}\}$
 	\State $\Sigma \gets \{\sigma_1, \ldots, \sigma_a\}$
 	\State $\delta \gets \emptyset$
-	\For {$i$ \textbf{in} $[1, \ldots, \mathfrak{e}]$}
+	\For {$i$ \textbf{in} $[1, \ldots, \mathcal{Q}_{sol}]$}
 		\For {$j$ \textbf{in} $[1, \ldots, a]$}
             \State $\delta(e_i, \sigma_j) = e_{F_\delta[i * a + j]}$
 		\EndFor
 	\EndFor
 	\State $s \gets e_1$
-	\State $F \gets \{\ e_i\ |\ i \in [1, \ldots, \mathfrak{e}] \land F_F[i] = 1\ \}$
+	\State $F \gets \{\ e_i\ |\ i \in [1, \ldots, \mathcal{Q}_{sol}] \land F_F[i] = 1\ \}$
 	\State \Return $(Q, \Sigma, \delta, s, F)$
 	\EndFunction
 \end{algorithmic}
@@ -290,12 +290,12 @@ Once the enumeration within a call of \textsc{BuildNewMinimalDFA} has been finis
 We reduce the enumeration room for each calculation.
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{BuildNewMinimalDFA-3b\ }{$\mathfrak{e}, a, f, m_{min}, m_{max}, p$}
+	\Function{BuildNewMinimalDFA-3b\ }{$\mathcal{Q}_{sol}, a, f, m_{min}, m_{max}, p$}
 	
 		\vspace{0.2cm}
 	
-		\State $l \gets$ all DFAs in DB1 matching $\mathfrak{e}, a, f, m_{min}, m_{max}, p$
-		\State $F_F, F_\delta \gets$ load enumeration progress for $\mathfrak{e}, a, f, p$ from DB2
+		\State $l \gets$ all DFAs in DB1 matching $\mathcal{Q}_{sol}, a, f, m_{min}, m_{max}, p$
+		\State $F_F, F_\delta \gets$ load enumeration progress for $\mathcal{Q}_{sol}, a, f, p$ from DB2
 		
 		\vspace{0.2cm}
 		
@@ -333,18 +333,101 @@ We reduce the enumeration room for each calculation.
 \end{algorithmic}
 \vspace{0.2cm}
 
-\subsection{Ideas for more efficiency}
-
-incrementing final state binary faster in enum-alternative
-
-speed up isomorphy test
-
-rewrite everything in C
-
-solve P vs NP
-
 \subsection{Related Research}
+
+Nicaud provides an overview of results on random generation and combinatorial properties of DFAs in ~\cite{Nic14}. His summary indicates, that research discusses rejection algorithms when it comes to random DFA generation. The naive variant presented in this work is improved in many ways. 
+
+Concerning combinatorial properties of DFA research has started very early~\cite{Vys59}. This~\cite{Kor78} contribution by Korshunov is often cited in this regard, he ``determines an asymptotic estimate of the number of accessible complete and deterministic $n$-state automata over a finite alphabet''~\cite[p. 1]{BDS11}.
+
+\begin{itemize}
+    \item 2005 \cite{CP05} Random, accessible. Relations to $m$-ary trees and generalized tuples. Recursive method.$P(minimial) = 0.8$ empirical. $\mathcal{O}(m^2)$
+    
+    \item 2007 \cite{BN07} Random, accessible. Bijection to some diagrams. Requires less memory space and precalculus.  Boltzmann sampler. $\mathcal{O}(n^{3/2}) = \mathcal{O}(m\sqrt{m})$
+    \item 2007 \cite{BDN07} REGAL. Implementation of above. Empirical on min.\ DFAs per state size, redundant states per state size.
+    
+    \item 2005 \cite{RMA05} Exact enumeration, accessible. Unique string representation. $\mathcal{O}(m^2)$
+    \item 2009 \cite{AMR09} To that.
+    \item 2009 \cite{AAA09} Implementation of above. DFA database.
+    
+    \item 2011 \cite{BDS11} Determined the fraction of minimal automata among accessible complete DFAs.
+    
+    \item 2012 \cite{CN12} Random, accessible. Simpler algorithm. Algorithms that output approximately $n$-state DFAs. $\mathcal{O}(n\sqrt{n})$
+    
+    \item 2014 \cite{Nic14} Survey.
+\end{itemize}
+
+
+\subsubsection{Random DFA generation}
+
+\paragraph{Via relations between DFAs, m-ary trees and generalized tuples}
+
+Jean-Marc Champarnaud and Thomas Paranthoën. Random generation of DFAs\cite{CP05}
+
+adaptation of the
+recursive method
+
+ O ( m 2 ) (consisting of a preprocessing in O ( m 2 ) and
+a computation in O ( m ))
+
+\paragraph{Via a different string-representation for complete accessible DFAs}
+
+ based on a representation of deterministic
+and complete accessible automata by words O ( m 2 )
+
+Reis, Moreira and Almeida~\cite{RMA05}\cite{AMR09}
+
+omit final states
+
+take order of reachability in DFA as order of states (p.3)
+
+there is a one-to-one-mapping between ICDFA with $n$ states over an alphabet of size $k$ and their strings (p. 4)
+
+tell about generation alg. based on that repr. (p. 5-6)
+
+thus a possibility to force reachability by representation
+
+\paragraph{Via combinatorial bijections and Boltzmann sampling}
+
+Frédérique Bassino and Cyril Nicaud. Enumeration and Random Generation of Accessible
+Automata  O ( m $\sqrt{m}$ )
+
+\paragraph{Via enumeration magic}
+
+Carayol, Nicaud~\cite[p. 9]{CN12}
+
+Rejection algorithm, extract accessible DFA
+
+We propose a very simple algorithm for generating accessible automata of size m whose
+expected complexity O ( m $\sqrt{m}$ ) matches the best known upper bounds
+
+Carayol, Nicaud~\cite[p. 9]{CN12}
+
+Approximate generation
+
+If we allow a $\varepsilon$ variation around $n$ in the size of the output automaton, algorithm is solution of linear expected complexity.
+
+Slightly modifying the algorithm to output the automaton when its size belongs to the interval $[(1-\varepsilon ) m, (1+ \varepsilon ) m ]$ yields a solution to the $\varepsilon$ -approximation problem with an expected complexity of O ( m )
+
+Carayol, Nicaud~\cite[p. 10]{CN12} based on Bassino, David, Sportiello~\cite{BDS11}
+
+Adding minimality test to rejection algorithm
+
+We also show that this algorithm can readily be adapted to generate
+minimal automata (using a recent result on the asymptotic number of minimal automata
+[ 11 ]), with the same expected complexity for the exact version and an expected complexity
+in O(nloglogn) for the approximated version
+
+
+
+
+
 
 \section{Alternative approach: Building $m(i)$ bottom up}
 
 Build $m$ from $m$-\CompDist\ iteratively. (Why would this basically result in running \CompDist\ all the time?)
+
+
+
+
+
+

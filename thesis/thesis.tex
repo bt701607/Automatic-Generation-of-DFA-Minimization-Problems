@@ -1,6 +1,6 @@
 % !TeX spellcheck = en_US
 
-\documentclass[a4paper, oneside, 12pt]{report}
+\documentclass[a4paper, oneside, 11pt]{report}
 
 % ----------- packages -------------
 
@@ -24,7 +24,7 @@
 
 \usepackage{setspace}
 
-\usepackage{hyperref}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 
 \usepackage[dvipsnames]{xcolor}
 
@@ -50,7 +50,8 @@
 \newcommand{\RemUnr}{\textsc{RemUnreachables}}
 \newcommand{\CompDist}{\textsc{ComEquivPairs}}
 \newcommand{\RemEq}{\textsc{RemEquivPairs}}
-\newcommand{\mmD}{\mathcal{D}}
+%\newcommand{\mmD}{\mathcal{D}}
+\newcommand{\mmD}{D}
 
 \newcommand{\gregorColor}{Violet}
 \newcommand{\gregor}[1]{\textcolor{\gregorColor}{\textbf{Gregor:} #1}}
@@ -65,7 +66,7 @@
 	\maketitle
 	
 	\begin{abstract}
-		Abstract$\ldots$
+        The theory of deterministic finite automatons (DFAs) is a classical topic of computer science-related courses. A typical task for students is to minimize a DFA by deleting irrelevant elements. However generation of those DFAs that shall be minimized is often done manually by the exercise instructor. This work presents approaches to automize the generation of DFA minimization tasks.
 	\end{abstract}
 
 	\renewcommand{\abstractname}{Generierung von DFA Minimierungsproblemen\\-\\Zusammenfassung}

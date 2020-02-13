@@ -4,42 +4,42 @@
 
 We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a task DFA $A_{task}$ based on our requirements analysis (see~\ref{ch:1:determined-requirements}):
 \begin{definition}[ExtendMinimalDFA] $ $ \\
-	$ $ \vspace{-0.4cm} \\
+	$ $ \vspace{-0.cm} \\
 	\noindent $\underline{\emph{Given:}}$
-	\vspace{-0.5cm}
+	\vspace{-0.2cm}
 	\begin{align*}
-	A_{sol} = (Q, \Sigma, \delta, s, F) \in \mathcal{A}_{min}\ \ \ & \emph{solution DFA} \\
-	\mathfrak{r} \in \mathbb{N}\ \ \ & \emph{number of redundant states} \\
-	\mathfrak{u} \in \mathbb{N}\ \ \ & \emph{number of unreachable states} \\
+	A_{sol} = (Q, \Sigma, \delta, s, F) \in \mathfrak{A}_{min}\ \ \ & \emph{solution DFA} \\
+	\mathcal{Q}_{eq} \in \mathbb{N}\ \ \ & \emph{number of states creating equivalent state pairs} \\
+	\mathcal{Q}_{unr} \in \mathbb{N}\ \ \ & \emph{number of unreachable states} \\
 	p \in \{0,1\}\ \ \ & \emph{planarity-bit} \\
 	c \in \{0,1\}\ \ \ & \emph{completeness-bit}
 	\end{align*}
 	\noindent $\underline{\emph{Task:}}$ \emph{Compute, if it exists, a task DFA $A_{task}$ with}
 	\begin{itemize}
-		\item $Q_{task} = Q_{sol} \cup \{ r_1, \ldots, r_\mathfrak{r}, u_1, \ldots, u_\mathfrak{u} \}$
-		\item $r_1, \ldots, r_\mathfrak{r}$ \emph{redundant}
-		\item $u_1, \ldots, u_\mathfrak{u}$ \emph{unreachable}
+		\item $Q_{task} = Q_{sol} \cup \{ r_1, \ldots, r_{\mathcal{Q}_{eq}}, u_1, \ldots, u_{\mathcal{Q}_{unr}} \}$
+		\item $r_1, \ldots, r_{\mathcal{Q}_{eq}}$ \emph{each creating an equivalent state pair}
+		\item $u_1, \ldots, u_{\mathcal{Q}_{unr}}$ \emph{unreachable}
 		\item $\Sigma_{task} = \Sigma_{sol}$, $s_{task} = s_{sol}$, $F_{task} \subseteq F_{sol}$
 		\item $A_{task}$ \emph{being planar iff} $p = 1$
 		\item $A_{task}$ \emph{being complete iff} $c = 1$
 		\item $A_{sol}$ \emph{being isomorph to} $\MinAlg(A_{task})$
 	\end{itemize}
 \end{definition}
-\noindent In order to fulfill these requirements we will deduce for both kinds of states how they may be added by examining their desired properties. We will show for the action of adding redundant states, that this does not change a DFAs $\mmD$-value.
+\noindent In order to fulfill these requirements we will deduce for both kinds of states how they may be added by examining their desired properties. We will show for the action of adding equivalent states, that this does not change a DFAs $\mmD$-value.
 
 \section{Creating equivalent state pairs}
 
-Step 3 and 4 of the minimization algorithm are concerned with detection and elimination of equivalent state pairs. We now want to add states $r_1,\ldots,r_\mathfrak{r}$ to a DFA $A_{sol}$, gaining $A_{re}$ with $Q_{re} = Q_{sol} \cup \{r_1,\ldots,r_\mathfrak{r}\}$, such that each of these states is equivalent to a state in $A_{re}$. Note that, for reasons of clarity, we are going to abbreviate from now on $A_{re} = A$, $Q_{re} = Q$, $\sim_{A_{re}} = \sim_A$ etc.
+Step 3 and 4 of the minimization algorithm are concerned with detection and elimination of equivalent state pairs. We now want to add states $r_1,\ldots,r_{\mathcal{Q}_{eq}}$ to a DFA $A_{sol}$, gaining $A_{re}$ with $Q_{re} = Q_{sol} \cup \{r_1,\ldots,r_{\mathcal{Q}_{eq}}\}$, such that each of these states is equivalent to a state in $A_{re}$. Note that, for reasons of clarity, we are going to abbreviate from now on $A_{re} = A$, $Q_{re} = Q$, $\sim_{A_{re}} = \sim_A$ etc.
 
 %At this point we notice, that $A_{sol}$ is isomorph to the $\sim$-equivalence automaton (see def.~\ref{ch:1:sim-eq-dfa}). We can think 
 
-Consider the properties $r_1,\ldots,r_\mathfrak{r}$ must have. They are equivalent to states $o_1,\ldots,o_\mathfrak{r}$ of $A$.
+Consider the properties $r_1,\ldots,r_{\mathcal{Q}_{eq}}$ must have. They are equivalent to states $o_1,\ldots,o_{\mathcal{Q}_{eq}}$ of $A$.
 \[
-\exists r_1,\ldots,r_\mathfrak{r} \in Q\colon\ \exists o_1,\ldots,o_\mathfrak{r} \in Q\colon\ \forall i \in [1,\mathfrak{r}] \colon\ r_i \sim_A o_i
+\exists r_1,\ldots,r_{\mathcal{Q}_{eq}} \in Q\colon\ \exists o_1,\ldots,o_{\mathcal{Q}_{eq}} \in Q\colon\ \forall i \in [1,\mathcal{Q}_{eq}] \colon\ r_i \sim_A o_i
 \]
 But we know also and in particular, that each of them is equivalent a state $e$ of $A_{sol}$.
 \[
-	\exists r_1,\ldots,r_\mathfrak{r} \in Q\colon\ \forall i \in [1,\mathfrak{r}] \colon\ \exists e \in Q_{sol}\colon\ r_i \sim_A e
+	\exists r_1,\ldots,r_{\mathcal{Q}_{eq}} \in Q\colon\ \forall i \in [1,\mathcal{Q}_{eq}] \colon\ \exists e \in Q_{sol}\colon\ r_i \sim_A e
 \]
 In our algorithm, we will choose the state $e$ for each state we add.
 
@@ -65,15 +65,15 @@ We see here, that $q$ must have at least $2$ ingoing transitions, else it would 
 \]
 Choose at least one $((q, \sigma), p) \in I_e$, remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$. 
 
-These finding lead us to a general requirement regarding the choice of a state $e$ for an $r_i$: The equivalence class of any $e$ has to contain at least one state with at least $2$ ingoing transitions (see fig.~\ref{fig:dfa_add_redundant_states}). We establish the following notion to pin down this restriction:
+These finding lead us to a general requirement regarding the choice of a state $e$ for an $r_i$: The equivalence class of any $e$ has to contain at least one state with at least $2$ ingoing transitions (see fig.~\ref{fig:dfa_create_equivalent_states}). We establish the following notion to pin down this restriction:
 \[
 	duplicatable(q) \Leftrightarrow_{def} (\exists p \in [q]_{\sim_A}\colon |d^-(p)| \geq 2)
 \]
 The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma| \leq 1$ (due to the restriction $|d^-(p)| \geq 2$) and greater than $0$ for $|\Sigma| > 1$ due to the pigeonhole principle: An accessible complete DFA has $|Q||\Sigma|$ transitions which have to be spread across $|Q|$ states.
 \begin{figure}
-	\includegraphics[width=\linewidth]{images/dfa_add_redundant_states.png}
+	\includegraphics[width=\linewidth]{images/dfa_create_equivalent_states.png}
 	\caption{If an equivalence class (here denoted by the states in the dashed area) contains a state with 2 or more ingoing transitions (in this case $p$), then a state equivalent to any of the classes states may be added. Here $r$ is equivalent to $o$ and is ``stealing'' the ingoing transition $\delta(q, a)$ from $p$.}
-	\label{fig:dfa_add_redundant_states}
+	\label{fig:dfa_create_equivalent_states}
 \end{figure}
 
 \subsection{The algorithm}
@@ -81,7 +81,7 @@ The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma|
 \vspace{0.2cm}
 \begin{spacing}{1}
 \begin{algorithmic}[1]
-	\Function{AddRedundantStates}{$A, \mathfrak{r}$}
+	\Function{CreateEquivalentStatePairs}{$A, \mathcal{Q}_{eq}$}
     \State $Q \gets Q_{sol}$
     \State $\delta \gets \delta_{sol}$
     \State $F \gets F_{sol}$
@@ -89,7 +89,7 @@ The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma|
 	\State $k(q) = C$ such that $q \in C$ and $C \in K$ \Comment{returns the equivalence class to $q$}
 	\State $in(q) = |d^-(q)|$ for all $q \in Q$ \Comment{tracks the number of ingoing t.}
 	
-    \For {$i$ \textbf{in} $[1,\mathfrak{r}]$}
+    \For {$i$ \textbf{in} $[1,\mathcal{Q}_{eq}]$}
 		\For {$q$ \textbf{in} $Q$} \Comment{find a duplicatable state $e$}
 			\If {$in(q) \geq 2$}
 				\State $e \gets$ random chosen state from $k(q)$
@@ -120,9 +120,12 @@ The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma|
 
 \subsection{Creating equivalent state pairs does not change $\mmD$} \label{ch:3:sec-D-proof}
 
-To prove this statement, we will prove two minor propositions first. In this context we will call a word $w$ \emph{distinguishing word of $p,q$}, iff $distinguishes(w, q_0, q_1)$ whereas $distinguishes_A(w, q_0, q_1) \Leftrightarrow (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)$.
+To prove this statement, we will prove two minor propositions first. In this context we will call a word $w$ \emph{distinguishing word of $p,q$}, iff $distinguishes(w, q_0, q_1)$ whereas
+\[
+    distinguishes_A(w, q_0, q_1) \Leftrightarrow (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F) \Leftrightarrow p \not\sim_A q
+\]
 
-\begin{lemma}[Semantics of $(p,q) \in m(n)$] \label{ch:3:semantics-of-m(n)}
+\begin{lemma}\label{ch:3:semantics-of-m(n)}
     In the context of \CompDist\ the following is true:
     \[
         (p,q) \in m(n) \Longleftrightarrow \exists w\in\Sigma^*\colon (|w| = n\ \land distinguishes_A(w, p, q))
@@ -133,173 +136,80 @@ To prove this statement, we will prove two minor propositions first. In this con
 	See TI-Lecture ch. 4 ``Minimization'' p. 18.
 \end{proof}
 
-\begin{lemma}[Semantics of $\mmD(A) = n$] \label{ch:3:semantics-of-D(A)}
-	\begin{multline*}
-		\mmD(A) =\ n \Rightarrow \\
-		n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon \hspace{3cm} \\
-		(|w| = n - 1\ \land distinguishes_A(w, p, q))
-	\end{multline*}
+\begin{lemma}\label{ch:3:semantics-of-D(A)}
+    The longest distinguishing word $w$ of a DFA $A$ has length $\mmD(A)-1$.
+%    Formally:
+%	\begin{multline*}
+%		\mmD(A) =\ n \Rightarrow \\
+%		n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon \hspace{3cm} \\
+%		(|w| = n - 1\ \land distinguishes_A(w, p, q))
+%	\end{multline*}
 \end{lemma}
 
 \begin{proof}
-		Via direct proof. Assume $m$-\CompDist(A) has done $n$ iterations (so $\mmD(A) = n$). We then know, that
-		\begin{enumerate}
-			\item $\forall i \in [0,n-1]\colon m(i) \neq \emptyset$
-			\item $\forall i \geq n\colon m(n)= \emptyset$ \gregor{fix this}
-		\end{enumerate}
-		$m$-\CompDist(A) terminates iff $m(i) = \emptyset$. If the first point would not hold, then the algorithm would have stopped before.
-		
-		Since the algorithm did $n$ iterations, the internal variable $i$ must be $n$ at the end of the last iteration. The terminating condition is $m(i) \neq \emptyset$; thus follows the second point.
-        
-        We prove that then there exists a distinguishing word of length $n-1$, but the existence of a longer word leads to a contradiction. Recall lemma~\ref{ch:3:semantics-of-m(n)}:
-        \[
-            (p,q) \in m(n) \Longleftrightarrow \exists w\in\Sigma^*\colon (|w| = n\ \land distinguishes(w, p, q))
-        \]
+	Via direct proof. Assume $m$-\CompDist(A) has done $n$ iterations (so $\mmD(A) = n$). We then know, that
+	\begin{enumerate}
+		\item $\forall i \in [0,n-1]\colon m(i) \neq \emptyset$
+		\item $\forall i > n-1\colon m(n)= \emptyset$ \gregor{fix this}
+	\end{enumerate}
+	$m$-\CompDist(A) terminates iff $m(i) = \emptyset$. If the first point would not hold, then the algorithm would have stopped before.
 	
-		% a possible word per definition of D(A), m(i) and lemma
-		
-		\noindent Following this lemma and point 1, we can deduce that there exists at least one distinguishing word $w$ with $|w| = n-1$ for some $p,q \in Q$.
-		
-		% There is no word longer than that
-		
-		There cannot be any distinguishing word $w'$ with $|w'| = k > n-1$ for any two states $p',q'\in Q$ fulfilling this property. Following the lemma again, $m(k), k > n-1$ would be non-empty, which is contradictory to point 2.
+	Since the algorithm did $n$ iterations, the internal variable $i$ must be $n$ at the end of the last iteration. The terminating condition is $m(i) \neq \emptyset$; thus follows the second point.
+    
+    We prove that then there exists a distinguishing word of length $n-1$, but the existence of a longer word leads to a contradiction. Recall lemma~\ref{ch:3:semantics-of-m(n)}:
+    \[
+        (p,q) \in m(n) \Longleftrightarrow \exists w\in\Sigma^*\colon (|w| = n\ \land distinguishes(w, p, q))
+    \]
+
+	% a possible word per definition of D(A), m(i) and lemma
+	
+	\noindent Following this lemma and point 1, we can deduce that there exists at least one distinguishing word $w$ with $|w| = n-1 = \mmD(A)-1$ for some $p,q \in Q$.
+	
+	% There is no word longer than that
+	
+	There cannot be any distinguishing word $w'$ with $|w'| = k > n-1$ for any two states $p',q'\in Q$ fulfilling this property. Following the lemma again, $m(k), k > n-1$ would be non-empty, which is contradictory to point 2.
 \end{proof}
 
-\begin{theorem}[]
+\begin{lemma}\label{ch:3:lem:disting-trans}
+    \[
+    distinguishes_A(w, p, q) \land q \sim_A q' \Rightarrow distinguishes_A(w, p, q')
+    \]
+\end{lemma}
+
+\begin{proof}
+    Via direct proof.
+    \begin{align*}
+        &\ distinguishes_A(w, p, q) \land q \sim_A q' \\
+        \Rightarrow &\ (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F) \land (\forall z \in \Sigma^* \colon\ (\delta^*(q, z) \in F \Leftrightarrow \delta^*(q', z) \in F)) \\
+        \Rightarrow &\ (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F) \land (\delta^*(q, w) \in F \Leftrightarrow \delta^*(q', w) \in F) \\
+        \Rightarrow &\ (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q',w) \notin F) \\
+        \Rightarrow &\ distinguishes_A(w, p, q')
+    \end{align*}
+\end{proof}
+
+\begin{theorem}
 	Creating equivalent state pairs in a minimal DFA $A$ does not increase the number of iterations when the \CompDist-algorithm is applied on it.
 \end{theorem}
 
 \begin{proof}
-	Proof per contradiction.
-	
-	\noindent Let us assume there were $\mathfrak{r}$ states $r_1, \ldots, r_\mathfrak{r}$ added to the given minimal DFA $A = (Q, \Sigma, \delta, s, F)$ resulting in a DFA $A' = (Q', \Sigma, \delta', s, F')$ such that $\mmD(A) < \mmD(A')$. Concerning $A'$ we can observe the following:
+	Per contradiction. Let us assume there were $n$ states $r_0, \ldots, r_n$ added to a given minimal DFA $A = (Q, \Sigma, \delta, s, F)$ resulting in a DFA $A' = (Q', \Sigma, \delta', s, F')$ such that:
 	\begin{itemize}
-		\item $Q' = Q \cup \{ r_1, \ldots, r_\mathfrak{r} \}$
-		\item W.l.o.g. $\forall i \in [1,\mathfrak{r}] \colon\ \exists e \in Q_{sol}\colon\ r_i \sim_{A'} e$
+		\item $Q' = Q \cup \{ r_1, \ldots, r_n \}$
+		\item $\forall i \in [1,n] \colon\ \exists q \in Q\colon\ r_i \sim_{A'} q$
+        \item $\mmD(A) < \mmD(A')$
 	\end{itemize}
-	Let us furthermore say that $\mmD(A) = i$ and $\mmD(A') = j$, so $i < j$. Recall now lemma~\ref{ch:3:semantics-of-D(A)}:
-	\begin{multline*}
-        \mmD(A) =\ n \Rightarrow \\
-        n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon \hspace{3cm} \\
-        (|w| = n - 1\ \land distinguishes_A(w, p, q))
-    \end{multline*}
-	According to this lemma there are words $w$ with $|w| = i - 1$ and $w'$ with $|w'| = j - 1$ which are the longest distinguishing words for some states of $A$ resp.\ some states $q',p'$ of $A'$.
+    According to lemma~\ref{ch:3:semantics-of-D(A)} the longest distinguishing word $w$ of $A$ has length $|w| = \mmD(A) - 1$, while its counterpart $w'$ in $A'$ has length $\mmD(A') - 1$. Consequently $|w| < |w'|$.
     
-    Recall now
-    \begin{lemma}\label{ch:3:lem:disting-trans}
-        \[
-        distinguishes_A(w, p, q) \land q \sim_A q' \Rightarrow distinguishes_A(w, p, q')
-        \]
-    \end{lemma}
-    \begin{description}
-        \item[Case 1 - $p',q'$ both in $Q$] $ $
+    There exist states $p',q' \in Q'$ such that $w'$ distinguishes $p',q'$. We differentiate between three cases regarding belonging of $p',q'$.
+    
+    \paragraph*{Both $p',q'$ in $Q$:} Since the longest distinguishing word any state pair in $Q$ can have is guaranteed shorter than $w'$, we may conclude that $p',q' \in Q$ and $p',q'$ have $w'$ as distinguishing word is a contradiction. \lightning
+    
+    \paragraph*{One of $p',q'$ in $Q$, one in $Q'\setminus Q$:} W.l.o.g. $p' \in Q$, $q' \in Q'\setminus Q$. We then know, that $q' \in \{r_1, \ldots, r_n\}$. This implies that $q' \sim_{A'} q$ for an $q \in Q$.
+    
+    By lemma~\ref{ch:3:lem:disting-trans} $w'$ is a distinguishing word for $p',q$. But this is contradictory to $p',q \in Q$. \lightning
         
-        Since the longest distinguishing word any state pair $p,q \in Q$ can have is guaranteed shorter than $w'$, we know that no $p,q \in Q$ can have $w'$ as distinguishing word. \hfill\lightning
-        
-        \item[Case 2 - one of $p',q'$ in $Q$, one in $Q'\setminus Q$] $ $
-        
-        W.l.o.g. $p' \in Q, q' \in Q'\setminus Q$. We then know, that $q' \in \{r_1, \ldots, r_\mathfrak{r}\}$. This implies that $q' \sim_{A'} e$ for an $e \in Q$. By lemma~\ref{ch:3:lem:disting-trans} $distinguishes_A(w', p', e)$. But then two states from $Q$ would have $w'$ as distinguishing word which is contradictory, see above. \hfill\lightning
-        
-        \item[Case 3 - $p',q'$ both in $Q'\setminus Q$] $ $
-        
-        Analogue to case 2, we can find states $e_1, e_2 \in Q$ equivalent to $p',q'$. Then again two states from $Q$ would have $w'$ as distinguishing word. \hfill\lightning
-    \end{description}
-    Thus we have led our assumption to contradiction in every case, which finishes the proof.
-	
-%	Let us split $w'$ as $w' = u'v'$ such that $|v'| = i$, which is exactly one symbol longer than $w$. We can formulate the following statement:
-%    
-%    The word $v'$ is a distinguishing word for some $p,q \in Q'$.
-%	\begin{equation}
-%    	\text{There must exist }p, q \in Q'\text{ such that }\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q,v) \notin F'.
-%	\end{equation}
-%	\gregor{hidden formulations here}
-%	%There must exist $p, q \in Q'$ such that $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q,v) \notin F'$.
-%	
-%	%So there exists a minimization word $v$ in $A'$, which is exactly one symbol longer than the longest minimization word of $A$. This word has length $i$ and is detected at minimization depth $i + 1$.
-%	
-%	\noindent We can therefore state, that $\neg(p \in Q \land q \in Q)$, because else $\mmD(A)$ would be higher than $i$ too.  So at least one of $p,q$ must be in $Q' \setminus Q$ which is exactly $\{ q_r^1, \ldots, q_r^n \}$.
-%	
-%	\begin{itemize}
-%		\item Every $q_r^k$ is $d_{A'}$-equivalent to a $q \in Q$
-%		\item In every case, $p,q$ can be $d_{A'}$-exchanged s.t. $p,q \in Q$
-%		\item But that's contradictory to $\mmD(A) = n$, because $p,q$ belong to a minimization word $w = n-1$
-%	\end{itemize}
-		
-%	Since $q_r$ is the only new state in $A'$ compared to $A$, we can conclude that at least one of both states must be $q_r$. Since $p = q_r = q$ is contradictory (\gregor{why?}), we can conclude that exactly one of both states $p, q$ is $q_r$ and that the other one is not.
-%	
-%	W.l.o.g.\ we say $q = q_r$ and $p \in Q' \setminus \{q_r\} = Q$ and reformulate our statement above:
-%	\begin{equation}
-%	\text{There must exist a }p \in Q\text{ such that }\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_r,v) \notin F'.
-%	\end{equation}
-%	\gregor{hidden formulations here}
-%	
-%	%Therefore we know there exists a state $p \in Q$ such that $\exists v \in \Sigma^*$, $|v| = i$ and $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_r,v) \notin F'$
-%	
-%	Since for $q_o \in Q$ the relation $d_{A'}(q_o, q_r)$ is given, we know per definition of $d_{A'}$ that $\forall z\in\Sigma'^*\colon \delta'^*(q_o,z) \in F \Leftrightarrow \delta'^*(q_r,z) \in F$.
-%	
-%	This implies in combination with statement 2.2, that for $p,q_o$ the word $v\in\Sigma'^*$ would fulfill $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_o,v) \notin F'$ too. But this is contradictory to $p,q \notin Q$.
+    \paragraph*{None of $p',q'$ in $Q$:} Since $p',q'$ both have to be in $Q'\setminus Q = \{r_1, \ldots, r_n\}$, we can find states $p, q \in Q$ equivalent to $p',q'$. These states would be distinguished by $w'$, which is contradictory again. \lightning 
 \end{proof}
-
-\gregor{Old proof for one $q_r$}
-%\begin{proof}
-%	\begin{description}
-%		\item
-%		
-%		Proof per contradiction.
-%		
-%		Let's assume adding a redundant state $q_r$ to a given automaton $A = (Q, \Sigma, \delta, s, F)$ results in an automaton $A' = (Q', \Sigma, \delta', s, F')$ whereas $\mmD(A) < \mmD(A')$.
-%		
-%		Concerning $A'$ we can say the following:
-%		\begin{itemize}
-%			\item $Q' = Q \cup \{ q_r \}$
-%			%			\item $\delta \subseteq \delta'$
-%			%			\item $F \subseteq F'$
-%			\item $\exists q_o \in Q \colon\ \sim_A'(q_o, q_r)$
-%		\end{itemize}
-%		Let us furthermore say that $\mmD(A) = i$ and $\mmD(A') = j$. Recall now lemma~\ref{ch:3:semantics-of-D(A)}:
-%		\begin{multline*}
-%			\mmD(A) =\ n \Rightarrow \\
-%			n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon |w| = n - 1\ \land \\
-%			(\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
-%		\end{multline*}
-%		According to this lemma there must be a pair $s, t \in Q'$ to which exists a word $w \in \Sigma'^*$, $|w| = j - 1$, such that $\delta'^*(s,w) \in F' \Leftrightarrow \delta'^*(t,w) \notin F'$.
-%		
-%		Let us split $w$ as $w = uv$, whereas $u,v \in\Sigma'^*$ and $|v| = i$, which is exactly one symbol longer than the longest minimization word of $A$. We can formulate the following statement:
-%		\begin{equation}
-%		\text{There must exist }p, q \in Q'\text{ such that }\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q,v) \notin F'.
-%		\end{equation}
-%		\gregor{hidden formulations here}
-%		%There must exist $p, q \in Q'$ such that $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q,v) \notin F'$.
-%		
-%		%So there exists a minimization word $v$ in $A'$, which is exactly one symbol longer than the longest minimization word of $A$. This word has length $i$ and is detected at minimization depth $i + 1$.
-%		
-%		We can therefore state, that $\neg(p \in Q \land q \in Q)$, because else $\mmD(A)$ would be higher than $i$ too. 
-%		
-%		Since $q_r$ is the only new state in $A'$ compared to $A$, we can conclude that at least one of both states must be $q_r$. Since $p = q_r = q$ is contradictory (\gregor{why?}), we can conclude that exactly one of both states $p, q$ is $q_r$ and that the other one is not.
-%		
-%		W.l.o.g.\ we say $q = q_r$ and $p \in Q' \setminus \{q_r\} = Q$ and reformulate our statement above:
-%		\begin{equation}
-%		\text{There must exist a }p \in Q\text{ such that }\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_r,v) \notin F'.
-%		\end{equation}
-%		\gregor{hidden formulations here}
-%		
-%		%Therefore we know there exists a state $p \in Q$ such that $\exists v \in \Sigma^*$, $|v| = i$ and $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_r,v) \notin F'$
-%		
-%		Since for $q_o \in Q$ the relation $d_{A'}(q_o, q_r)$ is given, we know per definition of $d_{A'}$ that $\forall z\in\Sigma'^*\colon \delta'^*(q_o,z) \in F \Leftrightarrow \delta'^*(q_r,z) \in F$.
-%		
-%		This implies in combination with statement 2.2, that for $p,q_o$ the word $v\in\Sigma'^*$ would fulfill $\delta'^*(p,v) \in F' \Leftrightarrow \delta'^*(q_o,v) \notin F'$ too. But this is contradictory to $p,q \notin Q$.
-%		
-%		\gregor{hidden lemma here}
-%		
-%		%		\begin{lemma}
-%		%			\begin{multline*}
-%		%				\mmD(A) =\ n \Leftrightarrow \\
-%		%				n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon \\
-%		%				|w| = n - 1 \land (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
-%		%			\end{multline*}
-%		%		\end{lemma}
-%	\end{description}
-%\end{proof}
 
 \section{Adding unreachable states}
 
@@ -307,12 +217,13 @@ From step 1 of the minimization algorithm we can deduce how to add unreachable s
 
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{AddUnreachableStates\ }{$A, u$}
-	\For {$u$ \textbf{times}}
+	\Function{AddUnreachableStates\ }{$A, \mathcal{Q}_{unr}, c$}
+	\For {$\mathcal{Q}_{unr}$ \textbf{times}}
 		\State $q \gets \max Q + 1$
 		\State $Q \gets Q \cup \{ q \}$
-		\State $R \gets$ random chosen sample of $|\Sigma|$ states from $Q \setminus \{q\}$
-		\For {$\sigma$ \textbf{in} $\Sigma$}
+        \State $outSymbols \gets c = 1\ ?\ \Sigma\ :\ $ random subset of $\Sigma$
+		\State $R \gets$ random chosen sample of $|outSymbols|$ states from $Q \setminus \{q\}$
+		\For {$\sigma$ \textbf{in} $outSymbols$}
 			\State $q' \in R$
 			\State $R \gets R \setminus \{q'\}$
 			\State $\delta \gets \delta \cup \{ ((q, \sigma), q') \}$

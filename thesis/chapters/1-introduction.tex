@@ -2,33 +2,31 @@
 
 \chapter{Introduction}
 
-\begin{itemize}
-	\item study computer science
-	\item theoretical informatics
-	\item automata theory
-	\item value of this theory
-	\item typical topics (minimization), why typical
-	\item sketch situation
-	\item why
-	
-	- science
-	
-	- increased clarification which kind of tasks can be generated, and where difficulties of those tasks lie
-	
-	automation allows
-	
-	- freeing time for other things, e.g. research, helping students face-to-face, designing the whole exercise sheet
-	
-	- generation of tasks which lie in a well-defined range
-	
-	- increased predictability and consistency of the generated task properties, which can be adjusted accurately through various parameters
-	
-	- saves human operators from the generating task which involves monotonous work
-\end{itemize}
+% study computer science, (theoretical informatics), automata theory, value of this theory
 
-This work lays out the theory for a program solving this task. As a consequence, parameters, which are sensible as user input, will be incorporated in problem definitions.
-In addition, when evaluating possible algorithms, we will take their usability in a practical use case into account.
-Furthermore additional theory will be discussed, to enhance usability.
+Automata theory is recommended as part of a standard computer science curriculum~\cite[pp. 5-6]{GI16}. As other such theories it provides the chance to gain a precise cognitive model yielding new perspectives on problems and givens. This may thus lead to increased problem solving skills and more accurate thinking.
+
+% typical topic - minimization, (why typical)
+
+A typical task in automata theory is the minimization of a given deterministic finite automaton (DFA). The classic textbook ``Introduction to automata theory, languages, and computation'' by Hopcroft et. al.~\cite{HMU01} presents a practicable minimization algorithm. In this work we will confine ourselves to look at DFA minimizations using that algorithm.
+
+% sketch situation
+
+In an introduction course to theoretical computer science minimization tasks are thus likely to occur in supplementary exercises or exams. As of the creation of such tasks, one may assume, that it is done mostly manually. Automation would yield here the following advantages:
+
+\begin{itemize}
+	\item freeing time for other things, e.g. research, helping students face-to-face, designing the whole exercise sheet
+	
+	\item generation of tasks which lie in a well-defined range
+	
+	\item increased predictability and consistency of the generated task properties, which can be adjusted accurately through various parameters
+	
+	\item saves human operators from the generating task which involves monotonous work
+\end{itemize}
+\gregor{Delete or find extern from wikipedia}
+Engagement on this topic promises moreover increased clarification which kind of minimization tasks can be generated, and where difficulties of those tasks lie.
+
+This work aims to provide theoretical foundations for a DFA minimization task generator. What requirements a user has towards such a program will be discussed in a short requirements analysis. Based on this work a DFA minimization generator has been implemented. It can be found at \url{https://github.com/bt701607/Generation-of-DFA-Minimization-Problems}.
 
 \section{Preliminaries}
 
@@ -36,23 +34,23 @@ We start with defining preliminary theoretical foundations.
 
 \subsection{Deterministic Finite Automatons}
 
-A 5-tuple $A = (Q, \Sigma, \delta, s, F)$ with $Q$ being a finite set of \emph{states}, $\Sigma$ a finite set of \emph{alphabet symbols}, $\delta \colon\ Q \times \Sigma \to Q$ a \emph{transition function}, $s \in Q$ a \emph{start state} and $F \subseteq Q$ \emph{final states} is called \emph{deterministic finite automaton} (DFA)~\cite[p. 46]{hopcroft01}. From now on $\mathcal{A}$ shall denote the set of all DFAs.
+A 5-tuple $A = (Q, \Sigma, \delta, s, F)$ with $Q$ being a finite set of \emph{states}, $\Sigma$ a finite set of \emph{alphabet symbols}, $\delta \colon\ Q \times \Sigma \to Q$ a \emph{transition function}, $s \in Q$ a \emph{start state} and $F \subseteq Q$ \emph{final states} is called \emph{deterministic finite automaton} (DFA)~\cite[p. 46]{HMU01}. From now on $\mathfrak{A}$ shall denote the set of all DFAs.
 
 We say $\delta(q,\sigma) = p$ is a transition from $q$ to $p$ using symbol $\sigma$. We define the \emph{extended transition function} $\delta^* : Q \times \Sigma^* \to Q$ of a DFA $A = (Q, \Sigma, \delta, s, F)$ as:
 \begin{itemize}
 	\item $\delta^*(q,\varepsilon) = q$
 	\item $\delta^*(q,w\sigma) = \delta(\delta^*(q,w),\sigma)$ for all $q \in Q$, $w \in \Sigma^*$, $\sigma \in \Sigma$
 \end{itemize}
-Then, the \emph{language} of that DFA is defined as $L(A) = \{\ w\ |\ \delta^*(w) \in F\ \}$~\cite[pp. 49-50. 52]{hopcroft01}.
+Then, the \emph{language} of that DFA is defined as $L(A) = \{\ w\ |\ \delta^*(w) \in F\ \}$~\cite[pp. 49-50. 52]{HMU01}.
 
-Given a state $q \in Q$. With $d^-(q)$ we denote the set of all \emph{ingoing} transitions $\delta(q', \sigma) = q$ of $q$. With $d^+(q)$ we denote the set of all \emph{outgoing} transitions $\delta(q, \sigma) = q'$ of $q$~\cite[pp. 2-3]{champarnaud05}. If a transition is of the form $\delta(q, \sigma) = q$, then we say that $q$ has a \emph{loop}.
+Given a state $q \in Q$. With $d^-(q)$ we denote the set of all \emph{ingoing} transitions $\delta(q', \sigma) = q$ of $q$. With $d^+(q)$ we denote the set of all \emph{outgoing} transitions $\delta(q, \sigma) = q'$ of $q$~\cite[pp. 2-3]{CP05}. If a transition is of the form $\delta(q, \sigma) = q$, then we say that $q$ has a \emph{loop}.
 
 \begin{definition}\label{ch:1:unreachable-states}
 	We say a state $q$ is \emph{(un-)reachable} in a DFA $A$, iff there is (no) a word $w \in \Sigma^*$ such that $\delta^*(s, w) = q$.
 \end{definition}
-\noindent If all states of a DFA $A$ are reachable, then we say $A$ is \emph{accessible}~\cite[p. 2]{champarnaud05}.
+\noindent If all states of a DFA $A$ are reachable, then we say $A$ is \emph{accessible}~\cite[p. 2]{CP05}.
 
-A DFA is called \emph{complete} iff for all states, every symbol of the alphabet is used on an outgoing transition: $\forall q\in Q\colon \forall\sigma\in\Sigma\colon \exists p\in Q\colon \delta(q,\sigma) = p$. Note, that every incomplete DFA can be converted to a complete one by adding a so called \emph{dead state}~\cite[p. 67]{hopcroft01}. The resulting automaton has the same language.
+A DFA is called \emph{complete} iff for all states, every symbol of the alphabet is used on an outgoing transition: $\forall q\in Q\colon \forall\sigma\in\Sigma\colon \exists p\in Q\colon \delta(q,\sigma) = p$. Note, that every incomplete DFA can be converted to a complete one by adding a so called \emph{dead state}~\cite[p. 67]{HMU01}. The resulting automaton has the same language.
 
 \begin{figure}
 	\includegraphics[width=\linewidth]{images/dfa.png}
@@ -62,7 +60,7 @@ A DFA is called \emph{complete} iff for all states, every symbol of the alphabet
 
 \subsection{Minimal DFAs}
 
-This section closely follows~\cite[pp. 42-45]{schoening01}. We call a DFA $A$ \emph{minimal}, if there exists no other automaton with the same language using less states. With $\mathcal{A}_{min}$ we shall denote the set of all minimal DFAs.
+This section closely follows~\cite[pp. 42-45]{Sch01}. We call a DFA $A$ \emph{minimal}, if there exists no other automaton with the same language using less states. With $\mathfrak{A}_{min}$ we shall denote the set of all minimal DFAs.
 
 The \emph{Nerode-relation} $\equiv_L\ \subseteq\ \Sigma^* \times \Sigma^*$ of a language $L$ with alphabet $\Sigma$ is defined as follows:
 \begin{displaymath}
@@ -96,11 +94,12 @@ Given two DFAs $A_1 = (Q_1, \Sigma_1, \delta_1, s_1, F_1)$ and $A_2 = (Q_2, \Sig
 	
 	$\forall q\in Q_1\colon \forall\sigma\in\Sigma_1\colon \pi(\delta_1(q,\sigma))=\delta_2(\pi(q),\phi(\sigma)))$
 \end{itemize}
-Note that practical isomorphy between two DFAs $A_1, A_2$ does not imply $L(A_1) = L(A_2)$. This would be given, if $\Sigma_1 = \Sigma_2$ were the case (see~\cite[p. 45]{schoening01}). However the language of such DFAs is equivalent except for an exchange of alphabet symbols:
+Note that practical isomorphy between two DFAs $A_1, A_2$ does not imply $L(A_1) = L(A_2)$. This would be given, if $\Sigma_1 = \Sigma_2$ were the case (see~\cite[p. 45]{Sch01}). However the language of such DFAs is equivalent except for an exchange of alphabet symbols:
 \[
 	\{\ \phi(\sigma_0)\ldots\phi(\sigma_n)\ |\ \sigma_0\ldots\sigma_n\in L(A_1)\ \} = L(A_2)
 \]
-%\begin{theorem} \textnormal{\cite[p. 45]{schoening01}} 
+Practical isomorphy will be sufficient for our case. \gregor{why?}
+%\begin{theorem} \textnormal{\cite[p. 45]{Sch01}} 
 %	Every minimal DFA is unique except for isomorphy.
 %\end{theorem}
 %So it
@@ -112,7 +111,7 @@ Note that practical isomorphy between two DFAs $A_1, A_2$ does not imply $L(A_1)
 
 \subsection{Equivalent and distinguishable state pairs}
 
-\begin{definition}[Equivalent and Distinguishable State Pairs]\cite[p. 154]{hopcroft01}
+\begin{definition}[Equivalent and Distinguishable State Pairs]\cite[p. 154]{HMU01}
 	A state pair $q_1, q_2 \in Q$ of a DFA $A = (Q, \Sigma, \delta, s, F)$ is called \emph{equivalent}, iff $\sim_A(q_1, q_2)$ is true, whereas
 	\begin{displaymath}
 	q_1\ \sim_A\ q_2 \Leftrightarrow_{def}\ \forall z \in \Sigma^* \colon\ (\delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)
@@ -191,7 +190,7 @@ This minimization algorithm \MinAlg\ works in four major steps, removing essenti
 		\EndFunction
 	\end{algorithmic}
 
-	\item Compute all equivalent state pairs ($\sim_A$).
+	\item Compute all equivalent state pairs ($\sim_A$). Inspired by Schöning~\cite[p. 46]{Sch01} \gregor{And TI-VL}.
 	
 	\vspace{0.2cm}
 	\begin{algorithmic}[1]
@@ -206,7 +205,7 @@ This minimization algorithm \MinAlg\ works in four major steps, removing essenti
 	\end{algorithmic}
 	Note that \CompDist\ requires its input automaton to be complete. \gregor{Why?}
 
-	\item Merge all equivalent state pairs, which are exactly those in $\sim_A$.
+	\item Merge all equivalent state pairs, which are exactly those in $\sim_A$. Inspired by Högberg~\cite[p. 10]{HL20}.
 	
 	\vspace{0.2cm}
 	\begin{algorithmic}[1] \label{ch:1:minmerge}
@@ -228,10 +227,21 @@ This minimization algorithm \MinAlg\ works in four major steps, removing essenti
 	\end{algorithmic}
 	Note that \RemEq\ creates complete automatons.
 \end{enumerate}
-\begin{theorem}\label{ch:1:min-alg-correct}
-	The minimization algorithm computes a minimal DFA to its input DFA.
+
+\vspace{0.2cm}
+\begin{algorithmic}[1] \label{ch:1:minalg}
+    \Function{\MinAlg}{$A_{task}$}
+    \State $A_{re} \gets \RemUnr(A_{task}, \CompUnr(A_{task}))$
+    \State $A_{sol} \gets \RemEq(A_{re}, \CompDist(A_{re}))$
+    \State \Return $A_{sol}$
+    \EndFunction
+\end{algorithmic}
+\vspace{0.2cm}
+\noindent This DFA minimization algorithm has been found by Hopcroft~\cite{Hop71} and was established in teaching by Hopcroft et al.~\cite[pp. 154-164]{HMU01}.
+
+\begin{theorem}\label{ch:1:min-alg-correct}\textnormal{\cite[pp. 162-164]{HMU01}}
+	\MinAlg\ computes a minimal DFA to its input DFA.
 \end{theorem}
-\noindent The definition of this DFA minimization algorithm is inspired by Schöning~\cite[p. 46]{schoening01}, Hopcroft~\cite[p. 161]{hopcroft01} and Högberg~\cite[p. 10]{hoegberg20}.
 
 \subsection{$m$-\CompDist.}
 
@@ -257,9 +267,9 @@ We will denote the number of iterations done by \CompDist\ on an DFA $A$ as $\mm
 %
 %When looking at \MinAlg, one may note, that we can partition the states $Q_A$ of any DFA $A$ into three parts:
 %\begin{itemize}
-%	\item a subset of \emph{unreachable} states $U_A = \{\ u_1, \ldots, u_\mathfrak{u}\ \}$ of size $\mathfrak{u}$, found and removed in step 1 and 2
-%	\item a subset of \emph{redundant} states $R_A = \{\ r_1, \ldots, r_\mathfrak{r}\ \}$ of size $\mathfrak{r}$, found and removed in step 3 and 4
-%	\item a subset of \emph{essential} states $E_A = \{\ e_1, \ldots, e_\mathfrak{e}\ \}$ of size $\mathfrak{e}$, which are left over after applying the algorithm
+%	\item a subset of \emph{unreachable} states $U_A = \{\ u_1, \ldots, u_{\mathcal{Q}_{unr}}\ \}$ of size $\mathcal{Q}_{unr}$, found and removed in step 1 and 2
+%	\item a subset of \emph{redundant} states $R_A = \{\ r_1, \ldots, r_{\mathcal{Q}_{eq}}\ \}$ of size $\mathcal{Q}_{eq}$, found and removed in step 3 and 4
+%	\item a subset of \emph{essential} states $E_A = \{\ e_1, \ldots, e_\mathcal{Q}_{sol}\ \}$ of size $\mathcal{Q}_{sol}$, which are left over after applying the algorithm
 %\end{itemize}
 %Note that the set of essential states to a DFA is dependent on the implementation of \RemEq, but we know, that there will always be states left over, and for a given DFA the number will always be the same \gregor{why}.
 
@@ -281,9 +291,9 @@ Consider step 3 and 4 of \MinAlg. A view on these algorithms reveal, that they a
     Note, that we know by theorem~\ref{ch:1:min-alg-correct} that $E_A$ is guaranteed to be a minimal automaton to $A$, if $A$ has no unreachable states.
 \end{definition}
 
-%Note moreover that, since $A_{sol}$ is minimal, there exists an isomorphism renaming $e_1,\ldots,e_\mathfrak{e}$ such that they correspond to the equivalence classes of $\equiv_{L(A_{task})}\ = \ \equiv_{L(A_{re})}$ and $\sim_{A_{re}}$.
+%Note moreover that, since $A_{sol}$ is minimal, there exists an isomorphism renaming $e_1,\ldots,e_\mathcal{Q}_{sol}$ such that they correspond to the equivalence classes of $\equiv_{L(A_{task})}\ = \ \equiv_{L(A_{re})}$ and $\sim_{A_{re}}$.
 %
-%However there might exist no isomorphism connecting $e_1,\ldots,e_\mathfrak{e}$ and the equivalence classes of $\sim_{A_{task}}$, since possible unreachable states might form $\sim$-equivalence classes that are distinct to those of the reachable states.
+%However there might exist no isomorphism connecting $e_1,\ldots,e_\mathcal{Q}_{sol}$ and the equivalence classes of $\sim_{A_{task}}$, since possible unreachable states might form $\sim$-equivalence classes that are distinct to those of the reachable states.
 
 \section{Requirements analysis}
 
@@ -326,17 +336,25 @@ Consider the computation of the sets $m(i)$ in \CompDist. Determining $m(0)$ is 
 
 It would therefore be sensible if $\mmD(A_{task})$ could be adjusted for example by parameters $m_{min}, m_{max}$ which give lower and upper bounds for that value.
 
-\paragraph*{Number of states.}
+\paragraph*{Number of states ($\mathcal{Q}_{sol}, \mathcal{Q}_{eq}, \mathcal{Q}_{unr}$).}
 
-To control the number of states in $A_{task}, A_{re}$ and $A_{sol}$, we will introduce three parameters: $\mathfrak{e}, \mathfrak{r}, \mathfrak{u} \in \mathbb{N}$. These parameters get their meaning by the following equations:
+To control the number of states in $A_{task}, A_{re}$ and $A_{sol}$, we will introduce three parameters: $\mathcal{Q}_{sol}, \mathcal{Q}_{eq}, \mathcal{Q}_{unr} \in \mathbb{N}$. These parameters get their meaning by the following equations:
 \begin{align*}
-    |Q_{sol}| &= \mathfrak{e} \\
-    |Q_{re}| &= \mathfrak{e} + \mathfrak{r} \\
-    |Q_{task}| &= \mathfrak{e} + \mathfrak{r} + \mathfrak{u}
+    |Q_{sol}| &= \mathcal{Q}_{sol} \\
+    |Q_{re}| &= \mathcal{Q}_{sol} + \mathcal{Q}_{eq} \\
+    |Q_{task}| &= \mathcal{Q}_{sol} + \mathcal{Q}_{eq} + \mathcal{Q}_{unr}
 \end{align*}
-It is sensible to have $\mathfrak{u} > 1, \mathfrak{r} > 1$, such that \RemUnr\ and \RemEq\ will not be skipped. To not make the task trivial, $\mathfrak{e} > 2$ is sensible. An exercise instructor will find it useful, to control exactly how big $\mathfrak{u}$, $\mathfrak{r}$ and $\mathfrak{e}$ are: The higher $\mathfrak{u}, \mathfrak{r}$, the more states have to be eliminated and merged. The higher $\mathfrak{e} + \mathfrak{r}$, the more state pairs have to be checked during \CompDist.
+It is sensible to have $\mathcal{Q}_{unr} > 1, \mathcal{Q}_{eq} > 1$, such that \RemUnr\ and \RemEq\ will not be skipped. To not make the task trivial, $\mathcal{Q}_{sol} > 2$ is sensible. An exercise instructor will find it useful, to control exactly how big $\mathcal{Q}_{unr}$, $\mathcal{Q}_{eq}$ and $\mathcal{Q}_{sol}$ are: The higher $\mathcal{Q}_{unr}, \mathcal{Q}_{eq}$, the more states have to be eliminated and merged. The higher $\mathcal{Q}_{sol} + \mathcal{Q}_{eq}$, the more state pairs have to be checked during \CompDist.
 
-\paragraph*{Alphabet size ($|\Sigma|$).}
+\gregor{Concept for min max.}
+%To control the number of states in $A_{task}, A_{re}$ and $A_{sol}$, we will introduce three pairs of parameters, denoting each ranges: $Q_{s,min}, Q_{s,max}$ for the number of states in the solution DFA, $Q_{e,min}, Q_{e,max}$ for the number of equivalent state pairs in $A_{re}$ and $A_{task}$, and $Q_{u,min}, Q_{u,max}$ for the number of unreachable states in $A_{task}$. Consequently the following equations are true:
+%\begin{align*}
+%|Q_{sol}| &\in [Q_{s,min}, Q_{s,max}] \\
+%|Q_{re}| &= |Q_{sol}| + n \in [Q_{e,min}, Q_{e,max}] \\
+%|Q_{task}| &= |Q_{re}| + n \in [ Q_{u,min}, Q_{u,max}]
+%\end{align*}
+
+\paragraph*{Alphabet size.}
 
 The more symbols the alphabet of $A_{task}, A_{re}$ and $A_{sol}$ has (note how \MinAlg\ does not change the alphabet), the more transitions have to be followed when checking whether $(\delta(q,\sigma),\delta(p,\sigma))\in m(i-1)$ is true for each state pair $p,q$.
 
@@ -384,23 +402,23 @@ Accepted reachable DFA criteria:
 \end{itemize}
 Accepted task DFA criteria:
 \begin{itemize}
-	\item[->] number of redundant states
+	\item[->] number of states that are added to create equivalent state pairs
 	\item[->] planarity
 	\item[->] completeness
 \end{itemize}
 
 \section{Approach and general algorithm}
 
-In this work we will first build the solution DFA (step 1), and - based on that - the task DFA by adding unreachable and redundant states (step 2). Both steps will fulfill all criteria chosen above and are covered in depth in chapter~\ref{ch:2} respectively chapter~\ref{ch:3}.
+In this work we will first build the solution DFA (step 1), and - based on that - the task DFA by creating equivalent states and adding unreachable states (step 2). Both steps will fulfill all criteria chosen above and are covered in depth in chapter~\ref{ch:2} respectively chapter~\ref{ch:3}.
 
-It follows that $\mmD$ and $L$ of both DFAs will be set when building $A_{sol}$. We know that adding redundant and unreachable states does not change $L(A_{task})$ in comparison to $A_{sol}$, else \MinAlg\ would not work (a minimal DFA has in particular the same language as the original DFA). However we must ensure, that adding those states does not change $\mmD$. Since unreachable states are eliminated before \CompDist\ is applied, we need only to ensure, that adding redundant states does not change the $\mmD$-value. We will do this during the discussion of step 2, more specifically in section~\ref{ch:3:sec-D-proof}.
+It follows that $\mmD$ and $L$ of both DFAs will be set when building $A_{sol}$. We know that creating equivalent states and adding unreachable does not change $L(A_{task})$ in comparison to $A_{sol}$, else \MinAlg\ would not work (a minimal DFA has in particular the same language as the original DFA). However we must ensure, that adding those states does not change $\mmD$. Since unreachable states are eliminated before \CompDist\ is applied, we need only to ensure, that creating equivalent states does not change the $\mmD$-value. We will do this during the discussion of step 2, more specifically in section~\ref{ch:3:sec-D-proof}.
 
 At the beginning of chapter 2 and 3, we will provide formal problem definitions for both steps, that specify precisely all requirements. Here we shall content ourselves with the definition of the main algorithm:
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{GenerateDFAMinimizationProblem}{$\mathfrak{e}, a, f, m_{min}, m_{max}, p_1, p_2, \mathfrak{r},\mathfrak{u}$}
-	\State $A_{sol} \gets \textsc{GenerateNewMinimalDFA}(\mathfrak{e}, a, f, m_{min}, m_{max}, p_1)$
-	\State $A_{task} \gets \textsc{ExtendMinimalDFA}(A_{sol}, p_2, \mathfrak{r},\mathfrak{u})$
+	\Function{GenerateDFAMinimizationProblem}{$\mathcal{Q}_{sol}, a, f, m_{min}, m_{max}, p_1, p_2, \mathcal{Q}_{eq},\mathcal{Q}_{unr}, c$}
+	\State $A_{sol} \gets \textsc{GenerateNewMinimalDFA}(\mathcal{Q}_{sol}, a, f, m_{min}, m_{max}, p_1)$
+	\State $A_{task} \gets \textsc{ExtendMinimalDFA}(A_{sol}, p_2, \mathcal{Q}_{eq},\mathcal{Q}_{unr}, c)$
 	\State \Return $A_{sol}, A_{task}$
 	\EndFunction
 \end{algorithmic}

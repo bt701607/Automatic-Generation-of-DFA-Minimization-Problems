@@ -333,11 +333,23 @@ We reduce the enumeration room for each calculation.
 \end{algorithmic}
 \vspace{0.2cm}
 
-\subsection{Related Research}
+\subsection{Related Research - DFA generation}
 
-Nicaud provides an overview of results on random generation and combinatorial properties of DFAs in ~\cite{Nic14}. His summary indicates, that research discusses rejection algorithms when it comes to random DFA generation. The naive variant presented in this work is improved in many ways. 
+Nicaud provides an overview of results on random generation and combinatorial properties of DFAs in ~\cite{Nic14}. We will outline relevant related research.
 
-Concerning combinatorial properties of DFA research has started very early~\cite{Vys59}. This~\cite{Kor78} contribution by Korshunov is often cited in this regard, he ``determines an asymptotic estimate of the number of accessible complete and deterministic $n$-state automata over a finite alphabet''~\cite[p. 1]{BDS11}.
+\subsubsection{DFA enumeration}
+
+Nicaud's summary indicates, that research has focused on variants of the rejection algorithm so far. The naive variant presented in this work is improved in many ways, in particular does every approach straightaway aim at producing accessible DFAs.
+
+Champarnaud and Paranthoën~\cite{CP05} continue ideas started by Nicaud in his thesis~\cite{Nic00}.
+
+Let a set of words $X$ of $\Sigma^*$ be prefix if it contains all words $u \in \Sigma^*$ such that there exists
+$w \in \Sigma^*$ such that $uw\in X$. We define the set of $n-tuples$:
+\[
+    \mathfrak{R_n}} = \{\ (k_1,\ldots,k_n) \in [[1,n]]^n\ |\ \forall i\in [2,n]\colon k_i \geq k_{i-1}\ and\ k_i \geq i\ \}
+\]
+Let furthermore $\mathfrak{F_{n,m}}$ be the set of $m$-ary trees of order $n$.
+
 
 \begin{itemize}
     \item 2005 \cite{CP05} Random, accessible. Relations to $m$-ary trees and generalized tuples. Recursive method.$P(minimial) = 0.8$ empirical. $\mathcal{O}(m^2)$
@@ -349,15 +361,21 @@ Concerning combinatorial properties of DFA research has started very early~\cite
     \item 2009 \cite{AMR09} To that.
     \item 2009 \cite{AAA09} Implementation of above. DFA database.
     
-    \item 2011 \cite{BDS11} Determined the fraction of minimal automata among accessible complete DFAs.
-    
     \item 2012 \cite{CN12} Random, accessible. Simpler algorithm. Algorithms that output approximately $n$-state DFAs. $\mathcal{O}(n\sqrt{n})$
-    
-    \item 2014 \cite{Nic14} Survey.
 \end{itemize}
 
+\subsubsection{Combinatorial properties of DFAs}
 
-\subsubsection{Random DFA generation}
+Concerning combinatorial properties of DFAs, several authors (e.g.~\cite{BN07, DKS02, HJ14}) consider a work from Vyssotsky~\cite{Vys59} in the Bell laboratories to be the first on this subject. A contribution by Korshunov~\cite{Kor78} is often cited in this regard, for he firstly ``determines an asymptotic estimate of the number of accessible complete and deterministic $n$-state automata over a finite alphabet''~\cite{BDS11}.
+
+\begin{itemize}
+    \item 2002 \cite{DKS02} Number of distinct $n$-$k$ minimal DFAs except isomorphy. Asymptotic estimates and explicit numbers.
+    
+    \item 2011 \cite{BDS11} Determined the fraction of minimal automata among accessible complete DFAs.
+    
+    \item 2013 \cite{BK13} Number of essential states for random $n$-$k$-DFAs is $\alpha_k n + \mathcal{O}(\sqrt{n}\log n)$ for a constant $\alpha_k$.
+\end{itemize}
+
 
 \paragraph{Via relations between DFAs, m-ary trees and generalized tuples}
 
@@ -417,7 +435,26 @@ minimal automata (using a recent result on the asymptotic number of minimal auto
 [ 11 ]), with the same expected complexity for the exact version and an expected complexity
 in O(nloglogn) for the approximated version
 
-
+%\begin{itemize}
+%    \item 2002 \cite{DKS02} Number of distinct $n$-$k$ minimal DFAs except isomorphy. Asymptotic estimates and explicit numbers.
+%    
+%    \item 2005 \cite{CP05} Random, accessible. Relations to $m$-ary trees and generalized tuples. Recursive method.$P(minimial) = 0.8$ empirical. $\mathcal{O}(m^2)$
+%    
+%    \item 2007 \cite{BN07} Random, accessible. Bijection to some diagrams. Requires less memory space and precalculus.  Boltzmann sampler. $\mathcal{O}(n^{3/2}) = \mathcal{O}(m\sqrt{m})$
+%    \item 2007 \cite{BDN07} REGAL. Implementation of above. Empirical on min.\ DFAs per state size, redundant states per state size.
+%    
+%    \item 2005 \cite{RMA05} Exact enumeration, accessible. Unique string representation. $\mathcal{O}(m^2)$
+%    \item 2009 \cite{AMR09} To that.
+%    \item 2009 \cite{AAA09} Implementation of above. DFA database.
+%    
+%    \item 2011 \cite{BDS11} Determined the fraction of minimal automata among accessible complete DFAs.
+%    
+%    \item 2012 \cite{CN12} Random, accessible. Simpler algorithm. Algorithms that output approximately $n$-state DFAs. $\mathcal{O}(n\sqrt{n})$
+%    
+%    \item 2013 \cite{BK13} Number of essential states for random $n$-$k$-DFAs is $\alpha_k n + \mathcal{O}(\sqrt{n}\log n)$ for a constant $\alpha_k$.
+%    
+%    \item 2014 \cite{Nic14} Survey.
+%\end{itemize}
 
 
 

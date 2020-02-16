@@ -1,28 +1,34 @@
-*.pdf
-*.tex
+**/*.pdf
+**/*.tex
 
 !thesis/**/*.tex
 !thesis/**/*.bib
 !thesis/**/*.pdf
+!presentation/**/*.tex
+!presentation/**/*.bib
+!presentation/**/*.pdf
 
-*.aux
-*.log
-*.out
-*.gz
-*.toc
-*.bbl
-*.blg
-*.dvi
-*.bak
-*.ps
-*.idx
-*.ilg
-*.ind
-*.synctex(busy)
+**/*.aux
+**/*.log
+**/*.out
+**/*.gz
+**/*.toc
+**/*.bbl
+**/*.blg
+**/*.dvi
+**/*.bak
+**/*.ps
+**/*.idx
+**/*.ilg
+**/*.ind
+**/*.synctex(busy)
 
-*.ini
-*.db
+**/*.nav
+**/*.snm
 
-*.pyc
+**/*.ini
+**/*.db
+
+**/*.pyc
 
 __pycache__

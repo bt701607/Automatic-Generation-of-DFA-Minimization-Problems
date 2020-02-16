@@ -23,11 +23,13 @@
 \usepackage[noend]{algpseudocode}
 
 \usepackage{setspace}
+\usepackage{float}
 
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 
 \usepackage[dvipsnames]{xcolor}
 
+\usepackage[nottoc,numbib]{tocbibind}
 \bibliographystyle{plainurl}
 
 % ----------- macros -------------
@@ -83,8 +85,7 @@
 	\input{./chapters/1-introduction.tex}
 	\input{./chapters/2-build-minimal-dfas.tex}
 	\input{./chapters/3-extending-minimal-dfas.tex}
-	\input{./chapters/4-notes-on-implementation.tex}
-	\input{./chapters/5-conclusion.tex}
+	\input{./chapters/4-conclusion.tex}
 	
 	\appendix
 	% List of figures, theorems/lemmas/etc., bibliography, index
@@ -93,9 +94,9 @@
 	\bibliographystyle{abbrv}
 	\bibliography{thesis}
 	
-	\chapter*{Erklärung}
+	\chapter{Erklärung}
 	
-	Hiermit versichere ich, Gregor Hans Christian Sönnichsen, dass ich die vorliegende Arbeit selbständig angefertigt und	ohne fremde Hilfe verfasst habe, keine außer den von mir angegebenen Hilfsmitteln und Quellen dazu verwendet habe und die den benutzten Werken inhaltlich oder wörtlich entnommenen Stellen als solche kenntlich gemacht habe. \\
+	Hiermit versichere ich, Gregor Hans Christian Sönnichsen, dass ich die vorliegende Arbeit selbständig verfasst habe, keine anderen als die von mir angegebenen Quellen und Hilfsmittel benutzt habe und die Arbeit nicht  bereits zur Erlangung eines akademischen Grades eingereicht habe. \\
 	
 	\noindent Bayreuth, den 8.\ Februar 2020. \\\\\\\\\\\\\\
 	\noindent Gregor Hans Christian Sönnichsen

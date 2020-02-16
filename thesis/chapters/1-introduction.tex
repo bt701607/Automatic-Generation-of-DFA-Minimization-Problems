@@ -253,7 +253,7 @@ When looking at \CompDist, one notes, that it computes distinct subsets of $Q \t
 	\State $m(0) \gets \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}$
 	\Do
 		\State $i \gets i + 1$
-		\State $m(i) \gets \{ (p,q)\ |\ (p,q) \notin \bigcup{m(\cdot)} \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in m(i-1) \}$
+		\State $m(i) \gets \{ (p,q), (q,p)\ |\ (p,q) \notin \bigcup{m(\cdot)} \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in m(i-1) \}$
 	\doWhile {$m(i) \neq \emptyset$}
 	\State \Return $\bigcup{m(\cdot)}$
 	\EndFunction

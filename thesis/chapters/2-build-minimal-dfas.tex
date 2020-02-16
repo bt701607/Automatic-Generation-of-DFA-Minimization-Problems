@@ -336,11 +336,11 @@ We reduce the enumeration room for each calculation.
 
 Build $m$ from $m$-\CompDist\ iteratively. (Why would this basically result in running \CompDist\ all the time?)
 
-\section{Related Research}
+\section{Related research on DFA generation}
 
 Nicaud provides an overview of results on random generation and combinatorial properties of DFAs in ~\cite{Nic14}. We will outline relevant related research.
 
-\subsection{DFA generation}
+%\subsection{}
 
 Nicaud's summary indicates, that research has focused on randomized generation of accessible, but not minimal DFAs so far. In the following we will sketch some approaches that have come up.
 
@@ -373,47 +373,48 @@ In his survey Nicaud mentions a paper by Bassino and Sportiello~\cite{BS13} that
 
 In this work we use a rejection algorithm that generates test DFAs either by randomization or by enumeration. Both methods implement a naive approach. The generated test DFAs are not necessary minimal and in particular not necessary accessible as in~\cite{CN12}. The enumeration method uses encodings of DFAs similar to those used by Almeida et.\ al.~\cite{RMA05}.
 
-\subsection{Combinatorial properties of DFAs}
+
+\section{Empirical and combinatorial results}
 
 Concerning combinatorial properties of DFAs, several authors (e.g.~\cite{BN07, DKS02, HJ14}) consider a work from Vyssotsky~\cite{Vys59} in the Bell laboratories to be the first on this subject. A contribution by Korshunov~\cite{Kor78} is often cited in this regard, for he firstly ``determines an asymptotic estimate of the number of accessible complete and deterministic $n$-state automata over a finite alphabet''~\cite{BDS11}.
 
-\begin{itemize}
-	
-	% Combinatorial
-	
-    \item 2002 \cite{DKS02} Number of distinct $n$-$k$ minimal DFAs except isomorphy. Asymptotic estimates and explicit numbers.
-    
-    \item 2011 \cite{BDS11} Determined the fraction of minimal automata among accessible complete DFAs.
-    
-    \item 2013 \cite{BK13} Number of essential states for random $n$-$k$-DFAs is $\alpha_k n + \mathcal{O}(\sqrt{n}\log n)$ for a constant $\alpha_k$.
-    
-    % Empirical
-    
-   	\item  In their experimental evaluation\cite[p. 14]{CP05} Champarnaud and Paranthoën notice a empirical probability of $0.8$, that a generated DFA is minimal.
-   	
-   	\item Empirical table on min.\ DFAs for many state and alphabet sizes \cite[p. 11]{AMR09}. Diagram for rate of min.\ DFAs for two given $k,n$. Confirms empirical probability by CP.
-   	
-   	\item 2007 \cite{BDN07} Empirical on min.\ DFAs per state size, redundant states per state size.
-\end{itemize}
-\gregor{TODO}
+Implementations (e.g.~\cite{AAA09, BDN07}) of various random and enumeration generation methods have given rise to several empirical observations concerning the number of minimal DFAs, their fraction among all DFAs and so forth.
 
-%\begin{itemize}
-%    \item 2002 \cite{DKS02} Number of distinct $n$-$k$ minimal DFAs except isomorphy. Asymptotic estimates and explicit numbers.
-%    
-%    \item 2005 \cite{CP05} Random, accessible. Relations to $m$-ary trees and generalized tuples. Recursive method.$P(minimial) = 0.8$ empirical. $\mathcal{O}(m^2)$
-%    
-%    \item 2007 \cite{BN07} Random, accessible. Bijection to some diagrams. Requires less memory space and precalculus.  Boltzmann sampler. $\mathcal{O}(n^{3/2}) = \mathcal{O}(m\sqrt{m})$
-%    \item 2007 \cite{BDN07} REGAL. Implementation of above. Empirical on min.\ DFAs per state size, redundant states per state size.
-%    
-%    \item 2005 \cite{RMA05} Exact enumeration, accessible. Unique string representation. $\mathcal{O}(m^2)$
-%    \item 2009 \cite{AMR09} To that.
-%    \item 2009 \cite{AAA09} Implementation of above. DFA database.
-%    
-%    \item 2011 \cite{BDS11} Determined the fraction of minimal automata among accessible complete DFAs.
-%    
-%    \item 2012 \cite{CN12} Random, accessible. Simpler algorithm. Algorithms that output approximately $n$-state DFAs. $\mathcal{O}(n\sqrt{n})$
-%    
-%    \item 2013 \cite{BK13} Number of essential states for random $n$-$k$-DFAs is $\alpha_k n + \mathcal{O}(\sqrt{n}\log n)$ for a constant $\alpha_k$.
-%    
-%    \item 2014 \cite{Nic14} Survey.
-%\end{itemize}
+Domaratzki, Kisman, and Shallit~\cite{DKS02} give some asymptotic estimates and explicit computations for the number of each several types of languages and automata that are distinct. The here relevant results have been subsumed and extended in~\cite[p. 8]{AMR09} by means of exact enumeration and are confirmed in~\cite{BDN07}.
+
+\begin{figure}[H]
+	\centering
+	\begin{tabular}{|c|c|l|l|l|}
+		\hline
+		$|\Sigma|$ ($k$) & $|Q|$ ($n$) & $|\mathcal{A}_{min,n,k}|$ & $|\mathcal{A}_{n,k}|$ & Minimal \% \\\hline
+		
+		$k = 2$ & $2$ & \textbf{24} & 64 & 0.38 \\
+		& $3$ & \textbf{1028} & 5832 & 0.18 \\
+		& $4$ & \textbf{56014} & 1048576 & 0.05 \\
+		& $5$ & \textbf{3705306} & 312500000 & 0.01 \\
+		& $6$ & \textbf{286717796} & 139314069504 & 0.0 \\
+		& $7$ & \textbf{25493886852} & 86812553324672 & 0.0 \\\hline
+		
+		$k = 3$ & $2$ & \textbf{112} & 256 & 0.44 \\
+		& $3$ & \textbf{41928} & 157464 & 0.27 \\
+		& $4$ & \textbf{26617614} & 268435456 & 0.1 \\
+		& $5$ & \textbf{25184560134} & 976562500000 & 0.03 \\\hline
+		
+		$k = 4$ & $2$ & \textbf{480} & 1024 & 0.47 \\
+		& $3$ & \textbf{1352732} & 4251528 & 0.32 \\
+		& $4$ & \textbf{7756763336} & 68719476736 & 0.11 \\\hline
+		
+		$k = 5$ & $2$ & \textbf{1984} & 4096 & 0.48 \\
+		& $3$ & \textbf{36818904} & 114791256 & 0.32\\\hline
+	\end{tabular}
+	\caption{Table depicting the amount of minimal complete DFAs among all complete DFAs for various sizes of $Q, \Sigma$. The numbers of minimal DFAs (bold numbers) are taken from~\cite[p. 8]{AMR09}.}
+	\label{fig:dfa_minimal_ratios}
+\end{figure}
+
+\noindent In table~\ref{fig:dfa_minimal_ratios} we use these results to determine the ratios of minimal complete DFAs among all complete DFAs for given $|Q|$ and $|\Sigma|$. The number of all DFAs is computed as follows:
+\[
+|\mathcal{A}_{n,k}| = \underbrace{n^{n*k}}_{\#\text{possible }\delta\text{'s}} * \underbrace{2^n}_{\#\text{possible sets }F}
+\]
+Thus we gain an insight into how probable the generation of a distinct minimal test DFA is without applying further constraints. For our proposed default parameters $n\in[4-5]$ and $k\in[2-3]$ the probabilities of successful generation range from $1\%$ to $5\%$. Practical tests have shown that this leads to sufficient short run times for our implementation.
+
+Further interesting results in this area include the determination of the fraction of minimal automata among accessible complete DFAs~\cite{BDS11} and asymptotic estimates for the number of states that a random minimized DFA has~\cite{BK13}.

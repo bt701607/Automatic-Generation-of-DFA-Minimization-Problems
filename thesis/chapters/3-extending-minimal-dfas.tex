@@ -120,24 +120,54 @@ The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma|
 
 \subsection{Creating equivalent state pairs does not change $\mmD$} \label{ch:3:sec-D-proof}
 
-To prove this statement, we will prove two minor propositions first. In this context we will call a word $w$ \emph{distinguishing word of $p,q$}, iff $distinguishes(w, q_0, q_1)$ whereas
-\[
-    distinguishes_A(w, q_0, q_1) \Leftrightarrow (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F) \Leftrightarrow p \not\sim_A q
-\]
+To prove this statement, we will prove two minor propositions first. In this context we will call a word $w$ \emph{distinguishing word of $p,q$}, iff $distinguishes(w, p, q)$ whereas
+\begin{multline*}
+    distinguishes_A(w, p, q) \Leftrightarrow\\
+    (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F) \lor\\ (\delta^*(q,w) \in F \Leftrightarrow \delta^*(p,w) \notin F)\\
+    \Leftrightarrow p \not\sim_A q
+\end{multline*}
+The following lemma and its proof are based on \cite[ch.\ 4 p.\ 18]{MS18}.
 
 \begin{lemma}\label{ch:3:semantics-of-m(n)}
     In the context of \CompDist\ the following is true:
-    \[
-        (p,q) \in m(n) \Longleftrightarrow \exists w\in\Sigma^*\colon (|w| = n\ \land distinguishes_A(w, p, q))
-    \]
+    \begin{align*}
+        (p,q) \in m(n) \Longleftrightarrow\ &\exists w\in\Sigma^*\colon (|w| = n\ \land distinguishes_A(w, p, q))\\
+        \land\ &\nexists v\in\Sigma^*\colon (|v| < |w|\ \land distinguishes_A(v, p, q))
+    \end{align*}
 \end{lemma}
 
 \begin{proof}
-	See TI-Lecture ch. 4 ``Minimization'' p. 18.
+	Per induction on the number of \CompDist-iterations $n$.
+	
+	\paragraph*{$n = 0$, ``$\Leftrightarrow$''.}
+	\begin{align*}
+		&(p,q) \in m(0) = \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}\hfill\text{ (see~\ref{ch:1:m-minmark}, line 2))}\\
+		\Leftrightarrow\ &\text{one of $p,q$ in $F$, one not}\\
+		\Leftrightarrow\ &\text{one of $\delta^*(p, \varepsilon),\delta^*(q, \varepsilon)$ in $F$, one not}\\
+		\Leftrightarrow\ &\exists w\in\Sigma^*\colon (|w|=0\land\text{one of $\delta^*(p, w),\delta^*(q, w)$ in $F$, one not})\\
+		\Leftrightarrow\ &\exists w\in\Sigma^*\colon (|w| = 0\ \land distinguishes_A(w, p, q))\\
+		&\text{and there is no word shorter than $0$\ \checkmark}
+	\end{align*}
+	
+	\paragraph*{$n-1 \rightarrow n$, ``$\Rightarrow$''.} 
+	Then the following holds for some states $p,q$ (see~\ref{ch:1:m-minmark}, line 5):
+	\[
+		(p,q) \in m(n) = \{ (p,q), (q,p)\ |\ (p,q) \notin \bigcup{m(\cdot)} \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in m(n-1) \}
+	\]
+	So in particular there exists a symbol $\sigma$ such that $(\delta(p,\sigma),\delta(q,\sigma)) \in m(n-1)$. Per induction there exist states $(p',q')=(\delta(p,\sigma),\delta(q,\sigma))$ in $m(n-1)$ and a word $w'$, $|w|=n-1$ such that one of $\delta^*(p', w'),\delta^*(q', w')$ is not in $F$ and there is no shorter word. Thus one of $\delta^*(p, \sigma w'),\delta^*(q, \sigma w')$ is not in $F$, which makes $\sigma w'$ a distinguishing word of length $n$ for $p,q$ and since.
+	
+	\paragraph*{$n-1 \rightarrow n$, ``$\Leftarrow$''.} 
+	Then the following holds for some states $p,q$ (see~\ref{ch:1:m-minmark}, line 5):
+	\[
+	\exists w\in\Sigma^*\colon (|w| = n\ \land distinguishes_A(w, p, q))
+	\]
+	So there exist $p,q$ such that one of $\delta^*(p, w),\delta^*(q, w)$ is not in $F$.
+	
+	So in particular there exists a symbol $\sigma$ such that $(\delta(p,\sigma),\delta(q,\sigma)) \in m(n-1)$. Per induction there exist states $(p',q')=(\delta(p,\sigma),\delta(q,\sigma))$ in $m(n-1)$ and a word $w'$, $|w|=n-1$ such that one of $\delta^*(p', w'),\delta^*(q', w')$ is not in $F$. Thus one of $\delta^*(p, \sigma w'),\delta^*(q, \sigma w')$ is not in $F$, which makes $\sigma w'$ a distinguishing word of length $n$ for $p,q$.
 \end{proof}
 
 \begin{lemma}\label{ch:3:semantics-of-D(A)}
-    The longest distinguishing word $w$ of a DFA $A$ has length $\mmD(A)-1$.
+    If \CompDist\ has done $\mmD(A)$ iterations and terminated, then the longest distinguishing word $w$ of a $A$ has length $\mmD(A)-1$.
 %    Formally:
 %	\begin{multline*}
 %		\mmD(A) =\ n \Rightarrow \\

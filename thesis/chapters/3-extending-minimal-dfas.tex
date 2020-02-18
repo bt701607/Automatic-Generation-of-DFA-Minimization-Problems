@@ -2,7 +2,7 @@
 
 \chapter{Extending minimal DFAs} \label{ch:3}
 
-We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a task DFA $A_{task}$ based on our requirements analysis (see~\ref{ch:1:determined-requirements}):
+We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a task DFA $A_{task}$ based on our requirements analysis (see~\ref{ch:1:requirements-analysis}):
 \begin{definition}[ExtendMinimalDFA] $ $ \\
 	$ $ \vspace{-0.cm} \\
 	\noindent $\underline{\emph{Given:}}$
@@ -97,7 +97,8 @@ The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma|
 			\EndIf
 		\EndFor
 		
-        \State Add $r_i$ to $Q$ \Comment{create to $e$ equivalent state $r_i$}
+		\State $r_i \gets$ unused state label \Comment{create to $e$ equivalent state $r_i$}
+        \State Add $r_i$ to $Q$
 		\State Add $r_i$ to $k(e)$
 		
 		\For {$\sigma$ \textbf{in} $\Sigma$} \Comment{add $d^+(r_i)$}
@@ -120,19 +121,17 @@ The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma|
 
 \subsection{Creating equivalent state pairs does not change $\mmD$} \label{ch:3:sec-D-proof}
 
-To prove this statement, we will prove two minor propositions first. In this context we will call a word $w$ \emph{distinguishing word of $p,q$}, iff $distinguishes(w, p, q)$ whereas
-\begin{multline*}
-    distinguishes_A(w, p, q) \Leftrightarrow\\
-    (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F) \lor\\ (\delta^*(q,w) \in F \Leftrightarrow \delta^*(p,w) \notin F)\\
-    \Leftrightarrow p \not\sim_A q
-\end{multline*}
-The following lemma and its proof are based on \cite[ch.\ 4 p.\ 18]{MS18}.
+To prove this statement, we will prove two minor propositions first. In this context we will call a word $w$ \emph{distinguishing word of $p,q$}, iff $d_A(w, p, q)$ whereas
+\[
+    d_A(w, p, q) \Leftrightarrow (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F)
+\]
+The following lemma and its proof are in parts inspired by \cite[ch.\ 4 p.\ 18]{MS18}.
 
 \begin{lemma}\label{ch:3:semantics-of-m(n)}
-    In the context of \CompDist\ the following is true:
+    In the context of \CompDist\ the following is true: If and only if $(p,q)\in m(n)$, the shortest distinguishing word of $p,q$ has length $n$. Formally:
     \begin{align*}
-        (p,q) \in m(n) \Longleftrightarrow\ &\exists w\in\Sigma^*\colon (|w| = n\ \land distinguishes_A(w, p, q))\\
-        \land\ &\nexists v\in\Sigma^*\colon (|v| < |w|\ \land distinguishes_A(v, p, q))
+        (p,q) \in m(n) \Longleftrightarrow\ &\exists w\in\Sigma^*\colon (|w| = n\ \land d_A(w, p, q))\\
+        \land\ &\nexists v\in\Sigma^*\colon (|v| < |w|\ \land d_A(v, p, q))
     \end{align*}
 \end{lemma}
 
@@ -145,76 +144,77 @@ The following lemma and its proof are based on \cite[ch.\ 4 p.\ 18]{MS18}.
 		\Leftrightarrow\ &\text{one of $p,q$ in $F$, one not}\\
 		\Leftrightarrow\ &\text{one of $\delta^*(p, \varepsilon),\delta^*(q, \varepsilon)$ in $F$, one not}\\
 		\Leftrightarrow\ &\exists w\in\Sigma^*\colon (|w|=0\land\text{one of $\delta^*(p, w),\delta^*(q, w)$ in $F$, one not})\\
-		\Leftrightarrow\ &\exists w\in\Sigma^*\colon (|w| = 0\ \land distinguishes_A(w, p, q))\\
-		&\text{and there is no word shorter than $0$\ \checkmark}
+		\Leftrightarrow\ &\exists w\in\Sigma^*\colon (|w| = 0\ \land d_A(w, p, q))\\
+		&\text{and there cannot be no shorter such word }\checkmark
 	\end{align*}
 	
-	\paragraph*{$n-1 \rightarrow n$, ``$\Rightarrow$''.} 
+	\paragraph*{$0\ldots n-1 \rightarrow n$, ``$\Rightarrow$''.} 
 	Then the following holds for some states $p,q$ (see~\ref{ch:1:m-minmark}, line 5):
-	\[
+	\begin{equation}\label{ch:3:eq:m(n)}
 		(p,q) \in m(n) = \{ (p,q), (q,p)\ |\ (p,q) \notin \bigcup{m(\cdot)} \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in m(n-1) \}
-	\]
-	So in particular there exists a symbol $\sigma$ such that $(\delta(p,\sigma),\delta(q,\sigma)) \in m(n-1)$. Per induction there exist states $(p',q')=(\delta(p,\sigma),\delta(q,\sigma))$ in $m(n-1)$ and a word $w'$, $|w|=n-1$ such that one of $\delta^*(p', w'),\delta^*(q', w')$ is not in $F$ and there is no shorter word. Thus one of $\delta^*(p, \sigma w'),\delta^*(q, \sigma w')$ is not in $F$, which makes $\sigma w'$ a distinguishing word of length $n$ for $p,q$ and since.
+	\end{equation}
+	So in particular there exists a symbol $\sigma$ such that $(\delta(p,\sigma),\delta(q,\sigma)) \in m(n-1)$. Let $(p',q')=(\delta(p,\sigma),\delta(q,\sigma))$. Per induction there exists a word $w'$, $|w'|=n-1$ to $p',q'$ such that one of $\delta^*(p', w'),\delta^*(q', w')$ in $F$, one not and there is no shorter word.
 	
-	\paragraph*{$n-1 \rightarrow n$, ``$\Leftarrow$''.} 
-	Then the following holds for some states $p,q$ (see~\ref{ch:1:m-minmark}, line 5):
-	\[
-	\exists w\in\Sigma^*\colon (|w| = n\ \land distinguishes_A(w, p, q))
-	\]
-	So there exist $p,q$ such that one of $\delta^*(p, w),\delta^*(q, w)$ is not in $F$.
+	Thus one of $\delta^*(p, \sigma w'),\delta^*(q, \sigma w')$ is in $F$, one not, which makes $\sigma w'$ a distinguishing word of length $n$ for $p,q$. Since $(p,q)$ is not in any $m(i), i<n$ (recall eq.~\ref{ch:3:eq:m(n)}), there is per induction no shorter distinguishing word.\ $\checkmark$ 
 	
-	So in particular there exists a symbol $\sigma$ such that $(\delta(p,\sigma),\delta(q,\sigma)) \in m(n-1)$. Per induction there exist states $(p',q')=(\delta(p,\sigma),\delta(q,\sigma))$ in $m(n-1)$ and a word $w'$, $|w|=n-1$ such that one of $\delta^*(p', w'),\delta^*(q', w')$ is not in $F$. Thus one of $\delta^*(p, \sigma w'),\delta^*(q, \sigma w')$ is not in $F$, which makes $\sigma w'$ a distinguishing word of length $n$ for $p,q$.
+	\paragraph*{$0\ldots n-1 \rightarrow n$, ``$\Leftarrow$''.} 
+	Then the following holds for some states $p,q$:
+	\begin{align*}
+	&\exists w\in\Sigma^*\colon (|w| = n\ \land d_A(w, p, q))\\
+	\land\ &\nexists v\in\Sigma^*\colon (|v| < |w|\ \land d_A(v, p, q))
+	\end{align*}
+	So there exists a word $w$ with $|w|=n>0$ such that one of $\delta^*(p, w),\delta^*(q, w)$ is in $F$, one not and there is no shorter word fulfilling this property.
+	
+	Consequently there exists a symbol $\sigma$ such that $w = \sigma w'$. Let $(\delta(p,\sigma),\delta(q,\sigma)) = (p',q')$. Thus, if one of $\delta^*(p, w),\delta^*(q, w)$ is in $F$ and one not, then the same must hold for $\delta^*(p', w'),\delta^*(q', w)'$. The word $w'$ is also the shortest fulfilling this property, because, if there existed a shorter word $v'$, $|v'| < |w'|$, then $\sigma v'$ would be a distinguishing word shorter than $w$ for $p,q$ which is contradictory.
+	
+	Per induction we can deduce, that $(p',q')\in m(n-1)$. The pair $(p,q)$ is not in any $m(i)$, $i<n$, since else-wise per induction the shortest distinguishing word would be shorter than $w$ and thus not $w$, which is contradictory. Since $(p',q')\in m(n-1)$ and $(\delta(p,\sigma),\delta(q,\sigma)) = (p',q')$, we can then deduce, that $(p,q)\in m(n)$.\ $\checkmark$ 
 \end{proof}
 
 \begin{lemma}\label{ch:3:semantics-of-D(A)}
-    If \CompDist\ has done $\mmD(A)$ iterations and terminated, then the longest distinguishing word $w$ of a $A$ has length $\mmD(A)-1$.
-%    Formally:
-%	\begin{multline*}
-%		\mmD(A) =\ n \Rightarrow \\
-%		n = \max_{n \in \mathbb{N}}\ \ \exists p, q \in Q\ \ \exists w \in \Sigma^* \colon \hspace{3cm} \\
-%		(|w| = n - 1\ \land distinguishes_A(w, p, q))
-%	\end{multline*}
+    If \CompDist\ has done $\mmD(A)$ iterations and terminated, then the longest word $w$, that is a shortest distinguishing word for any state pair, has length $\mmD(A)-1$.
 \end{lemma}
 
 \begin{proof}
 	Via direct proof. Assume $m$-\CompDist(A) has done $n$ iterations (so $\mmD(A) = n$). We then know, that
 	\begin{enumerate}
 		\item $\forall i \in [0,n-1]\colon m(i) \neq \emptyset$
-		\item $\forall i > n-1\colon m(n)= \emptyset$ \gregor{fix this}
+		\item $m(n)= \emptyset$
+		\item $\forall i > n\colon m(i)= \bot$
 	\end{enumerate}
-	$m$-\CompDist(A) terminates iff $m(i) = \emptyset$. If the first point would not hold, then the algorithm would have stopped before.
-	
-	Since the algorithm did $n$ iterations, the internal variable $i$ must be $n$ at the end of the last iteration. The terminating condition is $m(i) \neq \emptyset$; thus follows the second point.
+	$m$-\CompDist(A) terminates iff $m(i) = \emptyset$. If the first point would not hold, then the algorithm would have stopped before. Since the algorithm did $n$ iterations, the internal variable $i$ must be $n$ at the end of the last iteration. The terminating condition is $m(i) \neq \emptyset$ and no more iterations are done thereafter; thus follow the second and third point.
     
-    We prove that then there exists a distinguishing word of length $n-1$, but the existence of a longer word leads to a contradiction. Recall lemma~\ref{ch:3:semantics-of-m(n)}:
-    \[
-        (p,q) \in m(n) \Longleftrightarrow \exists w\in\Sigma^*\colon (|w| = n\ \land distinguishes(w, p, q))
-    \]
+    We prove that then there exists a shortest distinguishing word of length $n-1$, but the existence of a longer distinguishing word that is shortest for some state pair leads to a contradiction. Recall lemma~\ref{ch:3:semantics-of-m(n)}:
+    \begin{align*}
+    (p,q) \in m(n) \Longleftrightarrow\ &\exists w\in\Sigma^*\colon (|w| = n\ \land d_A(w, p, q))\\
+    \land\ &\nexists v\in\Sigma^*\colon (|v| < |w|\ \land d_A(v, p, q))
+    \end{align*}
 
 	% a possible word per definition of D(A), m(i) and lemma
 	
-	\noindent Following this lemma and point 1, we can deduce that there exists at least one distinguishing word $w$ with $|w| = n-1 = \mmD(A)-1$ for some $p,q \in Q$.
+	\noindent Following this lemma and point 1, we can deduce that there exists at least one shortest distinguishing word $w$ with $|w| = n-1 = \mmD(A)-1$ for some $p,q \in Q$.
 	
 	% There is no word longer than that
 	
-	There cannot be any distinguishing word $w'$ with $|w'| = k > n-1$ for any two states $p',q'\in Q$ fulfilling this property. Following the lemma again, $m(k), k > n-1$ would be non-empty, which is contradictory to point 2.
+	There cannot be any shortest distinguishing word $w'$ with $|w'| = k > n-1$ for any two states $p',q'\in Q$ fulfilling this property. Following the lemma again, $m(k)$ for some $k > n-1$ would be defined and non-empty, which is contradictory to point 2 and 3.
 \end{proof}
 
 \begin{lemma}\label{ch:3:lem:disting-trans}
-    \[
-    distinguishes_A(w, p, q) \land q \sim_A q' \Rightarrow distinguishes_A(w, p, q')
-    \]
+	If $w$ is shortest distinguishing word for $p,q$ and $q \sim_A q'$, then $w$ is a shortest distinguishing word for $p,q'$.
+%    \[
+%    d_A(w, p, q) \land q \sim_A q' \Rightarrow d_A(w, p, q')
+%    \]
 \end{lemma}
 
 \begin{proof}
-    Via direct proof.
-    \begin{align*}
-        &\ distinguishes_A(w, p, q) \land q \sim_A q' \\
-        \Rightarrow &\ (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F) \land (\forall z \in \Sigma^* \colon\ (\delta^*(q, z) \in F \Leftrightarrow \delta^*(q', z) \in F)) \\
-        \Rightarrow &\ (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F) \land (\delta^*(q, w) \in F \Leftrightarrow \delta^*(q', w) \in F) \\
-        \Rightarrow &\ (\delta^*(p,w) \in F \Leftrightarrow \delta^*(q',w) \notin F) \\
-        \Rightarrow &\ distinguishes_A(w, p, q')
-    \end{align*}
+    Via direct proof. The relation $q \sim_A q'$ says that for all words $z$, $\delta^*(q,z)$ and $\delta^*(q',z)$ are both in $F$ or both not in $F$. Consequently asking whether the following is true
+    \[
+    	\delta^*(p,z)\in F \Leftrightarrow \delta^*(q,z)\in F
+    \]
+    is the same as asking whether this is true:
+    \[
+    	\delta^*(p,z)\in F \Leftrightarrow \delta^*(q',z)\in F
+    \]
+    This implies, that $q$ and $q'$ have exactly the same distinguishing words with other states (see definition of distinguishing words). As a consequence they too have the same shortest distinguishing words with other states.
 \end{proof}
 
 \begin{theorem}
@@ -228,17 +228,17 @@ The following lemma and its proof are based on \cite[ch.\ 4 p.\ 18]{MS18}.
 		\item $\forall i \in [1,n] \colon\ \exists q \in Q\colon\ r_i \sim_{A'} q$
         \item $\mmD(A) < \mmD(A')$
 	\end{itemize}
-    According to lemma~\ref{ch:3:semantics-of-D(A)} the longest distinguishing word $w$ of $A$ has length $|w| = \mmD(A) - 1$, while its counterpart $w'$ in $A'$ has length $\mmD(A') - 1$. Consequently $|w| < |w'|$.
+    According to lemma~\ref{ch:3:semantics-of-D(A)} the longest shortest distinguishing word $w$ of $A$ has length $|w| = \mmD(A) - 1$, while its counterpart $w'$ in $A'$ has length $\mmD(A') - 1$. Consequently $|w| < |w'|$.
     
-    There exist states $p',q' \in Q'$ such that $w'$ distinguishes $p',q'$. We differentiate between three cases regarding belonging of $p',q'$.
+    There exist states $p',q' \in Q'$ such that $w'$ distinguishes $p',q'$. We differentiate between three cases regarding the belonging of $p',q'$.
     
-    \paragraph*{Both $p',q'$ in $Q$:} Since the longest distinguishing word any state pair in $Q$ can have is guaranteed shorter than $w'$, we may conclude that $p',q' \in Q$ and $p',q'$ have $w'$ as distinguishing word is a contradiction. \lightning
+    \paragraph*{Both $p',q'$ in $Q$:} Since the longest shortest distinguishing word any state pair in $Q$ can have is guaranteed shorter than $w'$, we may conclude that $p',q' \in Q$ and $p',q'$ have $w'$ as shortest distinguishing word is a contradiction. \lightning
     
     \paragraph*{One of $p',q'$ in $Q$, one in $Q'\setminus Q$:} W.l.o.g. $p' \in Q$, $q' \in Q'\setminus Q$. We then know, that $q' \in \{r_1, \ldots, r_n\}$. This implies that $q' \sim_{A'} q$ for an $q \in Q$.
     
-    By lemma~\ref{ch:3:lem:disting-trans} $w'$ is a distinguishing word for $p',q$. But this is contradictory to $p',q \in Q$. \lightning
+    By lemma~\ref{ch:3:lem:disting-trans} $w'$ is a shortest distinguishing word for $p',q$. But this is contradictory to $p',q \in Q$. \lightning
         
-    \paragraph*{None of $p',q'$ in $Q$:} Since $p',q'$ both have to be in $Q'\setminus Q = \{r_1, \ldots, r_n\}$, we can find states $p, q \in Q$ equivalent to $p',q'$. These states would be distinguished by $w'$, which is contradictory again. \lightning 
+    \paragraph*{None of $p',q'$ in $Q$:} Since $p',q'$ both have to be in $Q'\setminus Q = \{r_1, \ldots, r_n\}$, we can find states $p, q \in Q$ equivalent to $p',q'$. For these states $w'$ would be a shortest distinguishing word, which is contradictory again. \lightning 
 \end{proof}
 
 \section{Adding unreachable states}
@@ -249,7 +249,7 @@ From step 1 of the minimization algorithm we can deduce how to add unreachable s
 \begin{algorithmic}[1]
 	\Function{AddUnreachableStates\ }{$A, \mathcal{Q}_{unr}, c$}
 	\For {$\mathcal{Q}_{unr}$ \textbf{times}}
-		\State $q \gets \max Q + 1$
+		\State $q \gets$ unused state label
 		\State $Q \gets Q \cup \{ q \}$
         \State $outSymbols \gets c = 1\ ?\ \Sigma\ :\ $ random subset of $\Sigma$
 		\State $R \gets$ random chosen sample of $|outSymbols|$ states from $Q \setminus \{q\}$

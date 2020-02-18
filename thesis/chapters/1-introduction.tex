@@ -98,16 +98,19 @@ Note that practical isomorphy between two DFAs $A_1, A_2$ does not imply $L(A_1)
 \[
 	\{\ \phi(\sigma_0)\ldots\phi(\sigma_n)\ |\ \sigma_0\ldots\sigma_n\in L(A_1)\ \} = L(A_2)
 \]
-Practical isomorphy will be sufficient for our case. \gregor{why?}
-%\begin{theorem} \textnormal{\cite[p. 45]{Sch01}} 
-%	Every minimal DFA is unique except for isomorphy.
-%\end{theorem}
-%So it
+In~\cite[p. 45]{Sch01} we can find the following statement:
+\begin{theorem}
+	Every minimal DFA is unique (has a unique language) except for renaming of states.
+\end{theorem}
+We can thus formulate the following corollary:
+\begin{corollary}\label{ch:1:ism-uniq-lan}
+	Every minimal DFA is unique (has a unique language) except for practical isomorphy.
+\end{corollary}
+\gregor{Write down practical isomorphy test, argue its correctness.}
 %\begin{corollary}\label{ch:1:cor:all-min-dfa-ism}
 %	Every minimal DFA $A$ is isomorph to its corresponding equivalence class automaton $A_{L(A)}$.
 %	\gregor{All min. DFAs are ism. to each other, including A\_L}
 %\end{corollary}
-\gregor{Write down isomorphism test. Maybe discuss faster methods here? Look for faster methods in general?}
 
 \subsection{Equivalent and distinguishable state pairs}
 
@@ -190,7 +193,7 @@ This minimization algorithm \MinAlg\ works in four major steps, removing essenti
 		\EndFunction
 	\end{algorithmic}
 
-	\item Compute all equivalent state pairs ($\sim_A$). Inspired by Schöning~\cite[p. 46]{Sch01} \gregor{And TI-VL}.
+	\item Compute all equivalent state pairs ($\sim_A$). Inspired by Schöning~\cite[p. 46]{Sch01} and Martens~\cite[p. 17]{MS18}.
 	
 	\vspace{0.2cm}
 	\begin{algorithmic}[1]
@@ -261,19 +264,7 @@ When looking at \CompDist, one notes, that it computes distinct subsets of $Q \t
 \vspace{0.2cm}
 Using this redefinition, we can easier refer to the state pairs marked in a certain iteration. We will use both variants in exchange.
 
-We will denote the number of iterations done by \CompDist\ on an DFA $A$ as $\mmD(A)$. Note that $\mmD(A) = \max n \in \mathbb{N}\ |\ m(n) \neq \emptyset$. \gregor{Does that note maybe fit very well to the proof of lemma~\ref{ch:3:semantics-of-D(A)}?}
-
-%\subsection{\MinAlg-partition of a DFA}
-%
-%When looking at \MinAlg, one may note, that we can partition the states $Q_A$ of any DFA $A$ into three parts:
-%\begin{itemize}
-%	\item a subset of \emph{unreachable} states $U_A = \{\ u_1, \ldots, u_{\mathcal{Q}_{unr}}\ \}$ of size $\mathcal{Q}_{unr}$, found and removed in step 1 and 2
-%	\item a subset of \emph{redundant} states $R_A = \{\ r_1, \ldots, r_{\mathcal{Q}_{eq}}\ \}$ of size $\mathcal{Q}_{eq}$, found and removed in step 3 and 4
-%	\item a subset of \emph{essential} states $E_A = \{\ e_1, \ldots, e_\mathcal{Q}_{sol}\ \}$ of size $\mathcal{Q}_{sol}$, which are left over after applying the algorithm
-%\end{itemize}
-%Note that the set of essential states to a DFA is dependent on the implementation of \RemEq, but we know, that there will always be states left over, and for a given DFA the number will always be the same \gregor{why}.
-
-%\gregor{Example: In~\ref{fig:dfa_ex_task} and~\ref{fig:dfa_ex_sol} the state pairs $(A,D), (C,E)$ are equivalent and all others distinguishable. The states $A, G, C, B$ are essential, for they show up in the minimized automaton. The states $D, E$ are therefore redundant.}
+We will denote the number of iterations done by \CompDist\ on an DFA $A$ as $\mmD(A)$.
 
 \subsection{Another equivalence automaton}
 
@@ -324,9 +315,7 @@ We do some rather formal statements and requirements. Firstly, we can state that
 \end{itemize}
 Therefore $A_{sol}$ is minimal regarding $A_{re}$ and $A_{task}$. Secondly the languages of $A_{task}, A_{re}$ and $A_{sol}$ are be equal. We know that \CompDist\ requires $A_{re}$ to be complete and that \RemEq\ creates complete DFAs, so $A_{sol}$ is complete too. Furthermore we know that every state of $A_{re}$ is reachable since it is the output of \RemUnr.
 
-\gregor{How to define 'already found DFA sol' as requirement. Final states argument missing.}
-
-\subsection{Difficulty adjustment possibilities}
+\subsection{Discussion of difficulty adjustment possibilities}\label{ch:1:requirements-analysis}
 
 Concerning the execution of \MinAlg\ we find that its difficulty can be classified through various classification numbers.
 
@@ -358,6 +347,16 @@ It is sensible to have $\mathcal{Q}_{unr} > 1, \mathcal{Q}_{eq} > 1$, such that 
 
 The more symbols the alphabet of $A_{task}, A_{re}$ and $A_{sol}$ has (note how \MinAlg\ does not change the alphabet), the more transitions have to be followed when checking whether $(\delta(q,\sigma),\delta(p,\sigma))\in m(i-1)$ is true for each state pair $p,q$.
 
+\paragraph*{Number of final states.}
+
+Since most DFAs in teaching have about 1 to 3 final states, so being able to set a number of final states, that is familiar to students, might be a reason. We devote the parameter $f$ to this number.
+
+\paragraph*{Uniqueness of $A_{sol}$.}
+
+For example for an exam it would be sensible to be able to generate a task, so $A_{sol}$ and $A_{task}$, that has not been generated before. We will use the criterion of practical isomorphy to distinguish between used and unused DFAs. This is a sensible criterion, since state and symbol labels are not relevant to understanding the minimization algorithm and can easily be adjusted afterwards.
+
+If $A_{sol}$ is already not practical isomorph to all previously generated DFAs, then $A_{task}$ will automatically be different too, since $A_{sol},A_{task}$ describe a unique language then (see cor.~\ref{ch:1:ism-uniq-lan}).
+
 \paragraph*{Completeness of $A_{task}$.}
 
 Even though \CompUnr\ and \RemUnr\ do not require their input DFA $A_{task}$ to be complete, it is sensible to build it that way. The implications of the completeness-property are - in comparison to the other concepts involved here - rather subtle. This is especially due to its purely representational nature, a DFA has the same language and $\mmD$-value, whether it is represented in its complete form or not. Nonetheless we shall introduce a parameter $c$, that determines if there exist unreachable states, that make $A_{task}$ incomplete. Thus an exercise lecturer could showcase this matter on a DFA and generate according exercises.
@@ -372,50 +371,13 @@ The \emph{degree} $deg(q)$ of a state $q \in Q$ in a DFA $A$ is defined as $deg(
 
 %Note that $deg(q) \geq |\Sigma|$ for any complete DFA, since states of complete DFAs have to use all alphabet symbols on outgoing transitions.
 
-\subsection{Summary of found criteria}
-
-\gregor{TODO}
-
-\label{ch:1:determined-requirements}
-Accepted general criteria:
-\begin{itemize}
-	\item[->] $L(A_{sol}) = L(A_{re}) = L(A_{task})$
-	\item[->] $\mmD(A_{sol}) = \mmD(A_{re}) = \mmD(A_{task})$
-\end{itemize}
-Accepted solution DFA criteria:
-\begin{itemize}
-	\item[->] has to be minimal, complete
-	\item[->] number of essential states
-	\item[->] number of \CompDist\ iterations ($\mmD(A_{sol})$)
-	\item[->] alphabet size
-	\item[->] number of accepting states
-	\item[->] planarity
-	\item[->] $A_{sol}$ is new
-	
-	\begin{definition}[New DFAs] \label{ch:1:new-dfa}
-		A DFA $A_{sol}$ is \emph{new} if it is not practically isomorph to any previously generated solution DFA.
-	\end{definition}
-\end{itemize}
-Accepted reachable DFA criteria:
-\begin{itemize}
-	\item[->] has to be complete
-	\item[->] number of unreachable states
-	\item[->] planarity (can be checked in $O(|Q_{task}|)$)
-\end{itemize}
-Accepted task DFA criteria:
-\begin{itemize}
-	\item[->] number of states that are added to create equivalent state pairs
-	\item[->] planarity
-	\item[->] completeness
-\end{itemize}
-
 \section{Approach and general algorithm}
 
 In this work we will first build the solution DFA (step 1), and - based on that - the task DFA by creating equivalent states and adding unreachable states (step 2). Both steps will fulfill all criteria chosen above and are covered in depth in chapter~\ref{ch:2} respectively chapter~\ref{ch:3}.
 
-It follows that $\mmD$ and $L$ of both DFAs will be set when building $A_{sol}$. We know that creating equivalent states and adding unreachable does not change $L(A_{task})$ in comparison to $A_{sol}$, else \MinAlg\ would not work (a minimal DFA has in particular the same language as the original DFA). However we must ensure, that adding those states does not change $\mmD$. Since unreachable states are eliminated before \CompDist\ is applied, we need only to ensure, that creating equivalent states does not change the $\mmD$-value. We will do this during the discussion of step 2, more specifically in section~\ref{ch:3:sec-D-proof}.
+We will see that $\mmD$ and $L$ of both DFAs will be set when building $A_{sol}$. We know that creating equivalent states and adding unreachable does not change $L(A_{task})$ in comparison to $A_{sol}$, else \MinAlg\ would not work (a minimal DFA has in particular the same language as the original DFA). However we must ensure, that adding those states does not change $\mmD$. Since unreachable states are eliminated before \CompDist\ is applied, we need only to prove, that creating equivalent states does not change the $\mmD$-value. We will do this during the discussion of step 2, more specifically in section~\ref{ch:3:sec-D-proof}.
 
-At the beginning of chapter 2 and 3, we will provide formal problem definitions for both steps, that specify precisely all requirements. Here we shall content ourselves with the definition of the main algorithm:
+At the beginning of chapter~\ref{ch:2} and~\ref{ch:3}, we will provide formal problem definitions for both steps, that specify precisely all requirements. Here we shall content ourselves with the definition of the main algorithm:
 \vspace{0.2cm}
 \begin{algorithmic}[1]
 	\Function{GenerateDFAMinimizationProblem}{$\mathcal{Q}_{sol}, a, f, m_{min}, m_{max}, p_1, p_2, \mathcal{Q}_{eq},\mathcal{Q}_{unr}, c$}

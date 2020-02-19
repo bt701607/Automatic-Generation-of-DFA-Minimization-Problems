@@ -1,7 +1,23 @@
+% !TeX spellcheck = en_US
+
 \chapter{Conclusion}
 
-What happens, if we change start and accepting states? \\
-What happens, if we add transitions only? \\
+We close this work with a summary and a short lookout.
 
-\noindent dfa specific planarity test? \\
-use planarity test information for better drawing?
+\paragraph*{Summary.}
+
+In this work we discussed and implemented methods to automatically generate exercises for students that consist of a DFA $A_{task}$ which has to be minimized. We focused on the minimization algorithm by Hopcroft, which works in two steps: Firstly delete unreachable states, then merge equivalent state pairs.
+
+Following this separation in reverse, our approach was to generate the solution DFA first, then create equivalent state pairs and lastly add unreachable states. We devised several sensible input parameters and requirements for each of these stages.
+
+Concerning the generation of solution DFAs we made use of a simple rejection algorithm, that generates test DFAs by randomization or enumeration. Every generated DFA is saved in a database and test DFAs are compared against them, such that new DFAs have a distinct language. On this topic research has already been active, an overview about results there has been made to draw conclusions for this work.
+
+Concerning the extension of solution DFAs towards a task DFA, we found, that we can add states and transitions in an easy manner according to certain rules. These rules were derived from the properties equivalent state pairs and unreachable states have.
+
+\paragraph*{Lookout.}
+
+During our requirements analysis we defined several parameters that have not been or only sparsely further discussed in here. This includes especially boundaries for the number of ingoing transitions to each state and drawing DFAs in a visual comprehensible manner. Connected to the latter is the question, whether a good procedure exists, that outputs a visual representation of a DFA via LaTeX-code, such that hand-made adjustments might be done afterwards. One could also think of making more parameters ranged, such that per instance a minimum and maximum number of states could be specified as input.
+
+Regarding the planarity test as it is used now, one might ask whether there is a more efficient planarity test that is tailored to DFAs. Moreover it could be worth investigating whether informations generated during the planarity test can be used for drawing the DFA.
+
+Our summary on research on DFA generation indicated that efficient - randomized and enumerating - methods to generate DFAs have already been found, whereas the resulting DFAs where even accessible. An improved version of the associated implementation could implement some of these methods or make use of existing implementations. We shall cite in this regard the enumeration method of Almeida et. al.~\cite{AAA09} which uses a similar string representation of DFAs to iterate through all DFAs. Carayol and Nicaud~\cite{CN12} presented a randomization method that is deemed easy to implement.

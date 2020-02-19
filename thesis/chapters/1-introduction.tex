@@ -52,65 +52,126 @@ Given a state $q \in Q$. With $d^-(q)$ we denote the set of all \emph{ingoing} t
 
 A DFA is called \emph{complete} iff for all states, every symbol of the alphabet is used on an outgoing transition: $\forall q\in Q\colon \forall\sigma\in\Sigma\colon \exists p\in Q\colon \delta(q,\sigma) = p$. Note, that every incomplete DFA can be converted to a complete one by adding a so called \emph{dead state}~\cite[p. 67]{HMU01}. The resulting automaton has the same language.
 
+\begin{definition}
+	We call a DFA $A$ \emph{minimal}, if there exists no other automaton with the same language using less states.
+\end{definition}
+With $\mathfrak{A}_{min}$ we shall denote the set of all minimal DFAs.
+
 \begin{figure}
 	\includegraphics[width=\linewidth]{images/dfa.png}
 	\caption{An example DFA and its properties.}
 	\label{fig:dfa}
 \end{figure}
 
-\subsection{Minimal DFAs}
+%\subsection{Minimal DFAs}
+%
+%The \emph{Nerode-relation} $\equiv_L\ \subseteq\ \Sigma^* \times \Sigma^*$ of a language $L$ with alphabet $\Sigma$ is defined as follows:
+%\begin{displaymath}
+%	x \equiv_L y\ \Leftrightarrow_{def}\ \forall z\in\Sigma^*\colon (xz\in L \Leftrightarrow yz\in L)
+%\end{displaymath}
+%The Nerode-relation of a DFA $A$ is the the Nerode-relation of its language: $\equiv_{L(A)}$. If the context makes it clear, than we will shorten the notation of a equivalence class $[x]_{\equiv_L}$ with $[x]$.
+%
+%The \emph{equivalence class automaton} $A_L = (Q_L, \Sigma_L, \delta_L, s_L, F_L)$ to a regular language $L$ with alphabet $\Sigma$ is defined as follows:
+%\begin{itemize}
+%	\item $Q_L = \{\ [x]\ |\ x \in \Sigma^*\ \}$
+%	\item $\Sigma_L = \Sigma$
+%	\item $\delta_L([x], \sigma) = [x\sigma],\ \forall x\in\Sigma^*,\ \forall\sigma\in\Sigma$
+%	\item $s = [\varepsilon]$
+%	\item $F = \{\ [x]\ |\ x \in L\ \}$
+%\end{itemize}
+%\begin{theorem}
+%	Given a language $L$, then the equivalence class automaton $A_L$ is minimal.
+%\end{theorem}
 
-This section closely follows~\cite[pp. 42-45]{Sch01}. We call a DFA $A$ \emph{minimal}, if there exists no other automaton with the same language using less states. With $\mathfrak{A}_{min}$ we shall denote the set of all minimal DFAs.
+\subsection{Isomorphy of DFAs}\label{ch:1:sec:isom}
 
-The \emph{Nerode-relation} $\equiv_L\ \subseteq\ \Sigma^* \times \Sigma^*$ of a language $L$ with alphabet $\Sigma$ is defined as follows:
-\begin{displaymath}
-	x \equiv_L y\ \Leftrightarrow_{def}\ \forall z\in\Sigma^*\colon (xz\in L \Leftrightarrow yz\in L)
-\end{displaymath}
-The Nerode-relation of a DFA $A$ is the the Nerode-relation of its language: $\equiv_{L(A)}$. If the context makes it clear, than we will shorten the notation of a equivalence class $[x]_{\equiv_L}$ with $[x]$.
-
-The \emph{equivalence class automaton} $A_L = (Q_L, \Sigma_L, \delta_L, s_L, F_L)$ to a regular language $L$ with alphabet $\Sigma$ is defined as follows:
+Given two DFAs $A_1 = (Q_1, \Sigma_1, \delta_1, s_1, F_1)$ and $A_2 = (Q_2, \Sigma_2, \delta_2, s_2, F_2)$. We say $A_1$ and $A_2$ are \emph{isomorph}, iff:
 \begin{itemize}
-	\item $Q_L = \{\ [x]\ |\ x \in \Sigma^*\ \}$
-	\item $\Sigma_L = \Sigma$
-	\item $\delta_L([x], \sigma) = [x\sigma],\ \forall x\in\Sigma^*,\ \forall\sigma\in\Sigma$
-	\item $s = [\varepsilon]$
-	\item $F = \{\ [x]\ |\ x \in L\ \}$
-\end{itemize}
-\begin{theorem}
-	Given a language $L$, then the equivalence class automaton $A_L$ is minimal.
-\end{theorem}
-
-\subsection{Practical Isomorphy of DFAs}
-
-Given two DFAs $A_1 = (Q_1, \Sigma_1, \delta_1, s_1, F_1)$ and $A_2 = (Q_2, \Sigma_2, \delta_2, s_2, F_2)$. We say $A_1$ and $A_2$ are \emph{practical isomorph}, iff:
-\begin{itemize}
-	\item $|Q_1| = |Q_2|$, $|\Sigma_1| = |\Sigma_2|$ and
-	\item there exists a bijection $\phi\colon \Sigma_1 \to \Sigma_2$ such that:
+	\item $|Q_1| = |Q_2|$, $\Sigma_1 = \Sigma_2$ and
 	\item there exists a bijection $\pi\colon Q_1 \to Q_2$ such that:
 	
 	$\pi(s_1) = s_2$
 	
 	$\forall q\in Q_1\colon (q\in F_1 \Longleftrightarrow \pi(q)\in F_2)$
 	
-	$\forall q\in Q_1\colon \forall\sigma\in\Sigma_1\colon \pi(\delta_1(q,\sigma))=\delta_2(\pi(q),\phi(\sigma)))$
+	$\forall q\in Q_1\colon \forall\sigma\in\Sigma_1\colon \pi(\delta_1(q,\sigma))=\delta_2(\pi(q),\sigma))$
 \end{itemize}
-Note that practical isomorphy between two DFAs $A_1, A_2$ does not imply $L(A_1) = L(A_2)$. This would be given, if $\Sigma_1 = \Sigma_2$ were the case (see~\cite[p. 45]{Sch01}). However the language of such DFAs is equivalent except for an exchange of alphabet symbols:
-\[
-	\{\ \phi(\sigma_0)\ldots\phi(\sigma_n)\ |\ \sigma_0\ldots\sigma_n\in L(A_1)\ \} = L(A_2)
-\]
 In~\cite[p. 45]{Sch01} we can find the following statement:
-\begin{theorem}
-	Every minimal DFA is unique (has a unique language) except for renaming of states.
+\begin{theorem}\label{ch:1:thm:uniq-ism}
+	Every minimal DFA is unique (has a unique language) except for isomorphy.
 \end{theorem}
-We can thus formulate the following corollary:
-\begin{corollary}\label{ch:1:ism-uniq-lan}
-	Every minimal DFA is unique (has a unique language) except for practical isomorphy.
-\end{corollary}
-\gregor{Write down practical isomorphy test, argue its correctness.}
-%\begin{corollary}\label{ch:1:cor:all-min-dfa-ism}
-%	Every minimal DFA $A$ is isomorph to its corresponding equivalence class automaton $A_{L(A)}$.
-%	\gregor{All min. DFAs are ism. to each other, including A\_L}
-%\end{corollary}
+Here follows a simple isomorphy test that tries essentially to build a bijection as described above.
+\vspace{0.2cm}
+\begin{algorithmic}[1]
+	\Function{AreIsomorph\ }{$A_1, A_2$}
+		\If {$|Q_1| \neq |Q_2|$ \textbf{or} $|F_1| \neq |F_2|$ \textbf{or} $\Sigma_1 \neq \Sigma_2$}
+			\State \Return $false$
+		\EndIf
+		
+		\State $\pi(s_1) = s_2$ \Comment{bijection $Q_1 \to Q_2$}
+		\State $O \gets \emptyset$ \Comment{observed states}
+		\State $V \gets \{s_1\}$ \Comment{visited states}
+		\State $q_c \gets s_1$ \Comment{current state}
+		
+		\While {true}
+			\For {$((q_1,\sigma),p_1)$ \textbf{in} $\delta_1$} \Comment{iterate through $d^+(q_c)$}
+				\If {$q_1 = q_c$} 
+					\State \textbf{continue}
+				\EndIf
+				
+				\State
+				
+				\State $p_2 \gets \delta_2(\phi(q_c), \sigma)$ 
+				\State $p1marked \gets (\pi(p_1) \neq \bot)$ \Comment{see if $p_1$, $p_2$ were ``marked'' by $\pi$}
+				\State $p2marked \gets (\exists q\colon \pi(q)=p2)$
+				
+				\State
+				
+				\If {$p1marked$ \textbf{and} $p2marked$}
+					\If {$\pi(p_1) \neq p_2$}
+						\State \Return false
+					\EndIf
+				\ElsIf {$\neg p1marked$ \textbf{and} $\neg p2marked$}
+					\State $\pi(p_1) = p_2$
+					\If {$p_1 \notin V$}
+						\State Add $p_1$ to $O$
+					\EndIf
+				\Else \Comment{one of $p_1$, $p_2$ was assigned to some state $\neq p_1$ resp.\ $p_2$}
+					\State \Return false
+				\EndIf
+			\EndFor	
+			
+			\If {$|O| = 0$}
+				\State \textbf{break}
+			\EndIf
+			\State Pick and remove $q_c$ from $O$
+			\State Add $q_c$ to $V$
+		\EndWhile
+		\State\textbf{end}
+		
+		\For {$q_1$ \textbf{in} $F_1$}
+			\If {$\pi(q_1) \notin F_2$}
+				\State \Return false
+			\EndIf
+		\EndFor	
+		
+		\State \Return true
+	\EndFunction
+\end{algorithmic}
+\vspace{0.2cm}
+This algorithm \emph{visits} one by one all states of $A_1$ and tries to build $\pi$ on the way. The currently visited state is denoted $q_c$. In $V \subseteq Q_1$ we save all already visited states. The set $O \subseteq Q_1$ shall contain all \emph{observed} states, meaning those, that we encountered while following a transition, but have not been visited yet.
+
+We call states of $A_1$, $A_2$ \emph{marked}, if they have been assigned to another state by $\pi$. So if $\pi(q_1)=q_2$, then $q_1$, $q_2$ are marked. States in $O$ will have the property, that they are marked.
+
+Starting with $q_c = s_1$, in every while-iteration all outgoing transitions $\delta_1(q_c, \sigma) = p_1$ of the current state are followed. We then compute $\delta_2(\phi(q_c), \sigma) = p_2$, which is the state in $A_2$ that should correspond to $p_1$ of $A_1$. At this point (line 17) we do a case differentiation:
+\begin{itemize}
+	\item $p_1$, $p_2$ both marked: Then we only need to ensure they are assigned to each other.
+	\item $p_1$, $p_2$ both not marked: Then we can assign them to each other and may now add $q_1$ to $O$, since we observed it on an outgoing transition and know it has been marked. We will not add it, if we have visited as $q_c$.
+	\item one of $p_1$, $p_2$ marked, one not: In that case they cannot be assigned to each other, since then both states would be marked; consequently one state has been assigned to a distinct third state.
+\end{itemize}
+When finished with visiting all outgoing transitions of a state $q_c$, we can pick the next state which is added to the visited states.
+
+If all states of $A_1$ have been visited and the bijection thus been fully constructed, we need only to ensure, that the final state sets are equal after a renaming according to $\pi$.
 
 \subsection{Equivalent and distinguishable state pairs}
 
@@ -233,10 +294,9 @@ This minimization algorithm \MinAlg\ works in four major steps, removing essenti
 
 \vspace{0.2cm}
 \begin{algorithmic}[1] \label{ch:1:minalg}
-    \Function{\MinAlg}{$A_{task}$}
-    \State $A_{re} \gets \RemUnr(A_{task}, \CompUnr(A_{task}))$
-    \State $A_{sol} \gets \RemEq(A_{re}, \CompDist(A_{re}))$
-    \State \Return $A_{sol}$
+    \Function{\MinAlg}{$A$}
+    \State $A' \gets \RemUnr(A, \CompUnr(A))$
+    \State \Return $\RemEq(A', \CompDist(A'))$
     \EndFunction
 \end{algorithmic}
 \vspace{0.2cm}
@@ -246,7 +306,7 @@ This minimization algorithm \MinAlg\ works in four major steps, removing essenti
 	\MinAlg\ computes a minimal DFA to its input DFA.
 \end{theorem}
 
-\subsection{$m$-\CompDist.}
+\subsection{$m$-\CompDist\ and $D(A)$}
 
 When looking at \CompDist, one notes, that it computes distinct subsets of $Q \times Q$ on the way. Indeed, one could write the algorithm in such a way, that these subsets are explicitly computed in form of a function $m\colon\mathbb{N}\to\mathcal{P}(Q\times Q)$:
 \vspace{0.2cm}
@@ -263,28 +323,25 @@ When looking at \CompDist, one notes, that it computes distinct subsets of $Q \t
 \end{algorithmic}
 \vspace{0.2cm}
 Using this redefinition, we can easier refer to the state pairs marked in a certain iteration. We will use both variants in exchange.
-
-We will denote the number of iterations done by \CompDist\ on an DFA $A$ as $\mmD(A)$.
-
-\subsection{Another equivalence automaton}
-
-Consider step 3 and 4 of \MinAlg. A view on these algorithms reveal, that they are essentially collapsing each $\sim$-equivalence class of a DFA $A$ into one state.
-
-\begin{definition}[$\sim_A$-equivalence automaton] \label{ch:1:sim-eq-dfa}
-    We will call the automaton $E_A = (Q_E, \Sigma_E, \delta_E, s_E, F_E)$ created by \CompDist\ and \RemEq($A$)\ the \emph{$\sim_A$-equivalence automaton} of $A$. It has the following properties:
-    \begin{itemize}
-        \item $Q_E = \{\ [q]\ |\ q \in Q\ \}$
-        \item $\Sigma_E = \Sigma$
-        \item $\delta_E([q], \sigma) = [\delta(q, \sigma)], \forall q \in Q, \sigma \in \Sigma$
-        \item $s_E = [s]_\sim$
-        \item $F_E = \{\ [q]\ |\ q \in Q\ \}$
-    \end{itemize}
-    Note, that we know by theorem~\ref{ch:1:min-alg-correct} that $E_A$ is guaranteed to be a minimal automaton to $A$, if $A$ has no unreachable states.
+\begin{definition}
+	We denote the number of iterations done by \CompDist\ on an DFA $A$ as $\mmD(A)$.
 \end{definition}
 
-%Note moreover that, since $A_{sol}$ is minimal, there exists an isomorphism renaming $e_1,\ldots,e_\mathcal{Q}_{sol}$ such that they correspond to the equivalence classes of $\equiv_{L(A_{task})}\ = \ \equiv_{L(A_{re})}$ and $\sim_{A_{re}}$.
+%\subsection{Another equivalence automaton}
 %
-%However there might exist no isomorphism connecting $e_1,\ldots,e_\mathcal{Q}_{sol}$ and the equivalence classes of $\sim_{A_{task}}$, since possible unreachable states might form $\sim$-equivalence classes that are distinct to those of the reachable states.
+%Consider step 3 and 4 of \MinAlg. A view on these algorithms reveal, that they are essentially collapsing each $\sim$-equivalence class of a DFA $A$ into one state.
+%
+%\begin{definition}[$\sim_A$-equivalence automaton] \label{ch:1:sim-eq-dfa}
+%    We will call the automaton $E_A = (Q_E, \Sigma_E, \delta_E, s_E, F_E)$ created by \CompDist\ and \RemEq($A$)\ the \emph{$\sim_A$-equivalence automaton} of $A$. It has the following properties:
+%    \begin{itemize}
+%        \item $Q_E = \{\ [q]\ |\ q \in Q\ \}$
+%        \item $\Sigma_E = \Sigma$
+%        \item $\delta_E([q], \sigma) = [\delta(q, \sigma)], \forall q \in Q, \sigma \in \Sigma$
+%        \item $s_E = [s]_\sim$
+%        \item $F_E = \{\ [q]\ |\ q \in Q\ \}$
+%    \end{itemize}
+%    Note, that we know by theorem~\ref{ch:1:min-alg-correct} that $E_A$ is guaranteed to be a minimal automaton to $A$, if $A$ has no unreachable states.
+%\end{definition}
 
 \section{Requirements analysis}
 
@@ -306,18 +363,18 @@ Now that we have introduced all necessary basic definitions, we shall do a short
 \label{fig:dfa_ex_sol}
 \end{figure}
 
-\noindent Figures~\ref{fig:dfa_ex_task} and~\ref{fig:dfa_ex_sol} show such a task and solution. The students are confronted with a \emph{task DFA} $A_{task}$. Firstly, unreachable states have to be eliminated, we then gain the \emph{reachable DFA} $A_{re}$. Secondly equivalent state pairs of $A_{re}$ are merged such that the minimal \emph{solution DFA} $A_{sol}$ is found. The table $T$ displayed in figure~\ref{fig:dfa_ex_sol} is nothing else but a visualization of the function $m$, whereas $T(q_0, q_1) = i \Leftrightarrow (q_0, q_1) \in m(i)$.
+\noindent Figures~\ref{fig:dfa_ex_task} and~\ref{fig:dfa_ex_sol} show such a task and solution. The students are confronted with a \emph{task DFA} $A_{task}$. Firstly, unreachable states have to be eliminated, we then gain $A_{re}$. Secondly equivalent state pairs of $A_{re}$ are merged such that the minimal \emph{solution DFA} $A_{sol}$ is found. The table $T$ displayed in figure~\ref{fig:dfa_ex_sol} is nothing else but a visualization of the function $m$ of $m$-\CompDist, whereas $T(q_0, q_1) = i \Leftrightarrow (q_0, q_1) \in m(i)$.
 
 We do some rather formal statements and requirements. Firstly, we can state that
 \begin{itemize}
 	\item $A_{re} = \RemUnr(A_{task}, \CompUnr(A_{task}))$ and
 	\item $A_{sol} = \RemEq(A_{re}, \CompDist(A_{re}))$
 \end{itemize}
-Therefore $A_{sol}$ is minimal regarding $A_{re}$ and $A_{task}$. Secondly the languages of $A_{task}, A_{re}$ and $A_{sol}$ are be equal. We know that \CompDist\ requires $A_{re}$ to be complete and that \RemEq\ creates complete DFAs, so $A_{sol}$ is complete too. Furthermore we know that every state of $A_{re}$ is reachable since it is the output of \RemUnr.
+Therefore $A_{sol}$ is minimal regarding $A_{re}$ and $A_{task}$. Secondly the languages of $A_{task}, A_{re}$ and $A_{sol}$ are equal. We know that \CompDist\ requires $A_{re}$ to be complete and that \RemEq\ creates complete DFAs, so $A_{sol}$ is complete too. Furthermore we know that every state of $A_{re}$ is reachable since it is the output of \RemUnr.
 
-\subsection{Discussion of difficulty adjustment possibilities}\label{ch:1:requirements-analysis}
+\subsection{Difficulty adjustment possibilities and sensible requirements}\label{ch:1:requirements-analysis}
 
-Concerning the execution of \MinAlg\ we find that its difficulty can be classified through various classification numbers.
+Concerning the execution of \MinAlg\ we find that its difficulty can be classified through various classification numbers. Furthermore we can note some sensible requirements.
 
 \paragraph*{\CompDist-depth ($\mmD(A_{task})$).}
 
@@ -335,14 +392,6 @@ To control the number of states in $A_{task}, A_{re}$ and $A_{sol}$, we will int
 \end{align*}
 It is sensible to have $\mathcal{Q}_{unr} > 1, \mathcal{Q}_{eq} > 1$, such that \RemUnr\ and \RemEq\ will not be skipped. To not make the task trivial, $\mathcal{Q}_{sol} > 2$ is sensible. An exercise instructor will find it useful, to control exactly how big $\mathcal{Q}_{unr}$, $\mathcal{Q}_{eq}$ and $\mathcal{Q}_{sol}$ are: The higher $\mathcal{Q}_{unr}, \mathcal{Q}_{eq}$, the more states have to be eliminated and merged. The higher $\mathcal{Q}_{sol} + \mathcal{Q}_{eq}$, the more state pairs have to be checked during \CompDist.
 
-\gregor{Concept for min max.}
-%To control the number of states in $A_{task}, A_{re}$ and $A_{sol}$, we will introduce three pairs of parameters, denoting each ranges: $Q_{s,min}, Q_{s,max}$ for the number of states in the solution DFA, $Q_{e,min}, Q_{e,max}$ for the number of equivalent state pairs in $A_{re}$ and $A_{task}$, and $Q_{u,min}, Q_{u,max}$ for the number of unreachable states in $A_{task}$. Consequently the following equations are true:
-%\begin{align*}
-%|Q_{sol}| &\in [Q_{s,min}, Q_{s,max}] \\
-%|Q_{re}| &= |Q_{sol}| + n \in [Q_{e,min}, Q_{e,max}] \\
-%|Q_{task}| &= |Q_{re}| + n \in [ Q_{u,min}, Q_{u,max}]
-%\end{align*}
-
 \paragraph*{Alphabet size.}
 
 The more symbols the alphabet of $A_{task}, A_{re}$ and $A_{sol}$ has (note how \MinAlg\ does not change the alphabet), the more transitions have to be followed when checking whether $(\delta(q,\sigma),\delta(p,\sigma))\in m(i-1)$ is true for each state pair $p,q$.
@@ -353,9 +402,11 @@ Since most DFAs in teaching have about 1 to 3 final states, so being able to set
 
 \paragraph*{Uniqueness of $A_{sol}$.}
 
-For example for an exam it would be sensible to be able to generate a task, so $A_{sol}$ and $A_{task}$, that has not been generated before. We will use the criterion of practical isomorphy to distinguish between used and unused DFAs. This is a sensible criterion, since state and symbol labels are not relevant to understanding the minimization algorithm and can easily be adjusted afterwards.
+For example for an exam it would be sensible to be able to generate a task, so $A_{sol}$ and $A_{task}$, that has not been generated before. We will use the criterion of isomorphy to distinguish a possible solution DFA from all previously generated ones.
 
-If $A_{sol}$ is already not practical isomorph to all previously generated DFAs, then $A_{task}$ will automatically be different too, since $A_{sol},A_{task}$ describe a unique language then (see cor.~\ref{ch:1:ism-uniq-lan}).
+This is sensible since isomorphy distinguishes two minimal DFAs, if and only if they have different languages (see theorem~\ref{ch:1:thm:uniq-ism}).
+
+Note that, if $A_{sol}$ is indeed \emph{new} in that sense, then $A_{task}$ will automatically have a unique language too, since $A_{sol}$ and $A_{task}$ have the same language and this language was then never used before in this context.
 
 \paragraph*{Completeness of $A_{task}$.}
 

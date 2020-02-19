@@ -118,6 +118,7 @@ The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma|
 \end{algorithmic}
 \end{spacing}
 \vspace{0.2cm}
+\noindent Note that computing an unused state label can be easily done by e.g.\ taking the maximum of all solution DFA states (which are nothing else but numbers) and adding one.
 
 \subsection{Creating equivalent state pairs does not change $\mmD$} \label{ch:3:sec-D-proof}
 
@@ -263,15 +264,4 @@ From step 1 of the minimization algorithm we can deduce how to add unreachable s
 	\EndFunction
 \end{algorithmic}
 \vspace{0.2cm}
-
-%\noindent We have to ensure, that this algorithm does not induce changes in the language.
-%\begin{lemma}
-%	Adding unreachable states to a DFA does not change its language.
-%\end{lemma}
-%\begin{proof}
-%	{\setlength{\parindent}{0pt}
-%		Remember that the language of a DFA $A = (Q, \Sigma, \delta, s, F)$ is defined as $L(A) = \{\ w\ |\ w \in \Sigma^* \ \}$. For any unreachable state $q$ there exists no word $v \in \Sigma^*$ such that $\delta^*(s,v) = q$. Thus such a state cannot be the cause for any word to be in $L(A)$.
-%	}
-%\end{proof}
-%
-%\noindent The question whether adding unreachable states to a DFA changes $\mmD$-value is irrelevant. This is because in the context of the minimization algorithm, unreachable states are eliminated before the \CompDist-algorithm is applied on the task DFA.
+If completeness is demanded ($c=1$), then we set $\Sigma$ as set of all symbols, for which a state shall gain outgoing transitions. Else we choose a random subset for each state, such that some unreachable states may miss some outgoing transitions.

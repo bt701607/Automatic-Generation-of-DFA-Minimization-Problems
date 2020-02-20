@@ -19,15 +19,20 @@
 \usepackage{amssymb}
 \usepackage{wasysym}
 
+\usepackage[dvipsnames]{xcolor}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{positioning,automata}
+
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 
 \usepackage{setspace}
 \usepackage{float}
+\usepackage{subcaption}
 
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
-
-\usepackage[dvipsnames]{xcolor}
 
 \usepackage[nottoc,numbib]{tocbibind}
 \bibliographystyle{plainurl}
@@ -67,14 +72,7 @@
 	
 	\maketitle
 	
-	\begin{abstract}
-        The theory of deterministic finite automatons (DFAs) is a classical topic of computer science-related courses. A typical task for students is to minimize a DFA by deleting irrelevant elements. However generation of those DFAs that shall be minimized is often done manually by the exercise instructor. This work presents approaches to automize the generation of DFA minimization tasks.
-	\end{abstract}
-
-	\renewcommand{\abstractname}{Generierung von DFA Minimierungsproblemen\\-\\Zusammenfassung}
-	\begin{abstract}
-		Zusammenfassung$\ldots$
-	\end{abstract}
+	\input{abstract.tex}
 	
 	%\chapter*{Acknowledgements}
 	%I want to thank...
@@ -83,9 +81,10 @@
 	\tableofcontents
 	
 	\input{./chapters/1-introduction.tex}
-	\input{./chapters/2-build-minimal-dfas.tex}
-	\input{./chapters/3-extending-minimal-dfas.tex}
-	\input{./chapters/4-conclusion.tex}
+	\input{./chapters/2-problem-definition.tex}
+	\input{./chapters/3-build-minimal-dfas.tex}
+	\input{./chapters/4-extending-minimal-dfas.tex}
+	\input{./chapters/5-conclusion.tex}
 	
 	\appendix
 	% List of figures, theorems/lemmas/etc., bibliography, index

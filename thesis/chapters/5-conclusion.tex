@@ -2,19 +2,15 @@
 
 \chapter{Conclusion}
 
-We close this work with a summary and a short lookout.
+Our intention was to investigate approaches, how DFA minimization task could be generated automatically. Therefore we discussed requirements to such a program and used some of them to formalize the underlying problems. Our approach to solve those problems was to first generate the minimal solution DFA and afterwards the task DFA by adding equivalent states and unreachable DFAs. This structure was derived from Hopcrofts minimization algorithm.
 
-\paragraph*{Summary.}
+We did the generation of minimal DFAs via a rejection algorithm using either randomized and enumerating; we rejected in particular DFAs with a language which was found already in a previous run. A short overview over research on this topic confirmed our direction but gave outlook to more efficient variants.
 
-In this work we discussed and implemented methods to automatically generate exercises for students that consist of a DFA $A_{task}$ which has to be minimized. We focused on the minimization algorithm by Hopcroft, which works in two steps: Firstly delete unreachable states, then merge equivalent state pairs.
+On making minimal DFAs non-minimal no results in research was found. The properties of equivalent state pairs and unreachable states however gave precise and easy applicable rules to add such elements.
 
-Following this separation in reverse, our approach was to generate the solution DFA first, then create equivalent state pairs and lastly add unreachable states. We devised several sensible input parameters and requirements for each of these stages.
+When building the task DFA, a question arised concerning the number of iterations by the \CompDist-algorithm ($\mmD$), which we wanted to be adjustable via parameter. By proving that the $\mmD$-value does not change if we extend minimal DFAs, we could ensure that this value is already set when building the solution DFA, so DFAs could be rejected already in this stage, if $\mmD$ did not match.
 
-Concerning the generation of solution DFAs we made use of a simple rejection algorithm, that generates test DFAs by randomization or enumeration. Every generated DFA is saved in a database and test DFAs are compared against them, such that new DFAs have a distinct language. On this topic research has already been active, an overview about results there has been made to draw conclusions for this work.
-
-Concerning the extension of solution DFAs towards a task DFA, we found, that we can add states and transitions in an easy manner according to certain rules. These rules were derived from the properties equivalent state pairs and unreachable states have.
-
-\paragraph*{Lookout.}
+We close this work with a short lookout.
 
 During our requirements analysis we defined several parameters that have not been or only sparsely further discussed in here. This includes especially boundaries for the number of ingoing transitions to each state and drawing DFAs in a visual comprehensible manner. Connected to the latter is the question, whether a good procedure exists, that outputs a visual representation of a DFA via LaTeX-code, such that hand-made adjustments might be done afterwards. One could also think of making more parameters ranged, such that per instance a minimum and maximum number of states could be specified as input.
 

@@ -1,6 +1,6 @@
 % !TeX spellcheck = en_US
 
-\documentclass[a4paper, oneside, 11pt]{report}
+\documentclass[a4paper, oneside, 11pt]{book}
 
 % ----------- packages -------------
 
@@ -34,7 +34,7 @@
 
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 
-\usepackage[nottoc,numbib]{tocbibind}
+\usepackage[nottoc]{tocbibind}
 \bibliographystyle{plainurl}
 
 % ----------- macros -------------
@@ -63,14 +63,54 @@
 \newcommand{\gregorColor}{Violet}
 \newcommand{\gregor}[1]{\textcolor{\gregorColor}{\textbf{Gregor:} #1}}
 
+\makeatletter
+\newcommand{\unchapter}[1]{%
+	\begingroup
+	\let\@makechapterhead\@gobble % make \@makechapterhead do nothing
+	\chapter{#1}
+	\endgroup
+}
+\makeatother
+
+\newcounter{oldtocdepth}
+
+\newcommand{\hidefromtoc}{%
+	\setcounter{oldtocdepth}{\value{tocdepth}}%
+	\addtocontents{toc}{\protect\setcounter{tocdepth}{-10}}%
+}
+
+\newcommand{\unhidefromtoc}{%
+	\addtocontents{toc}{\protect\setcounter{tocdepth}{\value{oldtocdepth}}}%
+}
+
 % ----------- content -------------
 
-\title{Generation of DFA Minimization Problems}
-\author{Gregor Hans Christian Sönnichsen}
+%\title{Generation of DFA Minimization Problems}
+%\author{Gregor Hans Christian Sönnichsen}
 
 \begin{document}
 	
-	\maketitle
+	\frontmatter
+	
+	\begin{titlepage}
+		\centering
+		{\huge\bfseries Generation of DFA Minimization Problems\par}
+		\vspace{1cm}
+		{\large\bfseries Generierung von DFA Minimierungsproblemen\par}
+		\vspace{2cm}
+		{\large Gregor Hans Christian Sönnichsen\par}
+		\vfill
+		{\large University of Bayreuth \par}
+		{\large Applied Computer Science 7 - Theoretical Computer Science \par}
+		\vspace{1cm}
+		{\large \today\par}
+	\end{titlepage}
+	
+%	\maketitle
+	
+	%titleDS, titleMS, titlePW, titleASU, 
+	
+	%Generierung von DFA Minimierungsproblemen
 	
 	\input{abstract.tex}
 	
@@ -79,6 +119,8 @@
 	
 	\renewcommand{\contentsname}{Table of Contents}
 	\tableofcontents
+	
+	\mainmatter
 	
 	\input{./chapters/1-introduction.tex}
 	\input{./chapters/2-problem-definition.tex}
@@ -93,7 +135,8 @@
 	\bibliographystyle{abbrv}
 	\bibliography{thesis}
 	
-	\chapter{Erklärung}
+	\chapter*{Erklärung}
+	\addcontentsline{toc}{chapter}{Erklärung}
 	
 	Hiermit versichere ich, Gregor Hans Christian Sönnichsen, dass ich die vorliegende Arbeit selbständig verfasst habe, keine anderen als die von mir angegebenen Quellen und Hilfsmittel benutzt habe und die Arbeit nicht  bereits zur Erlangung eines akademischen Grades eingereicht habe. \\
 	

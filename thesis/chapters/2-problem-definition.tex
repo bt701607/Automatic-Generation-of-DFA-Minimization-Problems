@@ -29,41 +29,37 @@ Given a state $q \in Q$. With $d^-(q)$ we denote the set of all \emph{ingoing} t
 A DFA is called \emph{complete} iff for all states, every symbol of the alphabet is used on an outgoing transition: $\forall q\in Q\colon \forall\sigma\in\Sigma\colon \exists p\in Q\colon \delta(q,\sigma) = p$. Note, that every incomplete DFA can be converted to a complete one by adding a so called \emph{dead state}~\cite[p. 67]{HMU01}. The resulting automaton has the same language.
 
 \begin{figure}[H]
-	\begin{subfigure}{.5\textwidth}
-	\centering
-	\resizebox{1.\linewidth}{!}{
-		
+	\begin{subfigure}{.5\textwidth}\centering\resizebox{1.\linewidth}{!}{
 		\begin{tikzpicture}[initial text={},scale=1., every node/.style={transform shape}]
 		\tikzstyle{every state}=[minimum size=5mm, inner sep=0pt]
 		
-		\node[initial, state]  (1) at (0, 0) {$1$};
-		\node[accepting,state] (2) at (2, 1.5) {$2$};
-		\node[state]           (3) at (2,-1.5) {$3$};
-		\node[state]           (4) at (4, 0) {$4$};
-		\node[state]           (5) at (4,-1.5) {$5$};
+		\node[initial, state]  (0) at (0, 0) {$0$};
+		\node[accepting,state] (1) at (2, 1.5) {$1$};
+		\node[state]           (2) at (2,-1.5) {$2$};
+		\node[state]           (3) at (4, 0) {$3$};
+		\node[state]           (4) at (4,-1.5) {$4$};
 		
 		\path[->]
-		(1) edge 			  node [above left]  {$a$}   (2)
-		(2) edge [loop above] node [above]		 {$a$}   (2)
-		(2) edge 			  node [left]        {$b$}   (3)
-		(1) edge 			  node [below left]  {$b$}   (3)
-		(3) edge [loop below] node [loop below]  {$a,b$} (3)
-		(4) edge 			  node [above right] {$a$}   (2)
-		(5) edge [loop below] node [below]	     {$a$}   (5)
+		(0) edge 			  node [above left=-0.15cm]  {$a$}   (1)
+		(1) edge [loop above] node [above=-0.07cm]		 {$a$}   (1)
+		(1) edge 			  node [left=-0.07cm]        {$b$}   (2)
+		(0) edge 			  node [below left=-0.15cm]  {$b$}   (2)
+		(2) edge [loop below] node [below=-0.07cm]       {$a,b$} (2)
+		(3) edge 			  node [above right=-0.15cm] {$a$}   (1)
+		(4) edge [loop below] node [below=-0.07cm]	     {$a$}   (4)
 		;
 		\end{tikzpicture}
-	}
-	\end{subfigure}
+	}\end{subfigure}
 	\hfill
 	\begin{subfigure}{.4\textwidth}
 		$A = (Q, \Sigma, \delta, s ,F)$ \\\\
-		$Q = \{\ 1,2,3,4,5\ \}$ \\
+		$Q = \{\ 0,1,2,3,4\ \}$ \\
 		$\Sigma = \{\ a,b\ \}$ \\
-		$\delta = \{\ ((1,a),2), ((1,b),2), \ldots\ \}$ \\
+		$\delta = \{\ ((0,a),1), ((0,b),1), \ldots\ \}$ \\
 		$s = 0$ \\
 		$F = \{\ 1\ \}$
 	\end{subfigure}
-	\caption{An example DFA. The states $3$ and $4$ are unreachable. This DFA is not complete since the transitions $\delta(3,b)$ and $\delta(4,b)$ are not defined.}
+	\caption{An example DFA. The states $3$ and $4$ are unreachable. This DFA is not complete since the transitions $\delta(2,b)$ and $\delta(3,b)$ are not defined.}
 	\label{fig:dfa}
 \end{figure}
 
@@ -71,6 +67,14 @@ A DFA is called \emph{complete} iff for all states, every symbol of the alphabet
 	We call a DFA $A$ \emph{minimal}, if there exists no other automaton with the same language using less states.
 \end{definition}
 \noindent With $\mathfrak{A}_{min}$ we shall denote the set of all minimal DFAs.
+
+\begin{definition}[Equivalent and Distinguishable State Pairs]\cite[p. 154]{HMU01}
+	A state pair $q_1, q_2 \in Q$ of a DFA $A = (Q, \Sigma, \delta, s, F)$ is called \emph{equivalent}, iff $\sim_A(q_1, q_2)$ is true, whereas
+	\begin{displaymath}
+	q_1\ \sim_A\ q_2 \Leftrightarrow_{def}\ \forall z \in \Sigma^* \colon\ (\delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)
+	\end{displaymath}
+	If $q_0 \not\sim_A q_1$, then $q_0$ and $q_1$ are called a \emph{distinguishable} state pair. The relation $\sim_A$ is an equivalence relation
+\end{definition}
 
 \subsection{Isomorphy of DFAs}\label{ch:1:sec:isom}
 
@@ -89,127 +93,7 @@ In~\cite[p. 45]{Sch01} we can find the following statement:
 \begin{theorem}\label{ch:1:thm:uniq-ism}
 	Every minimal DFA is unique (has a unique language) except for isomorphy.
 \end{theorem}
-Here follows a simple isomorphy test that tries essentially to build a bijection as described above.
-\vspace{0.2cm}
-\begin{algorithmic}[1]
-	\Function{AreIsomorph\ }{$A_1, A_2$}
-		\If {$|Q_1| \neq |Q_2|$ \textbf{or} $|F_1| \neq |F_2|$ \textbf{or} $\Sigma_1 \neq \Sigma_2$}
-			\State \Return $false$
-		\EndIf
-		
-		\State $\pi(s_1) = s_2$ \Comment{bijection $Q_1 \to Q_2$}
-		\State $O \gets \emptyset$ \Comment{observed states}
-		\State $V \gets \{s_1\}$ \Comment{visited states}
-		\State $q_c \gets s_1$ \Comment{current state}
-		
-		\While {true}
-			\For {$((q_1,\sigma),p_1)$ \textbf{in} $\delta_1$} \Comment{iterate through $d^+(q_c)$}
-				\If {$q_1 = q_c$} 
-					\State \textbf{continue}
-				\EndIf
-				
-				\State
-				
-				\State $p_2 \gets \delta_2(\phi(q_c), \sigma)$ 
-				\State $p1marked \gets (\pi(p_1) \neq \bot)$ \Comment{see if $p_1$, $p_2$ were ``marked'' by $\pi$}
-				\State $p2marked \gets (\exists q\colon \pi(q)=p2)$
-				
-				\State
-				
-				\If {$p1marked$ \textbf{and} $p2marked$}
-					\If {$\pi(p_1) \neq p_2$}
-						\State \Return false
-					\EndIf
-				\ElsIf {$\neg p1marked$ \textbf{and} $\neg p2marked$}
-					\State $\pi(p_1) = p_2$
-					\If {$p_1 \notin V$}
-						\State Add $p_1$ to $O$
-					\EndIf
-				\Else \Comment{one of $p_1$, $p_2$ was assigned to some state $\neq p_1$ resp.\ $p_2$}
-					\State \Return false
-				\EndIf
-			\EndFor	
-			
-			\If {$|O| = 0$}
-				\State \textbf{break}
-			\EndIf
-			\State Pick and remove $q_c$ from $O$
-			\State Add $q_c$ to $V$
-		\EndWhile
-		\State\textbf{end}
-		
-		\For {$q_1$ \textbf{in} $F_1$}
-			\If {$\pi(q_1) \notin F_2$}
-				\State \Return false
-			\EndIf
-		\EndFor	
-		
-		\State \Return true
-	\EndFunction
-\end{algorithmic}
-\vspace{0.2cm}
-This algorithm \emph{visits} one by one all states of $A_1$ and tries to build $\pi$ on the way. The currently visited state is denoted $q_c$. In $V \subseteq Q_1$ we save all already visited states. The set $O \subseteq Q_1$ shall contain all \emph{observed} states, meaning those, that we encountered while following a transition, but have not been visited yet.
-
-We call states of $A_1$, $A_2$ \emph{marked}, if they have been assigned to another state by $\pi$. So if $\pi(q_1)=q_2$, then $q_1$, $q_2$ are marked. States in $O$ will have the property, that they are marked.
-
-Starting with $q_c = s_1$, in every while-iteration all outgoing transitions $\delta_1(q_c, \sigma) = p_1$ of the current state are followed. We then compute $\delta_2(\phi(q_c), \sigma) = p_2$, which is the state in $A_2$ that should correspond to $p_1$ of $A_1$. At this point (line 17) we do a case differentiation:
-\begin{itemize}
-	\item $p_1$, $p_2$ both marked: Then we only need to ensure they are assigned to each other.
-	\item $p_1$, $p_2$ both not marked: Then we can assign them to each other and may now add $q_1$ to $O$, since we observed it on an outgoing transition and know it has been marked. We will not add it, if we have visited as $q_c$.
-	\item one of $p_1$, $p_2$ marked, one not: In that case they cannot be assigned to each other, since then both states would be marked; consequently one state has been assigned to a distinct third state.
-\end{itemize}
-When finished with visiting all outgoing transitions of a state $q_c$, we can pick the next state which is added to the visited states.
-
-If all states of $A_1$ have been visited and the bijection thus been fully constructed, we need only to ensure, that the final state sets are equal after a renaming according to $\pi$.
-
-\subsection{Equivalent and distinguishable state pairs}
-
-\begin{definition}[Equivalent and Distinguishable State Pairs]\cite[p. 154]{HMU01}
-	A state pair $q_1, q_2 \in Q$ of a DFA $A = (Q, \Sigma, \delta, s, F)$ is called \emph{equivalent}, iff $\sim_A(q_1, q_2)$ is true, whereas
-	\begin{displaymath}
-	q_1\ \sim_A\ q_2 \Leftrightarrow_{def}\ \forall z \in \Sigma^* \colon\ (\delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)
-	\end{displaymath}
-	If $q_0 \not\sim_A q_1$, then $q_0$ and $q_1$ are called a \emph{distinguishable} state pair. The relation $\sim_A$ is an equivalence relation
-\end{definition}
-%\noindent Note the similarity between $\equiv_{L(A)}$ and $\sim_A$.:
-%\begin{align*}
-%	x\ \equiv_{L(A)}\ y\ \Leftrightarrow&\ \forall z\in\Sigma^*\colon (xz \in L \Leftrightarrow yz \in L) \\
-%	& \\
-%	q_1\ \sim_A\ q_2\ \Leftrightarrow&\ \forall z \in \Sigma^* \colon\ (\delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)
-%\end{align*}
-%We will prove the following statement regarding both relations:
-%\begin{proposition}[Relationship of $\equiv_{L(A)}$ and $\sim_A$] \label{ch:1:prop-ner-eq} $ $ \\
-%    \[
-%    	x \equiv_{L(A)} y\ \Leftrightarrow\ \delta^*(s,x)=q_1\ \land\ \delta^*(s,y)=q_2\ \land\ q_1 \sim_A q_2
-%    \]
-%\end{proposition}
-%\noindent Informally said: $x \equiv_{L(A)} y$ is true if and only if $q_1 \sim_A q_2$ whereas $q_1, q_2$ are reachable via $x,y$.
-%\begin{proof} Via direct proof.
-%    \begin{align*}
-%    \ \delta^*(s,x)=q_1 \land \delta^*(s,y)=q_2\ \land\ & q_1 \sim_A q_2 \\
-%    \Leftrightarrow\ \delta^*(s,x)=q_1 \land \delta^*(s,y)=q_2\ \land\ &(\forall z \in \Sigma^* \colon\ \delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F) \\
-%    \Leftrightarrow\hspace{5.65cm}&\ \forall z \in \Sigma^* \colon\ \delta^*(\delta^*(s,x), z) \in F \Leftrightarrow \delta^*(\delta^*(s,y), z) \in F \\
-%    \Leftrightarrow\hspace{5.65cm}&\ \forall z \in \Sigma^* \colon\ \delta^*(s,xz) \in F \Leftrightarrow \delta^*(s,yz) \in F \\
-%    \Leftrightarrow\hspace{5.65cm}&\ \forall z \in \Sigma^* \colon\ xz \in L(A) \Leftrightarrow yz \in L(A) \\
-%    \Leftrightarrow\hspace{5.65cm}& x \equiv_{L(A)} y
-%    \end{align*}
-%\end{proof}
-%\begin{corollary}
-%    If the DFA $A$ is accessible, then there exists a $1:1$-correspondence between the equivalence classes of $\equiv_{L(A)}$ and $\sim_A$.
-%\end{corollary}
-
-%\noindent Proposition~\ref{ch:1:prop-ner-eq} can be supplemented by an even stronger declaration. Towards this declaration we first define, analogous to the equivalence class automaton, the \emph{$\sim$-equivalence automaton} $A_{\sim_A} = (Q_{\sim_A}, \Sigma_{\sim_A}, \delta_{\sim_A}, s_{\sim_A}, F_{\sim_A})$ to a DFA $A$:
-%\begin{itemize}
-%    \item $Q_{\sim_A} = \{[q]_{\sim_A} | q \in Q\}$
-%    \item $\Sigma_{\sim_A} = \Sigma$
-%    \item $\delta_{\sim_A}([q]_{\sim_A}, \sigma) = [\delta(q, \sigma)]_{\sim_A}, \forall q \in Q, \sigma \in \Sigma$
-%    \item $s_{\sim_A} = [s]_{\sim_A}$
-%    \item $F_{\sim_A} = \{[q]_{\sim_A} | q \in Q\}$
-%\end{itemize}
-
-%\begin{theorem}
-%    If the DFA $A$ is accessible, then $A_{\sim_A}$ is minimal and thus isomorph to $A_L$.
-%\end{theorem}
+\noindent We describe a simple isomorphism test for DFAs in the appendix~\ref{ch:app:ism-test}.
 
 \subsection{The minimization algorithm}
 
@@ -238,7 +122,7 @@ This minimization algorithm \MinAlg\ works in four major steps, removing essenti
 	\vspace{0.2cm}
 	\begin{algorithmic}[1]
 		\Function{\RemUnr}{$A, U$}
-            \State $\delta' \gets \delta \setminus \{\ ((q,\sigma),p)\ |\ q\in U\ \lor\ p\in U\ \}$
+            \State $\delta' \gets \delta \setminus \{\ ((q,\sigma),p)\in\delta\ |\ q\in U\ \lor\ p\in U\ \}$
 			\State \Return $(Q \setminus U, \Sigma, \delta', s, F \setminus U)$
 		\EndFunction
 	\end{algorithmic}
@@ -262,12 +146,12 @@ This minimization algorithm \MinAlg\ works in four major steps, removing essenti
 	
 	\vspace{0.2cm}
 	\begin{algorithmic}[1] \label{ch:1:minmerge}
-		\Function{\RemEq}{$A$, $\sim_A$} \Comment{$[\cdot]_{\sim_A}$ shall be abbreviated $[\cdot]$}
+		\Function{\RemEq}{$A$, $\sim_A$}
             \State $Q_E \gets \emptyset$
             \State $\delta_E \gets \emptyset$
             \State $F_E \gets \emptyset$
             \For {$q$ \textbf{in} $Q$}
-                \State Add $[q]$ to $Q_E$
+                \State Add $[q]$ to $Q_E$ \Comment{$[\cdot]_{\sim_A}$ shall be abbreviated $[\cdot]$}
                 \For {$\sigma$ \textbf{in} $\Sigma$}
                     \State $\delta_E([q], \sigma) = [\delta(q, \sigma)]$
                 \EndFor
@@ -289,15 +173,13 @@ This minimization algorithm \MinAlg\ works in four major steps, removing essenti
     \EndFunction
 \end{algorithmic}
 \vspace{0.2cm}
-\noindent This DFA minimization algorithm has been found by Hopcroft~\cite{Hop71} and was established in teaching by Hopcroft et al.~\cite[pp. 154-164]{HMU01}.
+\noindent This DFA minimization algorithm has been found by Hopcroft~\cite{Hop71}.
 
 \begin{theorem}\label{ch:1:min-alg-correct}\textnormal{\cite[pp. 162-164]{HMU01}}
 	\MinAlg\ computes a minimal DFA to its input DFA.
 \end{theorem}
 
-\subsection{$m$-\CompDist\ and $D(A)$}
-
-When looking at \CompDist, one notes, that it computes distinct subsets of $Q \times Q$ on the way. Indeed, one could write the algorithm in such a way, that these subsets are explicitly computed in form of a function $m\colon\mathbb{N}\to\mathcal{P}(Q\times Q)$:
+\noindent When looking at \CompDist, one notes, that it computes distinct subsets of $Q \times Q$ on the way. Indeed, one could write the algorithm in such a way, that these subsets are explicitly computed in form of a function $m\colon\mathbb{N}\to\mathcal{P}(Q\times Q)$:
 \vspace{0.2cm}
 \begin{algorithmic}[1] \label{ch:1:m-minmark}
 	\Function{$m$-\CompDist}{$A$}
@@ -336,20 +218,97 @@ Using this redefinition, we can easier refer to the state pairs marked in a cert
 
 Now that we have introduced all necessary basic definitions, we shall do a short analysis of an example DFA minimization task and its sample solution, as it could have been given to students in an introductory course to automata theory.
 
-\subsection{Example of a DFA minimization task for students}
-
 \gregor{search for typical task in standard text books}
 
-\begin{figure}
-\includegraphics[width=\linewidth]{images/dfa_ex_task.png}
-\caption{An example DFA minimization task.}
-\label{fig:dfa_ex_task}
+\begin{figure}[h]
+	{\raggedright\itshape \underline{Task:} Consider the below shown deterministic finite automaton $A$:}
+	\begin{center}\resizebox{.75\linewidth}{!}{
+		\begin{tikzpicture}[initial text={},scale=1., every node/.style={transform shape}]
+		\tikzstyle{every state}=[minimum size=5mm, inner sep=0pt]
+		
+		\node[initial, state]  (0) at (0, 0)    {$0$};
+		\node[state] 		   (1) at (6, 0)    {$1$};
+		\node[state,accepting] (2) at (4,0)     {$2$};
+		\node[state]           (3) at (2, -1.5) {$3$};
+		\node[state,accepting] (4) at (4,-3)    {$4$};
+		\node[state]           (5) at (4,-1.5)  {$5$};
+		\node[state]           (6) at (2,0)     {$6$};
+		
+		\path[->]
+		(0) edge node [above=-0.07cm]  {$a$}   (6)
+		(0) edge [bend left] node [above=-0.07cm]  {$b$}   (2)
+		
+		(1) edge node [above=-0.07cm]  {$a$}   (2)
+		(1) edge node [below right=-0.15cm]  {$b$}   (4)
+		
+		(2) edge [bend left] node [above=-0.07cm]  {$a$}   (1)
+		(2) edge node [below right=-0.15cm]  {$b$}   (3)
+		
+		(3) edge node [left=-0.07cm]  {$a$}   (6)
+		(3) edge node [above right=-0.15cm]  {$b$}   (4)
+		
+		(4) edge [bend right] node [below right=-0.15cm]  {$a$}   (1)
+		(4) edge [bend left] node [below left=-0.15cm]  {$b$}   (0)
+		
+		(5) edge node [below right=-0.15cm]  {$a$}   (1)
+		(5) edge node [left=-0.07cm]  {$b$}   (4)
+		
+		(6) edge [bend right] node [below=-0.07cm]  {$a$}   (1)
+		(6) edge node [above=-0.07cm]  {$b$}   (2)
+		;
+		\end{tikzpicture}
+	}\end{center}
+	\itshape Apply the minimization algorithm and show for each state pair during which \CompDist-iteration it was marked. Draw the resulting automaton.
+	\caption{An example DFA minimization task.}
+	\label{fig:dfa_ex_task}
 \end{figure}
 
-\begin{figure}
-\includegraphics[width=\linewidth]{images/dfa_ex_sol.png}
-\caption{Solution to the DFA minimization task in fig.~\ref{fig:dfa_ex_task}.}
-\label{fig:dfa_ex_sol}
+\begin{figure}[h]
+	{\raggedright\itshape \underline{Solution:}\newline
+		Step 1: Detect and eliminate unreachable states.
+		\begin{tabbing}
+			\qquad\textnormal{State $6$ is unreachable.}
+		\end{tabbing}
+		Step 2: Apply \CompDist\ to $A$ and merge equivalent state pairs:\par
+	}
+	\begin{subfigure}{.4\textwidth}
+		\vspace{0.5cm}
+		\qquad
+		\begin{tabular}{c|c|c|c|c|c|c}
+			  & 0  & 1  & 2  & 3  & 4  & 6  \\\hline
+			0 & \x & 1  & 0  &    & 0  & 2  \\\hline
+			1 & \x & \x & 0  & 1  & 0  & 1  \\\hline
+			2 & \x & \x & \x & 0  &    & 0  \\\hline
+			3 & \x & \x & \x & \x & 0  & 2  \\\hline
+			4 & \x & \x & \x & \x & \x & 0  \\\hline
+			6 & \x & \x & \x & \x & \x & \x \\
+		\end{tabular}
+	\end{subfigure}
+	\begin{subfigure}{.5\textwidth}\centering\resizebox{1.\linewidth}{!}{
+		\begin{tikzpicture}[initial text={},scale=1., every node/.style={transform shape}]
+		\tikzstyle{every state}=[minimum size=5mm, inner sep=0pt]
+		
+		\node[initial, state]  (03) at (0, 0)   {$03$};
+		\node[state] 		   (1) at (6, 0)   {$1$};
+		\node[state,accepting] (24) at (4,0)    {$24$};
+		\node[state]           (6) at (2,0)    {$6$};
+		
+		\path[->]
+		(03) edge node [above=-0.07cm]  {$a$}   (6)
+		(03) edge [bend left] node [above=-0.07cm]  {$b$}   (24)
+		
+		(1) edge node [above=-0.13cm]  {$a,b$}   (24)
+		
+		(24) edge [bend left=50] node [above=-0.07cm]  {$a$}   (1)
+		(24) edge [bend right=50] node [above=-0.07cm]  {$b$}   (03)
+		
+		(6) edge [bend right] node [below=-0.07cm]  {$a$}   (1)
+		(6) edge node [above=-0.07cm]  {$b$}   (24)
+		;
+		\end{tikzpicture}
+	}\end{subfigure}
+	\caption{Solution to the DFA minimization task in fig.~\ref{fig:dfa_ex_task}.}
+	\label{fig:dfa_ex_sol}
 \end{figure}
 
 \noindent Figures~\ref{fig:dfa_ex_task} and~\ref{fig:dfa_ex_sol} show such a task and solution. The students are confronted with a \emph{task DFA} $A_{task}$. Firstly, unreachable states have to be eliminated, we then gain $A_{re}$. Secondly equivalent state pairs of $A_{re}$ are merged such that the minimal \emph{solution DFA} $A_{sol}$ is found. The table $T$ displayed in figure~\ref{fig:dfa_ex_sol} is nothing else but a visualization of the function $m$ of $m$-\CompDist, whereas $T(q_0, q_1) = i \Leftrightarrow (q_0, q_1) \in m(i)$.

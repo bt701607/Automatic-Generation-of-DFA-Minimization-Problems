@@ -2,6 +2,8 @@
 
 \documentclass[a4paper, oneside, 11pt]{book}
 
+%\documentclass[12pt,a4paper,oneside,titlepage,bibliography=totoc,listof=totoc]{scrartcl}
+
 % ----------- packages -------------
 
 \usepackage[a4paper,width=150mm,top=25mm,bottom=25mm]{geometry}
@@ -28,9 +30,12 @@
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 
+\usepackage{arydshln}
+
 \usepackage{setspace}
 \usepackage{float}
 \usepackage{subcaption}
+\usepackage{wrapfig}
 
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 
@@ -43,6 +48,7 @@
 \newtheorem{corollary}{Corollary}
 \newtheorem{lemma}{Lemma}
 \newtheorem{proposition}{Proposition}
+\newtheorem{example}{Example}
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
@@ -63,54 +69,45 @@
 \newcommand{\gregorColor}{Violet}
 \newcommand{\gregor}[1]{\textcolor{\gregorColor}{\textbf{Gregor:} #1}}
 
-\makeatletter
-\newcommand{\unchapter}[1]{%
-	\begingroup
-	\let\@makechapterhead\@gobble % make \@makechapterhead do nothing
-	\chapter{#1}
-	\endgroup
-}
-\makeatother
-
-\newcounter{oldtocdepth}
-
-\newcommand{\hidefromtoc}{%
-	\setcounter{oldtocdepth}{\value{tocdepth}}%
-	\addtocontents{toc}{\protect\setcounter{tocdepth}{-10}}%
-}
-
-\newcommand{\unhidefromtoc}{%
-	\addtocontents{toc}{\protect\setcounter{tocdepth}{\value{oldtocdepth}}}%
-}
+\newcommand{\x}{$\blacksquare$}
 
 % ----------- content -------------
-
-%\title{Generation of DFA Minimization Problems}
-%\author{Gregor Hans Christian Sönnichsen}
 
 \begin{document}
 	
 	\frontmatter
 	
 	\begin{titlepage}
-		\centering
-		{\huge\bfseries Generation of DFA Minimization Problems\par}
+		{
+			\raggedright
+			\includegraphics[scale=0.1]{images/UBT-logo.jpg}\\
+			\small{
+			Fakultät für Mathematik, Physik und Informatik\\
+			Institut für Informatik\\
+			Lehrstuhl für Angewandte Informatik 7\\
+			Theoretische Informatik}\\
+			\vspace{1cm}	
+		}
+		{\centering\bfseries\Large Bachelorarbeit\par}
 		\vspace{1cm}
-		{\large\bfseries Generierung von DFA Minimierungsproblemen\par}
+		{\centering\huge\bfseries Generation of DFA Minimization Problems\par}
+		\vspace{0.7cm}
+		{\centering\large\bfseries Generierung von DFA Minimierungsproblemen\par}
 		\vspace{2cm}
-		{\large Gregor Hans Christian Sönnichsen\par}
+		{\centering\large Gregor Hans Christian Sönnichsen\par}
+		\vspace{0.4cm}
+		{\centering\large \today\par}
 		\vfill
-		{\large University of Bayreuth \par}
-		{\large Applied Computer Science 7 - Theoretical Computer Science \par}
-		\vspace{1cm}
-		{\large \today\par}
+		{\large\raggedright
+			Betreuer:\\
+			Prof.\ Dr.\ Wim Martens\\
+			M.Sc.\ Tina Trautner\\
+			$ $\\
+			Prüfer:\\
+			Prof.\ Dr.\ Wim Martens\\
+			?\par
+		}
 	\end{titlepage}
-	
-%	\maketitle
-	
-	%titleDS, titleMS, titlePW, titleASU, 
-	
-	%Generierung von DFA Minimierungsproblemen
 	
 	\input{abstract.tex}
 	
@@ -130,6 +127,8 @@
 	
 	\appendix
 	% List of figures, theorems/lemmas/etc., bibliography, index
+	
+	\input{appendix.tex}
 	
 	\nocite{*}
 	\bibliographystyle{abbrv}

@@ -6,11 +6,11 @@ In this chapter we will set foundations, investigate sensible parameters and req
 
 \section{Preliminaries}
 
-We start with defining preliminary theoretical foundations.
+We start with defining preliminary theoretical foundations. By $[[n]]$ we will denote the set of integers $\{0,\ldots,n-1\}$.
 
 \subsection{Deterministic Finite Automatons}
 
-A 5-tuple $A = (Q, \Sigma, \delta, s, F)$ with $Q$ being a finite set of \emph{states}, $\Sigma$ a finite set of \emph{alphabet symbols}, $\delta \colon\ Q \times \Sigma \to Q$ a \emph{transition function}, $s \in Q$ a \emph{start state} and $F \subseteq Q$ \emph{final states} is called \emph{deterministic finite automaton} (DFA)~\cite[p. 46]{HMU01}. From now on $\mathfrak{A}$ shall denote the set of all DFAs.
+A 5-tuple $A = (Q, \Sigma, \delta, s, F)$ with $Q$ being a finite set of \emph{states}, $\Sigma$ a finite set of \emph{alphabet symbols}, $\delta \colon\ Q \times \Sigma \to Q$ a \emph{transition function}, $s \in Q$ a \emph{start state} and $F \subseteq Q$ \emph{final states} is called \emph{deterministic finite automaton} (DFA)~\cite[p. 46]{HMU01}. From now on $\A$ shall denote the set of all DFAs.
 
 We say $\delta(q,\sigma) = p$ is a transition from $q$ to $p$ using symbol $\sigma$. We define the \emph{extended transition function} $\delta^* : Q \times \Sigma^* \to Q$ of a DFA $A = (Q, \Sigma, \delta, s, F)$ as:
 \begin{itemize}
@@ -53,7 +53,7 @@ A DFA is called \emph{complete} iff for all states, every symbol of the alphabet
 	\hfill
 	\begin{subfigure}{.4\textwidth}
 		$A = (Q, \Sigma, \delta, s ,F)$ \\\\
-		$Q = \{\ 0,1,2,3,4\ \}$ \\
+		$Q = [[5]] = \{\ 0,1,2,3,4\ \}$ \\
 		$\Sigma = \{\ a,b\ \}$ \\
 		$\delta = \{\ ((0,a),1), ((0,b),1), \ldots\ \}$ \\
 		$s = 0$ \\
@@ -66,7 +66,7 @@ A DFA is called \emph{complete} iff for all states, every symbol of the alphabet
 \begin{definition}[Minimal DFA]
 	We call a DFA $A$ \emph{minimal}, if there exists no other automaton with the same language using less states.
 \end{definition}
-\noindent With $\mathfrak{A}_{min}$ we shall denote the set of all minimal DFAs.
+\noindent With $\Amin$ we shall denote the set of all minimal DFAs.
 
 \begin{definition}[Equivalent and Distinguishable State Pairs]\cite[p. 154]{HMU01}
 	A state pair $q_1, q_2 \in Q$ of a DFA $A = (Q, \Sigma, \delta, s, F)$ is called \emph{equivalent}, iff $\sim_A(q_1, q_2)$ is true, whereas
@@ -330,23 +330,23 @@ Consider the computation of the sets $m(i)$ in \CompDist. Determining $m(0)$ is 
 
 It would therefore be sensible if $\mmD(A_{task})$ could be adjusted for example by parameters $m_{min}, m_{max}$ which give lower and upper bounds for that value.
 
-\paragraph*{Number of states ($\mathcal{Q}_{sol}, \mathcal{Q}_{eq}, \mathcal{Q}_{unr}$).}
+\paragraph*{Number of states ($\nSO, \nEQ, \nUN$).}
 
-To control the number of states in $A_{task}, A_{re}$ and $A_{sol}$, we will introduce three parameters: $\mathcal{Q}_{sol}, \mathcal{Q}_{eq}, \mathcal{Q}_{unr} \in \mathbb{N}$. These parameters get their meaning by the following equations:
+To control the number of states in $A_{task}, A_{re}$ and $A_{sol}$, we will introduce three parameters: $\nSO, \nEQ, \nUN \in \mathbb{N}$. These parameters get their meaning by the following equations:
 \begin{align*}
-    |Q_{sol}| &= \mathcal{Q}_{sol} \\
-    |Q_{re}| &= \mathcal{Q}_{sol} + \mathcal{Q}_{eq} \\
-    |Q_{task}| &= \mathcal{Q}_{sol} + \mathcal{Q}_{eq} + \mathcal{Q}_{unr}
+    |Q_{sol}| &= \nSO \\
+    |Q_{re}| &= \nSO + \nEQ \\
+    |Q_{task}| &= \nSO + \nEQ + \nUN
 \end{align*}
-It is sensible to have $\mathcal{Q}_{unr} > 1, \mathcal{Q}_{eq} > 1$, such that \RemUnr\ and \RemEq\ will not be skipped. To not make the task trivial, $\mathcal{Q}_{sol} > 2$ is sensible. An exercise instructor will find it useful, to control exactly how big $\mathcal{Q}_{unr}$, $\mathcal{Q}_{eq}$ and $\mathcal{Q}_{sol}$ are: The higher $\mathcal{Q}_{unr}, \mathcal{Q}_{eq}$, the more states have to be eliminated and merged. The higher $\mathcal{Q}_{sol} + \mathcal{Q}_{eq}$, the more state pairs have to be checked during \CompDist.
+It is sensible to have $\nUN > 1, \nEQ > 1$, such that \RemUnr\ and \RemEq\ will not be skipped. To not make the task trivial, $\nSO > 2$ is sensible. An exercise instructor will find it useful, to control exactly how big $\nUN$, $\nEQ$ and $\nSO$ are: The higher $\nUN, \nEQ$, the more states have to be eliminated and merged. The higher $\nSO + \nEQ$, the more state pairs have to be checked during \CompDist.
 
-\paragraph*{Alphabet size.}
+\paragraph*{Alphabet size ($\kAL$).}
 
 The more symbols the alphabet of $A_{task}, A_{re}$ and $A_{sol}$ has (note how \MinAlg\ does not change the alphabet), the more transitions have to be followed when checking whether $(\delta(q,\sigma),\delta(p,\sigma))\in m(i-1)$ is true for each state pair $p,q$.
 
-\paragraph*{Number of final states.}
+\paragraph*{Number of final states ($\nF$).}
 
-Since most DFAs in teaching have about 1 to 3 final states, so being able to set a number of final states, that is familiar to students, might be a reason. We devote the parameter $f$ to this number.
+Since most DFAs in teaching have about 1 to 3 final states, so being able to set a number of final states, that is familiar to students, might be a reason.
 
 \paragraph*{Uniqueness of $A_{sol}$.}
 
@@ -379,9 +379,9 @@ We will see that $\mmD$ and $L$ of both DFAs will be set when building $A_{sol}$
 At the beginning of chapter~\ref{ch:2} and~\ref{ch:3}, we will provide formal problem definitions for both steps, that specify precisely all requirements. Here we shall content ourselves with the definition of the main algorithm:
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{GenerateDFAMinimizationProblem}{$\mathcal{Q}_{sol}, a, f, m_{min}, m_{max}, p_1, p_2, \mathcal{Q}_{eq},\mathcal{Q}_{unr}, c$}
-	\State $A_{sol} \gets \textsc{GenerateNewMinimalDFA}(\mathcal{Q}_{sol}, a, f, m_{min}, m_{max}, p_1)$
-	\State $A_{task} \gets \textsc{ExtendMinimalDFA}(A_{sol}, p_2, \mathcal{Q}_{eq},\mathcal{Q}_{unr}, c)$
+	\Function{GenerateDFAMinimizationTask}{$\nSO, \kAL, \nF, m_{min}, m_{max}, p_1, p_2, \nEQ,\nUN, c$}
+	\State $A_{sol} \gets \textsc{GenerateNewMinimalDFA}(\nSO, \kAL, \nF, m_{min}, m_{max}, p_1)$
+	\State $A_{task} \gets \textsc{ExtendMinimalDFA}(A_{sol}, p_2, \nEQ,\nUN, c)$
 	\State \Return $A_{sol}, A_{task}$
 	\EndFunction
 \end{algorithmic}

@@ -11,7 +11,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage[T1]{fontenc}
-\usepackage{lmodern}
+\usepackage{lmodern} \normalfont
+\DeclareFontShape{T1}{lmr}{bx}{sc} { <-> ssub * cmr/bx/sc }{}
 
 \usepackage{graphicx}
 \graphicspath{{images/}}
@@ -37,10 +38,13 @@
 \usepackage{subcaption}
 \usepackage{wrapfig}
 
-\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
-
 \usepackage[nottoc]{tocbibind}
 \bibliographystyle{plainurl}
+
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{naturalnames}{hyperref}
+\usepackage[hidelinks,hypertexnames=false]{hyperref}
 
 % ----------- macros -------------
 
@@ -146,9 +150,12 @@
 	\chapter*{Erklärung}
 	\addcontentsline{toc}{chapter}{Erklärung}
 	
-	Hiermit versichere ich, Gregor Hans Christian Sönnichsen, dass ich die vorliegende Arbeit selbständig verfasst habe, keine anderen als die von mir angegebenen Quellen und Hilfsmittel benutzt habe und die Arbeit nicht  bereits zur Erlangung eines akademischen Grades eingereicht habe. \\
+	Hiermit versichere ich, Gregor Hans Christian Sönnichsen, dass ich die vorliegende Arbeit selbständig verfasst habe, keine anderen als die von mir angegebenen Quellen und Hilfsmittel benutzt habe und die Arbeit nicht  bereits zur Erlangung eines akademischen Grades eingereicht habe.
 	
-	\noindent Bayreuth, den 8.\ Februar 2020. \\\\\\\\\\\\\\
+	\vspace{0.5cm}
+	\noindent Bayreuth, den 8.\ Februar 2020.
+	
+	\vspace{3cm}
 	\noindent Gregor Hans Christian Sönnichsen
 
 \end{document}          

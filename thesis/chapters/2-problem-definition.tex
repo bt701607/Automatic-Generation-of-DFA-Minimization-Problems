@@ -52,12 +52,15 @@ A DFA is called \emph{complete} iff for all states, every symbol of the alphabet
 	}\end{subfigure}
 	\hfill
 	\begin{subfigure}{.4\textwidth}
-		$A = (Q, \Sigma, \delta, s ,F)$ \\\\
-		$Q = [[5]] = \{\ 0,1,2,3,4\ \}$ \\
-		$\Sigma = \{\ a,b\ \}$ \\
-		$\delta = \{\ ((0,a),1), ((0,b),1), \ldots\ \}$ \\
-		$s = 0$ \\
-		$F = \{\ 1\ \}$
+		\begin{align*}
+			&A = (Q, \Sigma, \delta, s ,F) \\
+			&\\
+			&Q = [[5]] = \{\ 0,1,2,3,4\ \} \\
+			&\Sigma = \{\ a,b\ \} \\
+			&\delta = \{\ ((0,a),1), ((0,b),1), \ldots\ \} \\
+			&s = 0 \\
+			&F = \{\ 1\ \}
+		\end{align*}
 	\end{subfigure}
 	\caption{An example DFA. The states $3$ and $4$ are unreachable. This DFA is not complete since the transitions $\delta(2,b)$ and $\delta(3,b)$ are not defined.}
 	\label{fig:dfa}
@@ -220,7 +223,7 @@ Now that we have introduced all necessary basic definitions, we shall do a short
 
 \gregor{search for typical task in standard text books}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 	{\raggedright\itshape \underline{Task:} Consider the below shown deterministic finite automaton $A$:}
 	\begin{center}\resizebox{.75\linewidth}{!}{
 		\begin{tikzpicture}[initial text={},scale=1., every node/.style={transform shape}]
@@ -258,12 +261,12 @@ Now that we have introduced all necessary basic definitions, we shall do a short
 		;
 		\end{tikzpicture}
 	}\end{center}
-	\itshape Apply the minimization algorithm and show for each state pair during which \CompDist-iteration it was marked. Draw the resulting automaton.
+	\itshape Apply the minimization algorithm and illustrate for each state pair of $A$ during which \CompDist-iteration it was marked. Draw the resulting automaton.
 	\caption{An example DFA minimization task.}
 	\label{fig:dfa_ex_task}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 	{\raggedright\itshape \underline{Solution:}\newline
 		Step 1: Detect and eliminate unreachable states.
 		\begin{tabbing}
@@ -330,7 +333,7 @@ Consider the computation of the sets $m(i)$ in \CompDist. Determining $m(0)$ is 
 
 It would therefore be sensible if $\mmD(A_{task})$ could be adjusted for example by parameters $m_{min}, m_{max}$ which give lower and upper bounds for that value.
 
-\paragraph*{Number of states ($\nSO, \nEQ, \nUN$).}
+\paragraph*{Number of states \texorpdfstring{($\nSO, \nEQ, \nUN$)}{}.}
 
 To control the number of states in $A_{task}, A_{re}$ and $A_{sol}$, we will introduce three parameters: $\nSO, \nEQ, \nUN \in \mathbb{N}$. These parameters get their meaning by the following equations:
 \begin{align*}
@@ -340,15 +343,15 @@ To control the number of states in $A_{task}, A_{re}$ and $A_{sol}$, we will int
 \end{align*}
 It is sensible to have $\nUN > 1, \nEQ > 1$, such that \RemUnr\ and \RemEq\ will not be skipped. To not make the task trivial, $\nSO > 2$ is sensible. An exercise instructor will find it useful, to control exactly how big $\nUN$, $\nEQ$ and $\nSO$ are: The higher $\nUN, \nEQ$, the more states have to be eliminated and merged. The higher $\nSO + \nEQ$, the more state pairs have to be checked during \CompDist.
 
-\paragraph*{Alphabet size ($\kAL$).}
+\paragraph*{Alphabet size \texorpdfstring{($\kAL$)}{}.}
 
 The more symbols the alphabet of $A_{task}, A_{re}$ and $A_{sol}$ has (note how \MinAlg\ does not change the alphabet), the more transitions have to be followed when checking whether $(\delta(q,\sigma),\delta(p,\sigma))\in m(i-1)$ is true for each state pair $p,q$.
 
-\paragraph*{Number of final states ($\nF$).}
+\paragraph*{Number of final states \texorpdfstring{($\nF$)}{}.}
 
 Since most DFAs in teaching have about 1 to 3 final states, so being able to set a number of final states, that is familiar to students, might be a reason.
 
-\paragraph*{Uniqueness of $A_{sol}$.}
+\paragraph*{Uniqueness of solution DFA.}
 
 For example for an exam it would be sensible to be able to generate a task, so $A_{sol}$ and $A_{task}$, that has not been generated before. We will use the criterion of isomorphy to distinguish a possible solution DFA from all previously generated ones.
 
@@ -356,15 +359,15 @@ This is sensible since isomorphy distinguishes two minimal DFAs, if and only if 
 
 Note that, if $A_{sol}$ is indeed \emph{new} in that sense, then $A_{task}$ will automatically have a unique language too, since $A_{sol}$ and $A_{task}$ have the same language and this language was then never used before in this context.
 
-\paragraph*{Completeness of $A_{task}$.}
+\paragraph*{Completeness of task DFA.}
 
 Even though \CompUnr\ and \RemUnr\ do not require their input DFA $A_{task}$ to be complete, it is sensible to build it that way. The implications of the completeness-property are - in comparison to the other concepts involved here - rather subtle. This is especially due to its purely representational nature, a DFA has the same language and $\mmD$-value, whether it is represented in its complete form or not. Nonetheless we shall introduce a parameter $c$, that determines if there exist unreachable states, that make $A_{task}$ incomplete. Thus an exercise lecturer could showcase this matter on a DFA and generate according exercises.
 
-\paragraph*{Planar drawing of $A_{task}$.}
+\paragraph*{Planar drawing of task DFA.}
 
 A graph $G$ is \emph{planar} if it can be represented by a drawing in the plane such that its edges do not cross. Such a drawing is then called \emph{planar drawing} of $G$. A visual aid for students would be given, if the task DFA were planar and presented as a planar drawing. In this work libraries and parameters $p_1, p_2 \in \{0,1\}$ (toggling planarity of $A_{sol}, A_{task}$) will be used to allow the option of planarity, but neither ensuring planarity nor planar drawing will be investigated further theoretically.
 
-\paragraph*{Maximum degree of any state in $A_{task}$.}
+\paragraph*{Maximum degree of any state in task DFA.}
 
 The \emph{degree} $deg(q)$ of a state $q \in Q$ in a DFA $A$ is defined as $deg(q) = |d^-(q)| + |d^+(q)|$, so the total number of transitions in which $q$ participates. By capping the maximum degree for all states, the graphical representation of the DFA would be more clear. In this work the inclusion of a maximum degree parameter is omitted.
 

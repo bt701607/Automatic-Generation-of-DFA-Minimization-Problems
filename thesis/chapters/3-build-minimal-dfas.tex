@@ -69,7 +69,7 @@ A note on the search space. If we would not restrict ourselves to $Q_{sol} = [[\
 \vspace{0.2cm}
 We will complete this algorithm by resolving how the tests in lines $4, 6$ and $8$ work and by showing two methods for generation of automatons with given restrictions of $|Q|, |\Sigma|$ and $|F|$.
 
-\subsection{Ensuring $A_{test}$ is minimal and $\mmD(A_{test})$ is correct}
+\subsection{Ensuring Correctness of D-value and Minimality}
 
 In order to test, whether $A_{test}$ is minimal, we could simply use the minimization algorithm and compare the resulting DFA and $A_{test}$ using an isomorphy test. However it is sufficient to ensure, that no equivalent or unreachable states exist.
 
@@ -99,11 +99,11 @@ Regarding the unreachable states, we can just use \CompUnr\ and test whether the
 	\EndFunction
 \end{algorithmic}
 
-\subsection{Ensuring $A_{test}$ is planar}
+\subsection{Ensuring planarity}
 
 There exist several algorithms for planarity testing of graphs. In this work, the library \emph{pygraph}\footnote{\url{https://github.com/jciskey/pygraph}} has been used, which implements the Hopcroft-Tarjan planarity algorithm. More information on this can be found for example in this~\cite{Koc93} introduction from William Kocay. The original paper describing the algorithm is by Hopcroft and Tarjan~\cite{HT74}.
 
-\subsection{Ensuring $A_{test}$ is new}
+\subsection{Ensuring uniqueness}
 
 In our requirements we stated, that we wanted the generated solution DFA to be new, meaning not isomorph to any previously generated solution DFA. This implies the need of a database, that allows saving and loading DFAs. We name this database \emph{DB1}. Assuming the database is relational, the following scheme is proposed:
 \begin{center}
@@ -143,7 +143,7 @@ A more concrete specification of this proceeding is shown below, embedded in the
 \vspace{0.2cm}
 To test whether $A_{test}$ is isomorph to any found DFA, we use the isomorphism test described in section~\ref{ch:1:sec:isom}.
 
-\subsection{Option 1: Generating $A_{test}$ via Randomness}
+\subsection{Option 1: Generating Test DFAs via Randomness}
 
 We now approach the task of generating a random DFA whereas alphabet and number of (final) states are set. For our generated DFA we choose $Q_{sol}$, $\Sigma_{sol}$ and the start state as explained in remark~\ref{ch:2:rem:qas-set}.
 
@@ -202,7 +202,7 @@ With defining how to compute $\delta$ we have covered all elements of a DFA.
 \end{algorithmic}
 \vspace{0.2cm}
 
-\subsection{Option 2: Generating $A_{test}$ via Enumeration}
+\subsection{Option 2: Generating Test DFAs via Enumeration}
 
 % enumerating instead of random
 
@@ -294,16 +294,16 @@ In this algorithm we assume, that adding $1$ to a $n$-ary number $n-1\ n-1\ \ldo
 	
 \begin{example}
 	We showcase a sample enumeration at points, that demonstrate the semantics of different increments. We will use $\nSO=4$, $\kAL=2$ and $\nF=2$. Note that we will use $a,b,\ldots$ instead of $0,1,\ldots$ as symbols again. Valid enumeration progresses are depicted green.\par
-	\vspace{0.4cm}
-	\hspace{-0.65cm}
-	\begin{minipage}{0.55\textwidth}
-		(1).\ We start with the initial enumeration progress. In this case, a simple addition of $1$ to $F_\delta$ does not cause an overflow of $F_\delta$ (2), meaning the enumeration increment is already finished.\newline
+	\vspace{0.4cm}\noindent
+	\begin{minipage}{0.56\textwidth}
+		We will start with the initial enumeration progress (1). In this case, a simple addition of $1$ to $F_\delta$ does not cause an overflow of $F_\delta$ (2), meaning the enumeration increment is already finished.\newline
 		
 		(3). In this state however $F_\delta$ becomes $0\ldots0$ (4) after adding $1$. Thus we add $1$ to $F_F$, until it contains the required number of ones again (so we always have $f$ final states). The next $4$-ary number with $2$ ones after $0011$ is $0101$ (5).\newline
 		
 		(6). Here $F_\delta$ is at its maximum and there is no higher $4$-ary number with $2$ ones. So if the algorithm is now applied and tries to get the next valid $F_F$-value, it will eventually reach (7), which indicates the enumeration has found its end.
-	\end{minipage}\qquad
-	\begin{minipage}{0.45\textwidth}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.4\textwidth}
 		\begin{tikzpicture}
 		\node (0) at (0,0) {\color{ForestGreen} (1)\ \ $(0011)_2\ \ (00\ 00\ 00\ 00)_4$} ;
 		\node (1) at (0,-0.75) {\color{ForestGreen} (2)\ \ $(0011)_2\ \ (00\ 00\ 00\ 01)_4$} ;
@@ -405,7 +405,7 @@ We reduce the enumeration room for each calculation.
 \end{algorithmic}
 \vspace{0.2cm}
 
-\section{Alternative approach: Building $m(i)$ bottom up}
+\section{On alternative approaches}
 
 Build $m$ from $m$-\CompDist\ iteratively. (Why would this basically result in running \CompDist\ all the time?)
 
@@ -413,13 +413,11 @@ Build $m$ from $m$-\CompDist\ iteratively. (Why would this basically result in r
 
 Nicaud provides an overview of results on random generation and combinatorial properties of DFAs in ~\cite{Nic14}. We will outline relevant related research.
 
-%\subsection{}
-
 Nicaud's summary indicates, that research has focused on randomized generation of accessible, but not minimal DFAs so far. In the following we will sketch some approaches that have come up.
 
 \paragraph*{Using the recursive method.}
 
-Champarnaud and Paranthoën~\cite{CP05} continue ideas started by Nicaud in his thesis~\cite{Nic00}. Let $\mathfrak{F_{n,m}}$ be the set of extended $m$-ary trees of order $n$. These trees are characterized by a partitioning $V = N \uplus L$ with $|N| = n$ and $v \in N \Rightarrow d^+(v) = m$ and $v \in L \Rightarrow d^+(v) = 0$. We define the following set of tuples using $s=n(m-1)$:
+Champarnaud and Paranthoën~\cite{CP05} continue ideas started by Nicaud in his thesis~\cite{Nic00}. Let $\mathfrak{F_{n,m}}$ be the set of extended $m$-ary trees of order $n$. These trees are characterized by a partitioning $V = N \uplus L$ with $|N| = n$ and the properties $v \in N \Rightarrow d^+(v) = m$ and $v \in L \Rightarrow d^+(v) = 0$. We define the following set of tuples using $s=n(m-1)$:
 \[
     \mathfrak{R_{m,n}} = \{\ (k_1,\ldots,k_s) \in \mathbb{N}^s\ |\ \forall i\in [2,s]\colon k_i \geq \left\lceil\frac{i}{m-1}\right\rceil\ and\ k_i \geq k_{i-1}\ \}
 \]

@@ -143,7 +143,7 @@ The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma|
 \vspace{0.2cm}
 \noindent Note that computing an unused state label can be easily done by e.g.\ taking the maximum of all solution DFA states (which are nothing else but numbers) and adding one.
 
-\subsection{The existence of equivalent state pairs does not affect D} \label{ch:3:sec-D-proof}
+\subsection{Creating equivalent state pairs does not change D} \label{ch:3:sec-D-proof}
 
 To prove this statement, we will first introduce two auxiliary definitions and prove two minor propositions.
 
@@ -177,37 +177,37 @@ A word $w$ shall be called \emph{finishing word of $q$}, iff $\delta^*(q, w) \in
 		\Leftrightarrow\ &\exists w\in\Sigma^*\colon (|w| = 0\ \land d_A(w, p, q))\\
 		&\text{and there is no shorter such word }\checkmark
 	\end{align*}
-	
-	\paragraph*{$0\ldots n-1 \rightarrow n$, ``$\Rightarrow$''.} 
-	Then the following holds for some states $p,q$ (see alg.~\ref{ch:1:m-minmark}, line 5):
-	\begin{equation}\label{ch:3:eq:m(n)}
-		(p,q) \in m(n) = \{ (p,q), (q,p)\ |\ (p,q) \notin \bigcup{m(\cdot)} \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in m(n-1) \}
-	\end{equation}
-	So, in particular there exists a symbol $\sigma$ such that $(\delta(p,\sigma),\delta(q,\sigma)) \in m(n-1)$. Let $(p',q')=(\delta(p,\sigma),\delta(q,\sigma))$, so $(p',q')\in m(n-1)$.
-	
-	Per induction there exists a shortest distinguishing word $w'$, $|w'|=n-1$ to $p',q'$. Thus one of $\delta^*(p', w'),\delta^*(q', w')$ is in $F$, one not and there is no shorter word.
-	
-	Thus one of $\delta^*(p, \sigma w'),\delta^*(q, \sigma w')$ is in $F$, one not, which makes $\sigma w'$ a distinguishing word of length $n$ for $p,q$.
-	
-	Since $(p,q)$ is not in any $m(i), i<n$ (recall $(p,q) \notin \bigcup{m(\cdot)}$ of eq.~\ref{ch:3:eq:m(n)}), there is per induction no shorter distinguishing word.\ $\checkmark$ 
-	
-	\paragraph*{$0\ldots n-1 \rightarrow n$, ``$\Leftarrow$''.} 
-	Then the following holds for some states $p,q$:
-	\begin{align*}
-	&\exists w\in\Sigma^*\colon (|w| = n\ \land d_A(w, p, q))\\
-	\land\ &\nexists v\in\Sigma^*\colon (|v| < |w|\ \land d_A(v, p, q))
-	\end{align*}
-	So there exists a word $w$ with $|w|=n>0$ such that one of $\delta^*(p, w),\delta^*(q, w)$ is in $F$, one not and there is no shorter word fulfilling this property.
-	
-	Since $w$ is non-empty there exists a symbol $\sigma$ such that $w = \sigma w'$. Let $(\delta(p,\sigma),\delta(q,\sigma)) = (p',q')$.
-	
-	Thus, if one of $\delta^*(p, \sigma w'),\delta^*(q, \sigma w')$ is in $F$ and one not, then the same must hold for $\delta^*(p', w'),\delta^*(q', w')$, so $w'$ is a distinguishing word for $p',q'$.
-	
-	It is also the shortest one, because, if there existed a shorter word $v'$, $|v'| < |w'|$, then $\sigma v'$ would be a distinguishing word shorter than $w$ for $p,q$ which is contradictory.
-	
-	Since $w'$ is a shortest distinguishing word for $p',q'$, we may deduce now per induction, that $(p',q')\in m(n-1)$.
-	
-	The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the shortest distinguishing word would be shorter than $w$ and thus not $w$. Since $(p',q')\in m(n-1)$ and $(\delta(p,\sigma),\delta(q,\sigma)) = (p',q')$, we can then deduce by the definition of $m$, that $(p,q)\in m(n)$.\ $\checkmark$ 
+
+\paragraph*{$n > 0$, ``$\Rightarrow$''.} 
+Then the following holds for some states $p,q$ (see alg.~\ref{ch:1:m-minmark}, line 5):
+\begin{equation}\label{ch:3:eq:m(n)}
+(p,q) \in \{ (p,q), (q,p)\ |\ (p,q) \notin \bigcup{m(\cdot)} \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in m(n-1) \}
+\end{equation}
+We will prove: There exists a distinguishing word of length $n-1$ for $p,q$, and there is no shorter distinguishing word for $p,q$.
+
+Looking at eq.~\ref{ch:3:eq:m(n)} we observe, there exists a symbol $\sigma$ such that $(\delta(p,\sigma),\delta(q,\sigma)) \in m(n-1)$. Let $p',q'=\delta(p,\sigma),\delta(q,\sigma)$, so $(p',q')\in m(n-1)$.
+
+Per induction there exists a (shortest) distinguishing word $w'$, $|w'|=n-1$ to $p',q'$. Thus one of $\delta^*(p', w'),\delta^*(q', w')$ is in $F$, one not.
+
+Thus one of $\delta^*(p, \sigma w'),\delta^*(q, \sigma w')$ is in $F$, one not, which makes $\sigma w'$ a distinguishing word of length $n$ for $p,q$.
+
+Since $(p,q)$ is not in any $m(i), i<n$ (recall $(p,q) \notin \bigcup{m(\cdot)}$ of eq.~\ref{ch:3:eq:m(n)}), there is per precondition no shorter distinguishing word for $p,q$, making $\sigma w'$ (a) shortest distinguishing word for $p,q$.\ $\checkmark$ 
+
+\paragraph*{$n > 0$, ``$\Leftarrow$''.} 
+Then the following holds for some states $p,q$:
+\begin{align*}
+&\exists w\in\Sigma^*\colon (|w| = n\ \land d_A(w, p, q))\\
+\land\ &\nexists v\in\Sigma^*\colon (|v| < |w|\ \land d_A(v, p, q))
+\end{align*}
+Since $w$ is non-empty there exists a symbol $\sigma$ such that $w = \sigma w'$. Let $\delta(p,\sigma),\delta(q,\sigma) = p',q'$.
+
+Thus, if one of $\delta^*(p, \sigma w'),\delta^*(q, \sigma w')$ is in $F$ and one not, then the same must hold for $\delta^*(p', w'),\delta^*(q', w')$, so $w'$ is a distinguishing word for $p',q'$.
+
+It is also the shortest one, because, if there existed a shorter word $v'$, $|v'| < |w'|$, then $\sigma v'$ would be a distinguishing word shorter than $w$ for $p,q$ which is contradictory.
+
+Since $w'$ is a shortest distinguishing word for $p',q'$, we may deduce now per induction, that $(p',q')\in m(n-1)$.
+
+The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the shortest distinguishing word would be shorter than $w$ and thus not $w$. Since $(p',q')\in m(n-1)$ and $\delta(p,\sigma),\delta(q,\sigma) = p',q'$, we can then deduce by the definition of $m$, that $(p,q)\in m(n)$.\ $\checkmark$ 
 \end{proof}
 
 \begin{lemma}\label{ch:3:semantics-of-D(A)}
@@ -222,12 +222,6 @@ A word $w$ shall be called \emph{finishing word of $q$}, iff $\delta^*(q, w) \in
 		\item $\forall i > n\colon m(i)= \bot$\ .
 	\end{enumerate}
 	This follows directly from while loop and its terminating condition of \CompDist (alg.~\ref{ch:1:m-minmark}, line 4--7). Given this, we will prove: There exists a shortest distinguishing word of length $n-1$ for some state pair, but a longer such word can not exist.
-    
-%    Recall Lemma~\ref{ch:3:semantics-of-m(n)}:
-%    \begin{align*}
-%    (p,q) \in m(n) \Longleftrightarrow\ &\exists w\in\Sigma^*\colon (|w| = n\ \land d_A(w, p, q))\\
-%    \land\ &\nexists v\in\Sigma^*\colon (|v| < |w|\ \land d_A(v, p, q))
-%    \end{align*}
 
 	% a possible word per definition of D(A), m(i) and lemma
 	
@@ -237,25 +231,6 @@ A word $w$ shall be called \emph{finishing word of $q$}, iff $\delta^*(q, w) \in
 	
 	There cannot be any shortest distinguishing word $w'$ with $|w'| = k > n-1$ for any two states $p',q'\in Q$. Following Lemma~\ref{ch:3:semantics-of-m(n)} again, $m(k)$ for some $k > n-1$ would be defined and non-empty, which is contradictory to observations 2 and 3.
 \end{proof}
-
-%\begin{lemma}\label{ch:3:lem:disting-trans}
-%	If $w$ is shortest distinguishing word for $p,q$ and $q \sim_A q'$, then $w$ is a shortest distinguishing word for $p,q'$.
-%%    \[
-%%    d_A(w, p, q) \land q \sim_A q' \Rightarrow d_A(w, p, q')
-%%    \]
-%\end{lemma}
-%
-%\begin{proof}
-%    Via direct proof. The relation $q \sim_A q'$ says that for all words $z$, $\delta^*(q,z)$ and $\delta^*(q',z)$ are both in $F$ or both not in $F$. Consequently asking whether the following is true
-%    \[
-%    	\delta^*(p,z)\in F \Leftrightarrow \delta^*(q,z)\in F
-%    \]
-%    is the same as asking whether this is true:
-%    \[
-%    	\delta^*(p,z)\in F \Leftrightarrow \delta^*(q',z)\in F
-%    \]
-%    This implies, that $q$ and $q'$ have exactly the same distinguishing words with other states (see definition of distinguishing words). As a consequence they too have the same shortest distinguishing words with other states.
-%\end{proof}
 
 \begin{theorem}
 	Given two accessible DFAs $A$, $A'$. If their language is the same ($L(A) = L(A')$), then $\mmD(A) = \mmD(A')$.
@@ -271,23 +246,15 @@ A word $w$ shall be called \emph{finishing word of $q$}, iff $\delta^*(q, w) \in
 		
 		\item[$\Rightarrow$] $\forall w \in \Sigma^*\colon \delta^*(s, w) \in F \Leftrightarrow \delta'^*(s', w) \in F'$
 	\end{itemize}
-	We extend this to a statement that includes any state visited on the way to $F$ resp.\ $F'$.
+	We extend this to a statement that includes any state visited on the way to $F$ resp.\ $F'$. We can see, that those states reached by the same word in $A$, $A'$ have the same finishing words.
 	\begin{itemize}
-		\item[] $\forall u \in \Sigma^*\colon \forall v \in \Sigma^*\colon$
-		
-		\qquad $\delta^*(s, u) = q \land \delta'^*(s', u) = q' \land$
-		
-		\qquad $(\delta^*(q, v) \in F \Leftrightarrow \delta'^*(q', v) \in F')$
-	\end{itemize}
-	Through shifting the second quantor directly before the last line we can now see, that those states reached by the same word in $A$, $A'$ have the same finishing words.
-	\begin{itemize}
-		\item[] $\forall u \in \Sigma^*\colon \forall v \in \Sigma^*\colon$
+		\item[] $\forall u \in \Sigma^*\colon \exists q,q' \in Q\colon$
 		
 		\qquad $\delta^*(s, u) = q \land \delta'^*(s', u) = q' \land$
 		
 		\qquad $(\forall v \in \Sigma^*\colon (\delta^*(q, v) \in F \Leftrightarrow \delta'^*(q', v) \in F'))$
 		
-		\item[$\Rightarrow$] $\forall u \in \Sigma^*\colon$
+		\item[$\Rightarrow$] $\forall u \in \Sigma^*\colon \exists q,q' \in Q\colon$
 		
 		\qquad $\delta^*(s, u) = q \land \delta'^*(s', u) = q' \land$
 		
@@ -297,16 +264,20 @@ A word $w$ shall be called \emph{finishing word of $q$}, iff $\delta^*(q, w) \in
 	
 	For every state in $A$/$A'$ there exists a state in the other DFA, such that their finishing words are equal.
 	\begin{itemize}
-		\item [] $\forall q \in Q\colon \exists q' \in Q'\colon f(q) = f(q')$ \hfill $\land$ \hfill $\forall q' \in Q'\colon \exists q \in Q\colon f(q') = f(q)$ \qquad \qquad \qquad \qquad
+		\item [] $\forall q \in Q\colon \exists q' \in Q'\colon f(q) = f(q')$ \hfill $\land$ \hfill $\forall q' \in Q'\colon \exists q \in Q\colon f(q) = f(q')$ \qquad \qquad \qquad \qquad
 		
 		\item[$\Rightarrow$] $\{\ f(q)\ |\ q \in Q\ \} = \{\ f(q')\ |\ q' \in Q'\ \}$
 	\end{itemize}
-	Since every distinguishing word is a finishing word (see def.~\ref{ch:4:def-dist-word}), there cannot be a distinguishing word in one of $A$/$A'$, that is not distinguishing word in the other DFA.
+	Since a distinguishing word is defined as being finishing word for one state and for one not (see def.~\ref{ch:4:def-dist-word}), there cannot be a distinguishing word in one of $A$/$A'$, that is not distinguishing word in the other DFA.
 	
 	As a consequence both DFAs have the same shortest distinguishing words and thus too the same longest shortest distinguishing word.
 	
-	If $\mmD(A) \neq \mmD(A')$ then by Lemma~\ref{ch:3:semantics-of-D(A)} one DFA would have a longer longest shortest distinguishing word, which is not possible as proven, thus $\mmD(A) = \mmD(A')$ must be true. 
+	If $\mmD(A) \neq \mmD(A')$ then by Lemma~\ref{ch:3:semantics-of-D(A)} one DFA would have a longer longest shortest distinguishing word, which is not true as proven, thus $\mmD(A) = \mmD(A')$ must be true. 
 \end{proof}
+
+\begin{corollary}
+	Since our method of creating equivalent state pairs in a DFA does not change the DFA language, it will thus also not change the $\mmD$-value.
+\end{corollary}
 
 \section{Adding unreachable states}
 

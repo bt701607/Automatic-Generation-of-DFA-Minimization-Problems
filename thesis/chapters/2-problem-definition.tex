@@ -67,12 +67,12 @@ A DFA is called \emph{complete} iff for all states, every symbol of the alphabet
 \end{figure}
 
 \begin{definition}[Minimal DFA]
-	We call a DFA $A$ \emph{minimal}, if there exists no other automaton with the same language using less states.
+	We call a DFA $A$ \emph{minimal}, if there exists no other DFA with the same language using less states.
 \end{definition}
 \noindent With $\Amin$ we shall denote the set of all minimal DFAs.
 
 \begin{definition}[Equivalent and Distinguishable State Pairs]\cite[p. 154]{HMU01}
-	A state pair $q_1, q_2 \in Q$ of a DFA $A = (Q, \Sigma, \delta, s, F)$ is called \emph{equivalent}, iff $\sim_A(q_1, q_2)$ is true, whereas
+	A state pair $q_1, q_2 \in Q$ of a DFA $A = (Q, \Sigma, \delta, s, F)$ is called \emph{equivalent}, iff $\sim_A(q_1, q_2)$ is true, where
 	\begin{displaymath}
 	q_1\ \sim_A\ q_2 \Leftrightarrow_{def}\ \forall z \in \Sigma^* \colon\ (\delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)
 	\end{displaymath}
@@ -100,7 +100,7 @@ In~\cite[p. 45]{Sch01} we can find the following statement:
 
 \subsection{The minimization algorithm}
 
-This minimization algorithm \MinAlg\ works in four major steps, removing essentially states in such a way, that no unreachable states and no equivalent state pairs are left.
+This minimization algorithm \MinAlg\ works in four major steps, essentially removing states in such a way, that no unreachable states and no equivalent state pairs are left.
 \begin{enumerate}
 	\item Compute all unreachable states via breadth-first search.
 	
@@ -130,8 +130,7 @@ This minimization algorithm \MinAlg\ works in four major steps, removing essenti
 		\EndFunction
 	\end{algorithmic}
 
-	\item Compute all equivalent state pairs ($\sim_A$). Inspired by Schöning~\cite[p. 46]{Sch01} and Martens~\cite[p. 17]{MS18}.
-	
+	\item Compute all equivalent state pairs ($\sim_A$). Inspired by Schöning~\cite[p. 46]{Sch01} and Martens and Schwentick~\cite[p. 17]{MS18}.
 	\vspace{0.2cm}
 	\begin{algorithmic}[1]
 		\Function{\CompDist}{$A$} \label{ch:1:minmark}

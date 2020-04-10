@@ -71,44 +71,42 @@ First of all, we know, that $r_i$ must be reachable, since we decided that all u
 Thus a fitting state $q$ has to have a transition to some state in $[r_i]_{\sim_A} = [e]_{\sim_A}$ already. So, given a state $q$ with $\delta(q, \sigma) = p$ and $p \in [e]_{\sim_A}$, we can set $\delta(q, \sigma) = r_i$ and thus ``steal'' $q$ its ingoing transition.
 
 We see here, that $q$ must have at least $2$ ingoing transitions, else it would become unreachable. Thus we summarize:
-\[
-    I_e = \{\ ((q, \sigma), p)\ |\ \delta(q, \sigma) = p \land p \in [e] \land d^-(p) \geq 2\ \}
-\]
-Choose at least one $((q, \sigma), p) \in I_e$, remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$. 
-
+\begin{description}
+	\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $d^-(p) \geq 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
+\end{description}
 These finding lead us to a general requirement regarding the choice of a state $e$ for an $r_i$: The equivalence class of any $e$ has to contain at least one state with at least $2$ ingoing transitions (see fig.~\ref{fig:dfa_create_equivalent_states}). We establish the following notion to pin down this restriction:
 \[
 	duplicatable(q) \Leftrightarrow_{def} (\exists p \in [q]_{\sim_A}\colon |d^-(p)| \geq 2)
 \]
 The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma| \leq 1$ (due to the restriction $|d^-(p)| \geq 2$) and greater than $0$ for $|\Sigma| > 1$ due to the pigeonhole principle: An accessible complete DFA has $|Q||\Sigma|$ transitions which have to be spread across $|Q|$ states.
-\begin{example}
-	\begin{tikzpicture}[initial text={},scale=1., every node/.style={transform shape}]
-	\tikzstyle{every state}=[minimum size=5mm, inner sep=0pt]
-	
-	\node[initial, state]  (03) at (0, 0)   {$03$};
-	\node[state] 		   (1) at (6, 0)   {$1$};
-	\node[state,accepting] (24) at (4,0)    {$24$};
-	\node[state]           (6) at (2,0)    {$6$};
-	
-	\path[->]
-	(03) edge node [above=-0.07cm]  {$a$}   (6)
-	(03) edge [bend left] node [above=-0.07cm]  {$b$}   (24)
-	
-	(1) edge node [above=-0.13cm]  {$a,b$}   (24)
-	
-	(24) edge [bend left=50] node [above=-0.07cm]  {$a$}   (1)
-	(24) edge [bend right=50] node [above=-0.07cm]  {$b$}   (03)
-	
-	(6) edge [bend right] node [below=-0.07cm]  {$a$}   (1)
-	(6) edge node [above=-0.07cm]  {$b$}   (24)
-	;
-	\end{tikzpicture}
-\end{example}
-\begin{figure}
-	\includegraphics[width=\linewidth]{images/dfa_create_equivalent_states.png}
-	\caption{If an equivalence class (here denoted by the states in the dashed area) contains a state with 2 or more ingoing transitions (in this case $p$), then a state equivalent to any of the classes states may be added. Here $r$ is equivalent to $o$ and is ``stealing'' the ingoing transition $\delta(q, a)$ from $p$.}
-	\label{fig:dfa_create_equivalent_states}
-\end{figure}
+%\begin{example}
+%	\begin{tikzpicture}[initial text={},scale=1., every node/.style={transform shape}]
+%	\tikzstyle{every state}=[minimum size=5mm, inner sep=0pt]
+%	
+%	\node[initial, state]  (03) at (0, 0)   {$03$};
+%	\node[state] 		   (1) at (6, 0)   {$1$};
+%	\node[state,accepting] (24) at (4,0)    {$24$};
+%	\node[state]           (6) at (2,0)    {$6$};
+%	
+%	\path[->]
+%	(03) edge node [above=-0.07cm]  {$a$}   (6)
+%	(03) edge [bend left] node [above=-0.07cm]  {$b$}   (24)
+%	
+%	(1) edge node [above=-0.13cm]  {$a,b$}   (24)
+%	
+%	(24) edge [bend left=50] node [above=-0.07cm]  {$a$}   (1)
+%	(24) edge [bend right=50] node [above=-0.07cm]  {$b$}   (03)
+%	
+%	(6) edge [bend right] node [below=-0.07cm]  {$a$}   (1)
+%	(6) edge node [above=-0.07cm]  {$b$}   (24)
+%	;
+%	\end{tikzpicture}
+%\end{example}
+%\begin{figure}
+%	\includegraphics[width=\linewidth]{images/dfa_create_equivalent_states.png}
+%	\caption{If an equivalence class (here denoted by the states in the dashed area) contains a state with 2 or more ingoing transitions (in this case $p$), then a state equivalent to any of the classes states may be added. Here $r$ is equivalent to $o$ and is ``stealing'' the ingoing transition $\delta(q, a)$ from $p$.}
+%	\label{fig:dfa_create_equivalent_states}
+%\end{figure}
 
 \subsection{The algorithm}
 
@@ -134,16 +132,17 @@ The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma|
 		\State $r_i \gets$ unused state label \Comment{create to $e$ equivalent state $r_i$}
         \State Add $r_i$ to $Q$
 		\State Add $r_i$ to $k(e)$
+		\State $in(r_i) \gets 0$
 		
-		\For {$\sigma$ \textbf{in} $\Sigma$} \Comment{add $d^+(r_i)$}
+		\For {$\sigma$ \textbf{in} $\Sigma$} \Comment{\textbf{R1:} add $d^+(r_i)$}
 			\State $\delta(r_i, \sigma) =$ random chosen state from $k(\delta(e, \sigma))$
 		\EndFor
 		
-		\State $P \gets \{\ ((s, \sigma), t) \in \delta\ |\ t \in k(e),\ in(t) \geq 2\ \}$ \Comment{add $d^-(r_i)$}
+		\State $P \gets \{\ ((s, \sigma), t) \in \delta\ |\ t \in k(e),\ in(t) \geq 2\ \}$ \Comment{\textbf{R2:} add $d^-(r_i)$}
 		\State $C \gets$ random nonempty subset of $P$
 		\For {$((s, \sigma), t)$ \textbf{in} $C$}
 			\State $in(t) \gets in(t) - 1$
-			\State $in(r_i) \gets 1$
+			\State $in(r_i) \gets in(r_i) + 1$
             \State $\delta(s, \sigma) = r_i$
 		\EndFor
 	\EndFor

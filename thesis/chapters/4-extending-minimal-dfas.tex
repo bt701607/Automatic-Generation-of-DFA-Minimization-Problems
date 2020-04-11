@@ -2,7 +2,7 @@
 
 \chapter{Extending minimal DFAs} \label{ch:4}
 
-We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a task DFA $A_{task}$ based on our requirements analysis (see~\ref{ch:1:requirements-analysis}):
+We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a task DFA $A_{task}$ based on our requirements analysis (see~\ref{ch:2:requirements-analysis}):
 \begin{definition}[ExtendMinimalDFA] $ $ \\
 	$ $ \vspace{-0.cm} \\
 	\noindent $\underline{\emph{Given:}}$
@@ -153,9 +153,11 @@ The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma|
 \vspace{0.2cm}
 \noindent Note that computing an unused state label can be easily done by e.g.\ taking the maximum of all solution DFA states (which are nothing else but numbers) and adding one.
 
-\subsection{Creating equivalent state pairs does not change D} \label{ch:3:sec-D-proof}
+\subsection{Creating equivalent state pairs does not change D} \label{ch:4:sec-D-proof}
 
-To prove this statement, we will first introduce two auxiliary definitions and prove two minor propositions.
+In this section we want to prove that our method of creating state pairs does not affect the $\mmD$-value. Using this information we can be sure that $\mmD(A_{sol}) = \mmD(A_{task})$ and our just explained algorithm does not have to care about possibly changing this value.
+
+To do this proof, we will first introduce two auxiliary definitions and then prove two minor lemmas. As a side effect, Lemma~\ref{ch:4:semantics-of-m(n)} will describe a central property of \CompDist\ and Lemma~\ref{ch:4:semantics-of-D(A)} will show an extended characterization of $\mmD(A)$ compared to its definition (def.~\ref{ch:2:def:D(A)}).
 
 A word $w$ shall be called \emph{finishing word of $q$}, iff $\delta^*(q, w) \in F$. With $f(q) = \{\ w\ |\ \delta^*(q, w) \in F\ \}$ we denote the set of all finishing words to a state.
 \begin{definition} \label{ch:4:def-dist-word}
@@ -165,9 +167,9 @@ A word $w$ shall be called \emph{finishing word of $q$}, iff $\delta^*(q, w) \in
 	&\Leftrightarrow (w \in f(p) \Leftrightarrow w \notin f(q))
 	\end{align*}
 \end{definition}
-\noindent The following lemma and its proof are in parts inspired by Martens and Schwentick \cite[ch.\ 4 p.\ 18]{MS18}.
+\noindent This definition and its terminology are in close relation to definition~\ref{ch:2:def:eq-dist-pairs}. The following lemma and its proof are in parts inspired by Martens and Schwentick \cite[ch.\ 4 p.\ 18]{MS18}.
 
-\begin{lemma}\label{ch:3:semantics-of-m(n)}
+\begin{lemma}\label{ch:4:semantics-of-m(n)}
     In the context of \CompDist\ the following is true: If and only if $(p,q)\in m(n)$, the shortest distinguishing word of $p,q$ has length $n$. Formally:
     \begin{align*}
         (p,q) \in m(n) \Longleftrightarrow\ &\exists w\in\Sigma^*\colon (|w| = n\ \land d_A(w, p, q))\\
@@ -180,7 +182,7 @@ A word $w$ shall be called \emph{finishing word of $q$}, iff $\delta^*(q, w) \in
 	
 	\paragraph*{$n = 0$, ``$\Leftrightarrow$''.}
 	\begin{align*}
-		&(p,q) \in m(0) = \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}\hfill\text{ (see alg.~\ref{ch:1:m-minmark}, line 2))}\\
+		&(p,q) \in m(0) = \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}\hfill\text{ (see alg.~\ref{ch:2:m-minmark}, line 2))}\\
 		\Leftrightarrow\ &\text{one of $p,q$ in $F$, one not}\\
 		\Leftrightarrow\ &\text{one of $\delta^*(p, \varepsilon),\delta^*(q, \varepsilon)$ in $F$, one not}\\
 		\Leftrightarrow\ &\exists w\in\Sigma^*\colon (|w|=0\land\text{one of $\delta^*(p, w),\delta^*(q, w)$ in $F$, one not})\\
@@ -189,19 +191,19 @@ A word $w$ shall be called \emph{finishing word of $q$}, iff $\delta^*(q, w) \in
 	\end{align*}
 
 \paragraph*{$n > 0$, ``$\Rightarrow$''.} 
-Then the following holds for some states $p,q$ (see alg.~\ref{ch:1:m-minmark}, line 5):
-\begin{equation}\label{ch:3:eq:m(n)}
+Then the following holds for some states $p,q$ (see alg.~\ref{ch:2:m-minmark}, line 5):
+\begin{equation}\label{ch:4:eq:m(n)}
 (p,q) \in \{ (p,q), (q,p)\ |\ (p,q) \notin \bigcup{m(\cdot)} \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in m(n-1) \}
 \end{equation}
 We will prove: There exists a distinguishing word of length $n-1$ for $p,q$, and there is no shorter distinguishing word for $p,q$.
 
-Looking at eq.~\ref{ch:3:eq:m(n)} we observe, there exists a symbol $\sigma$ such that $(\delta(p,\sigma),\delta(q,\sigma)) \in m(n-1)$. Let $p',q'=\delta(p,\sigma),\delta(q,\sigma)$, so $(p',q')\in m(n-1)$.
+Looking at eq.~\ref{ch:4:eq:m(n)} we observe, there exists a symbol $\sigma$ such that $(\delta(p,\sigma),\delta(q,\sigma)) \in m(n-1)$. Let $p',q'=\delta(p,\sigma),\delta(q,\sigma)$, so $(p',q')\in m(n-1)$.
 
 Per induction there exists a (shortest) distinguishing word $w'$, $|w'|=n-1$ to $p',q'$. Thus one of $\delta^*(p', w'),\delta^*(q', w')$ is in $F$, one not.
 
 Thus one of $\delta^*(p, \sigma w'),\delta^*(q, \sigma w')$ is in $F$, one not, which makes $\sigma w'$ a distinguishing word of length $n$ for $p,q$.
 
-Since $(p,q)$ is not in any $m(i), i<n$ (recall $(p,q) \notin \bigcup{m(\cdot)}$ of eq.~\ref{ch:3:eq:m(n)}), there is per precondition no shorter distinguishing word for $p,q$, making $\sigma w'$ (a) shortest distinguishing word for $p,q$.\ $\checkmark$ 
+Since $(p,q)$ is not in any $m(i), i<n$ (recall $(p,q) \notin \bigcup{m(\cdot)}$ of eq.~\ref{ch:4:eq:m(n)}), there is per precondition no shorter distinguishing word for $p,q$, making $\sigma w'$ (a) shortest distinguishing word for $p,q$.\ $\checkmark$ 
 
 \paragraph*{$n > 0$, ``$\Leftarrow$''.} 
 Then the following holds for some states $p,q$:
@@ -220,7 +222,7 @@ Since $w'$ is a shortest distinguishing word for $p',q'$, we may deduce now per 
 The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the shortest distinguishing word would be shorter than $w$ and thus not $w$. Since $(p',q')\in m(n-1)$ and $\delta(p,\sigma),\delta(q,\sigma) = p',q'$, we can then deduce by the definition of $m$, that $(p,q)\in m(n)$.\ $\checkmark$ 
 \end{proof}
 
-\begin{lemma}\label{ch:3:semantics-of-D(A)}
+\begin{lemma}\label{ch:4:semantics-of-D(A)}
     If \CompDist\ has done $\mmD(A)$ iterations and terminated, then the longest word $w$, that is a shortest distinguishing word for any state pair, has length $\mmD(A)-1$.
 \end{lemma}
 
@@ -231,24 +233,23 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 		\item $m(n)= \emptyset$
 		\item $\forall i > n\colon m(i)= \bot$\ .
 	\end{enumerate}
-	This follows directly from while loop and its terminating condition of \CompDist (alg.~\ref{ch:1:m-minmark}, line 4--7). Given this, we will prove: There exists a shortest distinguishing word of length $n-1$ for some state pair, but a longer such word can not exist.
+	This follows directly from while loop and its terminating condition of \CompDist (alg.~\ref{ch:2:m-minmark}, line 4--7). Given this, we will prove: There exists a shortest distinguishing word of length $n-1$ for some state pair, but a longer such word can not exist.
 
 	% a possible word per definition of D(A), m(i) and lemma
 	
-	Following Lemma~\ref{ch:3:semantics-of-m(n)} and the first observation, we can deduce the existence of a shortest distinguishing word $w$ with $|w| = n-1 = \mmD(A)-1$ for some $p,q \in Q$.
+	Following Lemma~\ref{ch:4:semantics-of-m(n)} and the first observation, we can deduce the existence of a shortest distinguishing word $w$ with $|w| = n-1 = \mmD(A)-1$ for some $p,q \in Q$.
 	
 	% There is no word longer than that
 	
-	There cannot be any shortest distinguishing word $w'$ with $|w'| = k > n-1$ for any two states $p',q'\in Q$. Following Lemma~\ref{ch:3:semantics-of-m(n)} again, $m(k)$ for some $k > n-1$ would be defined and non-empty, which is contradictory to observations 2 and 3.
+	There cannot be any shortest distinguishing word $w'$ with $|w'| = k > n-1$ for any two states $p',q'\in Q$. Following Lemma~\ref{ch:4:semantics-of-m(n)} again, $m(k)$ for some $k > n-1$ would be defined and non-empty, which is contradictory to observations 2 and 3.
 \end{proof}
 
 \begin{theorem}
-	Given two accessible DFAs $A$, $A'$. If their language is the same ($L(A) = L(A')$), then $\mmD(A) = \mmD(A')$.
+	Given two DFAs $A$, $A'$. If both are accessible and their language is the same $(L(A) = L(A'))$, then \CompDist\ runs with the same number of iterations on them $(\mmD(A) = \mmD(A'))$.
 \end{theorem}
 
 \begin{proof}
 	Per direct proof. Starting with the language-equivalence of $A$ and $A'$ we observe, that the start states of both DFAs have the same finishing words.
-	\vspace{0.25cm}
 	\begin{itemize}
 		\item[] $L(A) = L(A')$
 		
@@ -282,7 +283,7 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 	
 	As a consequence both DFAs have the same shortest distinguishing words and thus too the same longest shortest distinguishing word.
 	
-	If $\mmD(A) \neq \mmD(A')$ then by Lemma~\ref{ch:3:semantics-of-D(A)} one DFA would have a longer longest shortest distinguishing word, which is not true as proven, thus $\mmD(A) = \mmD(A')$ must be true. 
+	If $\mmD(A) \neq \mmD(A')$ then by Lemma~\ref{ch:4:semantics-of-D(A)} one DFA would have a longer longest shortest distinguishing word, which is not true as proven, thus $\mmD(A) = \mmD(A')$ must be true. 
 \end{proof}
 
 \begin{corollary}
@@ -291,7 +292,7 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 
 \section{Adding unreachable states}
 
-From step 1 of the minimization algorithm we can deduce how to add unreachable states. These can easily be added to a DFA by adding non-start states with no ingoing transitions (see def.~\ref{ch:1:unreachable-states}). Number and nature of outgoing transitions may be arbitrary.
+From step 1 of the minimization algorithm we can deduce how to add unreachable states. These can easily be added to a DFA by adding non-start states with no ingoing transitions (see def.~\ref{ch:2:unreachable-states}). Number and nature of outgoing transitions may be arbitrary.
 
 \vspace{0.2cm}
 \begin{algorithmic}[1]
@@ -299,7 +300,7 @@ From step 1 of the minimization algorithm we can deduce how to add unreachable s
 	\For {$\nUN$ \textbf{times}}
 		\State $q \gets$ unused state label
 		\State $Q \gets Q \cup \{ q \}$
-        \State $outSymbols \gets c = 1\ ?\ \Sigma\ :\ $ random subset of $\Sigma$
+        \State $outSymbols \gets \textbf{if } c = 1 \textbf{ then } \Sigma \textbf{ else}$ random subset of $\Sigma$
 		\State $R \gets$ random chosen sample of $|outSymbols|$ states from $Q \setminus \{q\}$
 		\For {$\sigma$ \textbf{in} $outSymbols$}
 			\State $q' \in R$

@@ -2,7 +2,7 @@
 
 \chapter{Generating minimal DFAs} \label{ch:3}
 
-We seek algorithms for generation of minimal DFAs that fulfilling the conditions defined in the requirements analysis section~\ref{ch:1:requirements-analysis}. We formally subsume these conditions via the GenerateNewMinimalDFA-problem:
+We seek algorithms for generation of minimal DFAs that fulfill the conditions defined in the requirements analysis section~\ref{ch:2:requirements-analysis}. We formally subsume these conditions via the GenerateNewMinimalDFA-problem:
 \begin{definition}[GenerateNewMinimalDFA] $ $ \\
 	$ $ \vspace{-0.4cm} \\
 	\noindent $\underline{\emph{Given:}}$
@@ -24,7 +24,7 @@ We seek algorithms for generation of minimal DFAs that fulfilling the conditions
 \end{definition}
 \noindent We consider different approaches to solve this problem, of which those using trial-and-error will be discussed most broadly.
 
-\begin{remark}\label{ch:2:rem:qas-set}
+\begin{remark}\label{ch:3:rem:qas-set}
 	Note that for all generated DFAs we are going to set $Q_{sol} = [[\nSO]] = \{0,\ldots,\nSO-1\}$, $\Sigma_{sol} = [[\kAL]] = \{0,\ldots,\kAL-1\}$ and $s_{sol} = 0$, so every DFA of same state number and alphabet size will have the same states and symbols.
 \end{remark}
 \noindent As a consequence the presented algorithms will not be able to compute all of $\Amin$.
@@ -141,11 +141,11 @@ A more concrete specification of this proceeding is shown below, embedded in the
 	\EndFunction
 \end{algorithmic}
 \vspace{0.2cm}
-To test whether $A_{test}$ is isomorph to any found DFA, we use the isomorphism test described in section~\ref{ch:1:sec:isom}.
+To test whether $A_{test}$ is isomorph to any found DFA, we use the isomorphism test described in section~\ref{ch:2:sec:isom}.
 
 \subsection{Option 1: Generating Test DFAs via Randomness}
 
-We now approach the task of generating a random DFA whereas alphabet and number of (final) states are set. For our generated DFA we choose $Q_{sol}$, $\Sigma_{sol}$ and the start state as explained in remark~\ref{ch:2:rem:qas-set}.
+We now approach the task of generating a random DFA whereas alphabet and number of (final) states are set. For our generated DFA we choose $Q_{sol}$, $\Sigma_{sol}$ and the start state as explained in remark~\ref{ch:3:rem:qas-set}.
 
 The remaining elements that need to be defined are $\delta$ and $F$. The set of final states is supposed to have a size of $\nF$ and be a subset of $Q$. Therefore we can simply choose randomly $\nF$ distinct states from $Q$.
 
@@ -409,9 +409,9 @@ We reduce the enumeration room for each calculation.
 
 Build $m$ from $m$-\CompDist\ iteratively. (Why would this basically result in running \CompDist\ all the time?)
 
-\section{Related research on DFA generation}
+\section{Related work on DFA generation}
 
-Nicaud provides an overview of results on random generation and combinatorial properties of DFAs in ~\cite{Nic14}. We will outline relevant related research.
+Nicaud provides an overview of results on random generation and combinatorial properties of DFAs in ~\cite{Nic14}. We will outline relevant related work.
 
 Nicaud's summary indicates, that research has focused on randomized generation of accessible, but not minimal DFAs so far. In the following we will sketch some approaches that have come up.
 
@@ -426,7 +426,7 @@ In~\cite[p. 6]{CP05} it is shown that there exists a bijection $\varphi$ between
 As a consequence they are able to construct a random generation of accessible complete DFAs using the ``recursive method'' from~\cite{NW78} which generates $n$-tuples~\cite[p. 10]{CP05}. Nicaud states in his survey that the algorithm's runtime is $\mathcal{O}(n^2)$ but notes, that generation of DFAs with more than ``a few thousand states'' is practically hard to do~\cite[pp. 10-11]{Nic14}.
 \footnotetext{Those are essentially DFAs without final state sets.}
 
-Almeida et.\ al.~\cite{AAA09, AMR09, RMA05} present and implement methods using a string-encoding of DFAs for exact enumeration and random generation of DFAs. Nicaud~\cite[p. 11]{Nic14} states in a remark, that this approach uses the same recursive method and differs only in the DFA encoding.
+Almeida et al.~\cite{AAA09, AMR09, RMA05} present and implement methods using a string-encoding of DFAs for exact enumeration and random generation of DFAs. Nicaud~\cite[p. 11]{Nic14} states in a remark, that this approach uses the same recursive method and differs only in the DFA encoding.
 
 \paragraph*{Using Boltzmann sampler.}
 

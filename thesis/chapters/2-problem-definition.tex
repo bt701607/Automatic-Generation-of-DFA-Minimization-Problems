@@ -21,7 +21,7 @@ Then, the \emph{language} of $A$ is defined as $L(A) = \{\ w\ |\ \delta^*(w) \in
 
 Given a state $q \in Q$. With $d^-(q)$ we denote the set of all \emph{ingoing} transitions $\delta(q', \sigma) = q$ of $q$. With $d^+(q)$ we denote the set of all \emph{outgoing} transitions $\delta(q, \sigma) = q'$ of $q$~\cite[pp. 2-3]{CP05}.
 
-\begin{definition}[(Un-)Reachable State]\label{ch:1:unreachable-states}
+\begin{definition}[(Un-)Reachable State]\label{ch:2:unreachable-states}
 	We say a state $q$ is \emph{(un-)reachable} in a DFA $A$, iff there is (no) a word $w \in \Sigma^*$ such that $\delta^*(s, w) = q$.
 \end{definition}
 \noindent If all states of a DFA $A$ are reachable, then we call $A$ \emph{accessible}~\cite[p. 2]{CP05}.
@@ -71,15 +71,15 @@ A DFA is called \emph{complete} iff for all states, every symbol of the alphabet
 \end{definition}
 \noindent With $\Amin$ we shall denote the set of all minimal DFAs.
 
-\begin{definition}[Equivalent and Distinguishable State Pairs]\cite[p. 154]{HMU01}
+\begin{definition}[Equivalent and Distinguishable State Pairs]\cite[p. 154]{HMU01}\label{ch:2:def:eq-dist-pairs}
 	A state pair $q_1, q_2 \in Q$ of a DFA $A = (Q, \Sigma, \delta, s, F)$ is called \emph{equivalent}, iff $\sim_A(q_1, q_2)$ is true, where
 	\begin{displaymath}
-	q_1\ \sim_A\ q_2 \Leftrightarrow_{def}\ \forall z \in \Sigma^* \colon\ (\delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)
+	q_1\ \sim_A\ q_2\ \Leftrightarrow_{def}\ \forall z \in \Sigma^* \colon\ (\delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)
 	\end{displaymath}
 	If $q_0 \not\sim_A q_1$, then $q_0$ and $q_1$ are called a \emph{distinguishable} state pair. The relation $\sim_A$ is an equivalence relation
 \end{definition}
 
-\subsection{Isomorphy of DFAs}\label{ch:1:sec:isom}
+\subsection{Isomorphy of DFAs}\label{ch:2:sec:isom}
 
 Given two DFAs $A_1 = (Q_1, \Sigma_1, \delta_1, s_1, F_1)$ and $A_2 = (Q_2, \Sigma_2, \delta_2, s_2, F_2)$. We say $A_1$ and $A_2$ are \emph{isomorph}, iff:
 \begin{itemize}
@@ -93,7 +93,7 @@ Given two DFAs $A_1 = (Q_1, \Sigma_1, \delta_1, s_1, F_1)$ and $A_2 = (Q_2, \Sig
 	$\forall q\in Q_1\colon \forall\sigma\in\Sigma_1\colon \pi(\delta_1(q,\sigma))=\delta_2(\pi(q),\sigma))$
 \end{itemize}
 In~\cite[p. 45]{Sch01} we can find the following statement:
-\begin{theorem}\label{ch:1:thm:uniq-ism}
+\begin{theorem}\label{ch:2:thm:uniq-ism}
 	Every minimal DFA is unique (has a unique language) except for isomorphy.
 \end{theorem}
 \noindent We describe a simple isomorphism test for DFAs in the appendix~\ref{ch:app:ism-test}.
@@ -133,7 +133,7 @@ This minimization algorithm \MinAlg\ works in four major steps, essentially remo
 	\item Compute all equivalent state pairs ($\sim_A$). Inspired by Schöning~\cite[p. 46]{Sch01} and Martens and Schwentick~\cite[p. 17]{MS18}.
 	\vspace{0.2cm}
 	\begin{algorithmic}[1]
-		\Function{\CompDist}{$A$} \label{ch:1:minmark}
+		\Function{\CompDist}{$A$} \label{ch:2:minmark}
 		\State $M \gets \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}$
 		\Do
 			\State $M' \gets \{ (p,q)\ |\ (p,q) \notin M \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in M \}$
@@ -147,7 +147,7 @@ This minimization algorithm \MinAlg\ works in four major steps, essentially remo
 	\item Merge all equivalent state pairs, which are exactly those in $\sim_A$. Inspired by Högberg~\cite[p. 10]{HL20}.
 	
 	\vspace{0.2cm}
-	\begin{algorithmic}[1] \label{ch:1:minmerge}
+	\begin{algorithmic}[1] \label{ch:2:minmerge}
 		\Function{\RemEq}{$A$, $\sim_A$}
             \State $Q_E \gets \emptyset$
             \State $\delta_E \gets \emptyset$
@@ -168,7 +168,7 @@ This minimization algorithm \MinAlg\ works in four major steps, essentially remo
 \end{enumerate}
 
 \vspace{0.2cm}
-\begin{algorithmic}[1] \label{ch:1:minalg}
+\begin{algorithmic}[1] \label{ch:2:minalg}
     \Function{\MinAlg}{$A$}
     \State $A' \gets \RemUnr(A, \CompUnr(A))$
     \State \Return $\RemEq(A', \CompDist(A'))$
@@ -177,13 +177,13 @@ This minimization algorithm \MinAlg\ works in four major steps, essentially remo
 \vspace{0.2cm}
 \noindent This DFA minimization algorithm has been found by Hopcroft~\cite{Hop71}.
 
-\begin{theorem}\label{ch:1:min-alg-correct}\textnormal{\cite[pp. 162-164]{HMU01}}
+\begin{theorem}\label{ch:2:min-alg-correct}\textnormal{\cite[pp. 162-164]{HMU01}}
 	\MinAlg\ computes a minimal DFA to its input DFA.
 \end{theorem}
 
 \noindent When looking at \CompDist, one notes, that it computes distinct subsets of $Q \times Q$ on the way. Indeed, one could write the algorithm in such a way, that these subsets are explicitly computed in form of a function $m\colon\mathbb{N}\to\mathcal{P}(Q\times Q)$:
 \vspace{0.2cm}
-\begin{algorithmic}[1] \label{ch:1:m-minmark}
+\begin{algorithmic}[1] \label{ch:2:m-minmark}
 	\Function{$m$-\CompDist}{$A$}
 	\State $i \gets 0$
 	\State $m(0) \gets \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}$
@@ -196,7 +196,7 @@ This minimization algorithm \MinAlg\ works in four major steps, essentially remo
 \end{algorithmic}
 \vspace{0.2cm}
 Using this redefinition, we can easier refer to the state pairs marked in a certain iteration. We will use both variants in exchange.
-\begin{definition}
+\begin{definition}\label{ch:2:def:D(A)}
 	We denote the number of iterations done by \CompDist\ on an DFA $A$ as $\mmD(A)$.
 \end{definition}
 
@@ -204,7 +204,7 @@ Using this redefinition, we can easier refer to the state pairs marked in a cert
 %
 %Consider step 3 and 4 of \MinAlg. A view on these algorithms reveal, that they are essentially collapsing each $\sim$-equivalence class of a DFA $A$ into one state.
 %
-%\begin{definition}[$\sim_A$-equivalence automaton] \label{ch:1:sim-eq-dfa}
+%\begin{definition}[$\sim_A$-equivalence automaton] \label{ch:2:sim-eq-dfa}
 %    We will call the automaton $E_A = (Q_E, \Sigma_E, \delta_E, s_E, F_E)$ created by \CompDist\ and \RemEq($A$)\ the \emph{$\sim_A$-equivalence automaton} of $A$. It has the following properties:
 %    \begin{itemize}
 %        \item $Q_E = \{\ [q]\ |\ q \in Q\ \}$
@@ -213,7 +213,7 @@ Using this redefinition, we can easier refer to the state pairs marked in a cert
 %        \item $s_E = [s]_\sim$
 %        \item $F_E = \{\ [q]\ |\ q \in Q\ \}$
 %    \end{itemize}
-%    Note, that we know by theorem~\ref{ch:1:min-alg-correct} that $E_A$ is guaranteed to be a minimal automaton to $A$, if $A$ has no unreachable states.
+%    Note, that we know by theorem~\ref{ch:2:min-alg-correct} that $E_A$ is guaranteed to be a minimal automaton to $A$, if $A$ has no unreachable states.
 %\end{definition}
 
 \section{Requirements analysis}
@@ -269,7 +269,7 @@ Now that we have introduced all necessary basic definitions, we shall do a short
 	{\raggedright\itshape \underline{Solution:}\newline
 		Step 1: Detect and eliminate unreachable states.
 		\begin{tabbing}
-			\qquad\textnormal{State $6$ is unreachable.}
+			\qquad\textnormal{State $5$ is unreachable.}
 		\end{tabbing}
 		Step 2: Apply \CompDist\ to $A$ and merge equivalent state pairs:\par
 	}
@@ -322,15 +322,15 @@ We do some rather formal statements and requirements. Firstly, we can state that
 \end{itemize}
 Therefore $A_{sol}$ is minimal regarding $A_{re}$ and $A_{task}$. Secondly the languages of $A_{task}, A_{re}$ and $A_{sol}$ are equal. We know that \CompDist\ requires $A_{re}$ to be complete and that \RemEq\ creates complete DFAs, so $A_{sol}$ is complete too. Furthermore we know that every state of $A_{re}$ is reachable since it is the output of \RemUnr.
 
-\subsection{Difficulty adjustment possibilities and sensible requirements}\label{ch:1:requirements-analysis}
+\subsection{Difficulty adjustment possibilities and sensible requirements}\label{ch:2:requirements-analysis}
 
 Concerning the execution of \MinAlg\ we find that its difficulty can be classified through various classification numbers. Furthermore we can note some sensible requirements.
 
-\paragraph*{\CompDist-depth ($\mmD(A_{task})$).}
+\paragraph*{\CompDist-iterations ($\mmD(A_{task})$).}
 
-Consider the computation of the sets $m(i)$ in \CompDist. Determining $m(0)$ is quite straightforward, because it consists simply of tests whether two states are in $F \times Q \setminus F$ (see~\ref{ch:1:m-minmark}, line 3). Determining $m(1)$ is less easy: The rule for determining all $m(i), i > 0$ is different to that for $m(0)$ and more complicated (see~\ref{ch:1:m-minmark}, line 6). Determining $m(2)$ requires the same rule. It shows nonetheless a students understanding of the terminating behavior of \CompDist: It does not stop after computing $m(1)$, but only when no more distinguishable state pairs were found. Concerning the sets $m(i), i > 2$ however no additional understanding can be shown.
+Consider the computation of the sets $m(i)$ in \CompDist\ (see alg.~\ref{ch:2:m-minmark}). Determining $m(0)$ is quite straightforward, because it consists simply of tests whether two states are in $F \times Q \setminus F$ (see alg.~\ref{ch:2:m-minmark}, line 3). Determining $m(1)$ is less easy: The rule for determining all $m(i), i > 0$ is different to that for $m(0)$ and more complicated (see~\ref{ch:2:m-minmark}, line 6). Determining $m(2), m(3), \ldots$ requires the same rule. It shows nonetheless a students understanding of \CompDist' terminating behavior: The algorithm does not stop after computing $m(1)$, but only when no more distinguishable state pairs were found.
 
-It would therefore be sensible if $\mmD(A_{task})$ could be adjusted for example by parameters $m_{min}, m_{max}$ which give lower and upper bounds for that value.
+It would therefore be sensible if $\mmD(A_{task})$ could be adjusted by parameters (we call them $m_{min}, m_{max}$) which give lower and upper bounds for that value.
 
 \paragraph*{Number of states \texorpdfstring{($\nSO, \nEQ, \nUN$)}{}.}
 
@@ -354,7 +354,7 @@ Since most DFAs in teaching have about 1 to 3 final states, so being able to set
 
 For example for an exam it would be sensible to be able to generate a task, so $A_{sol}$ and $A_{task}$, that has not been generated before. We will use the criterion of isomorphy to distinguish a possible solution DFA from all previously generated ones.
 
-This is sensible since isomorphy distinguishes two minimal DFAs, if and only if they have different languages (see theorem~\ref{ch:1:thm:uniq-ism}).
+This is sensible since isomorphy distinguishes two minimal DFAs, if and only if they have different languages (see theorem~\ref{ch:2:thm:uniq-ism}).
 
 Note that, if $A_{sol}$ is indeed \emph{new} in that sense, then $A_{task}$ will automatically have a unique language too, since $A_{sol}$ and $A_{task}$ have the same language and this language was then never used before in this context.
 
@@ -374,11 +374,11 @@ The \emph{degree} $deg(q)$ of a state $q \in Q$ in a DFA $A$ is defined as $deg(
 
 \section{Approach and general algorithm}
 
-In this work we will first build the solution DFA (step 1), and - based on that - the task DFA by creating equivalent states and adding unreachable states (step 2). Both steps will fulfill all criteria chosen above and are covered in depth in chapter~\ref{ch:2} respectively chapter~\ref{ch:3}.
+In this work we will first build the solution DFA (step 1), and - based on that - the task DFA by creating equivalent states and adding unreachable states (step 2). Both steps will fulfill all criteria chosen above and are covered in depth in chapter~\ref{ch:3} respectively chapter~\ref{ch:4}.
 
-We will see that $\mmD$ and $L$ of both DFAs will be set when building $A_{sol}$. We know that creating equivalent states and adding unreachable does not change $L(A_{task})$ in comparison to $A_{sol}$, else \MinAlg\ would not work (a minimal DFA has in particular the same language as the original DFA). However we must ensure, that adding those states does not change $\mmD$. Since unreachable states are eliminated before \CompDist\ is applied, we need only to prove, that creating equivalent states does not change the $\mmD$-value. We will do this during the discussion of step 2, more specifically in section~\ref{ch:3:sec-D-proof}.
+We will see that $\mmD$ and $L$ of both DFAs will be set when building $A_{sol}$. We know that creating equivalent states and adding unreachable does not change $L(A_{task})$ in comparison to $A_{sol}$, else \MinAlg\ would not work (a minimal DFA has in particular the same language as the original DFA). However we must ensure, that adding those states does not change $\mmD$. Since unreachable states are eliminated before \CompDist\ is applied, we need only to prove, that creating equivalent states does not change the $\mmD$-value. We will do this during the discussion of step 2, more specifically in section~\ref{ch:4:sec-D-proof}.
 
-At the beginning of chapter~\ref{ch:2} and~\ref{ch:3}, we will provide formal problem definitions for both steps, that specify precisely all requirements. Here we shall content ourselves with the definition of the main algorithm:
+At the beginning of chapter~\ref{ch:3} and~\ref{ch:4}, we will provide formal problem definitions for both steps, that specify precisely all requirements. Here we shall content ourselves with the definition of the main algorithm:
 \vspace{0.2cm}
 \begin{algorithmic}[1]
 	\Function{GenerateDFAMinimizationTask}{$\nSO, \kAL, \nF, m_{min}, m_{max}, p_1, p_2, \nEQ,\nUN, c$}

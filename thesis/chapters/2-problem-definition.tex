@@ -334,17 +334,23 @@ It would therefore be sensible if $\mmD(A_{task})$ could be adjusted by paramete
 
 \paragraph*{Number of states \texorpdfstring{($\nSO, \nEQ, \nUN$)}{}.}
 
-To control the number of states in $A_{task}, A_{re}$ and $A_{sol}$, we will introduce three parameters: $\nSO, \nEQ, \nUN \in \mathbb{N}$. These parameters get their meaning by the following equations:
+To control the number of states in $A_{task}, A_{re}$ and $A_{sol}$, we will introduce three parameters: $\nSO, \nEQ, \nUN \in \mathbb{N}$, where
+\begin{itemize}
+	\item $\nSO$ is the number of states of $A_{sol}$
+	\item $\nEQ$ is the number of distinct equivalent state pairs of $A_{re}$
+	\item $\nUN$ is the number of unreachable states of $A_{task}$
+\end{itemize}
+They can be equivalently described by the following equations:
 \begin{align*}
     |Q_{sol}| &= \nSO \\
     |Q_{re}| &= \nSO + \nEQ \\
     |Q_{task}| &= \nSO + \nEQ + \nUN
 \end{align*}
-It is sensible to have $\nUN > 1, \nEQ > 1$, such that \RemUnr\ and \RemEq\ will not be skipped. To not make the task trivial, $\nSO > 2$ is sensible. An exercise instructor will find it useful, to control exactly how big $\nUN$, $\nEQ$ and $\nSO$ are: The higher $\nUN, \nEQ$, the more states have to be eliminated and merged. The higher $\nSO + \nEQ$, the more state pairs have to be checked during \CompDist.
+It is sensible to have $\nUN > 1, \nEQ > 1$, such that \RemUnr\ and \RemEq\ will not be skipped. To not make the task trivial, $\nSO > 2$ is sensible. An exercise instructor will find it useful to control exactly how big $\nUN$, $\nEQ$ and $\nSO$ are: The higher $\nUN, \nEQ$, the more states have to be eliminated and merged. The higher $\nSO + \nEQ$, the more state pairs have to be checked during \CompDist.
 
 \paragraph*{Alphabet size \texorpdfstring{($\kAL$)}{}.}
 
-The more symbols the alphabet of $A_{task}, A_{re}$ and $A_{sol}$ has (note how \MinAlg\ does not change the alphabet), the more transitions have to be followed when checking whether $(\delta(q,\sigma),\delta(p,\sigma))\in m(i-1)$ is true for each state pair $p,q$.
+The more symbols the alphabet of $A_{task}, A_{re}$ and $A_{sol}$ has (note that \MinAlg\ does not change the alphabet), the more transitions have to be followed when checking whether $(\delta(q,\sigma),\delta(p,\sigma))\in m(i-1)$ is true for each state pair $p,q$.
 
 \paragraph*{Number of final states \texorpdfstring{($\nF$)}{}.}
 

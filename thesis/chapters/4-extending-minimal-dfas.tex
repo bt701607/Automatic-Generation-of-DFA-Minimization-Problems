@@ -25,17 +25,17 @@ We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a ta
 		\item $A_{sol}$ \emph{being isomorph to} $\MinAlg(A_{task})$
 	\end{itemize}
 \end{definition}
-\noindent In order to fulfill these requirements we will deduce for both kinds of states how they may be added by examining their desired properties. We will show for the action of adding equivalent states, that this does not change a DFAs $\mmD$-value.
+\noindent In order to fulfill these requirements we will deduce for both kinds of states how they may be added by examining their desired properties. We will show for the action of adding equivalent states, that this does not change a DFAs $\mmD$-value - thus we do not have to care whether we are possibly changing it by adding such states.
 
 \section{Creating equivalent state pairs}
 
 Step 3 and 4 of the minimization algorithm are concerned with detection and elimination of equivalent state pairs. We now want to add states $r_1,\ldots,r_\nEQ$ to a DFA $A_{sol}$, gaining $A_{re}$ with $Q_{re} = Q_{sol} \cup \{r_1,\ldots,r_\nEQ\}$, such that each of these states is equivalent to a state in $Q_{re}$. Note that, for reasons of clarity, we are going to abbreviate from now on $A_{re} = A$, $Q_{re} = Q$, $\sim_{A_{re}} = \sim_A$ etc.
 
-Consider the properties $r_1,\ldots,r_\nEQ$ must have. Since we start from $A_{sol}$, and add in each step a state that is equivalent to a state in the so-far constructed DFA, it follows by transitivity, that each of $r_1,\ldots,r_\nEQ$ is equivalent to a state $e$ of $A_{sol}$.
+In our algorithm we will add each $r_i$ separately starting from $A_{sol}$. Consider the properties $r_1,\ldots,r_\nEQ$ must have. Since we start from $A_{sol}$, and add in each step a state, that will be equivalent to a state in the so-far constructed DFA, it follows by transitivity, that each of $r_1,\ldots,r_\nEQ$ will be equivalent to a state $e$ of $A_{sol}$.
 \[
 	\forall i \in [1,\nEQ] \colon\ \exists e \in Q_{sol}\colon\ r_i \sim_A e
 \]
-In our algorithm, we will choose a to-be-equivalent-state $e\in Q_{sol}$ for each state we add..
+In other words: Every new state $r_i$ is by transitivity equivalent to a state $e$ of $A_{sol}$. In our algorithm, we will first choose a to-be-equivalent-state $e\in Q_{sol}$ for each state we add.
 
 \subsection{Adding outgoing transitions}
 
@@ -74,7 +74,7 @@ We see here, that $q$ must have at least $2$ ingoing transitions, else it would 
 \begin{description}
 	\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $d^-(p) \geq 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
 \end{description}
-These finding lead us to a general requirement regarding the choice of a state $e$ for an $r_i$: The equivalence class of any $e$ has to contain at least one state with at least $2$ ingoing transitions (see fig.~\ref{fig:dfa_create_equivalent_states}). We establish the following notion to pin down this restriction:
+These finding lead us to a general requirement regarding the choice of a state $e$ for an $r_i$: The equivalence class of any $e$ has to contain at least one state with at least $2$ ingoing transitions. We establish the following notion to pin down this restriction:
 \[
 	duplicatable(q) \Leftrightarrow_{def} (\exists p \in [q]_{\sim_A}\colon |d^-(p)| \geq 2)
 \]
@@ -249,7 +249,7 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 \end{theorem}
 
 \begin{proof}
-	Per direct proof. Starting with the language-equivalence of $A$ and $A'$ we observe, that the start states of both DFAs have the same finishing words.
+	Starting with the language-equivalence of $A$ and $A'$ we observe, that the start states of both DFAs have the same finishing words.
 	\begin{itemize}
 		\item[] $L(A) = L(A')$
 		
@@ -273,7 +273,7 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 	\end{itemize}
 	Since we are making a statement about all states reached from $s$/$s'$ and since all states in $A$/$A'$ are reachable, we may conclude:
 	
-	For every state in $A$/$A'$ there exists a state in the other DFA, such that their finishing words are equal.
+	For every state in $A$/$A'$ there exists a state in the other DFA, such that their finishing words are the same.
 	\begin{itemize}
 		\item [] $\forall q \in Q\colon \exists q' \in Q'\colon f(q) = f(q')$ \hfill $\land$ \hfill $\forall q' \in Q'\colon \exists q \in Q\colon f(q) = f(q')$ \qquad \qquad \qquad \qquad
 		

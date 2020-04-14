@@ -341,9 +341,7 @@ Most DFAs in teaching have about 1 to 3 final states, so being able to set a num
 
 \paragraph*{Uniqueness of solution DFA language.}
 
-For example for an exam it would be sensible to be able to generate a task that is different in structure  , that has not been generated before. We will use the criterion of isomorphy to distinguish a possible solution DFA from all previously generated ones.
-
-This is sensible since isomorphy distinguishes two minimal DFAs, if and only if they have different languages (see Theorem~\ref{ch:2:thm:uniq-ism}).
+For example for an exam it would be sensible to be able to generate a task where the DFA language is unique, meaning there was no previously generated DFA with the same language. We will use the criterion of isomorphy (see Theorem~\ref{ch:2:thm:uniq-ism}) to categorize a possible DFA.
 
 Note that, if $A_{sol}$ is indeed \emph{new} in that sense, then $A_{task}$ will automatically have a unique language too, since $A_{sol}$ and $A_{task}$ have the same language.
 
@@ -357,13 +355,13 @@ A graph $G$ is \emph{planar} if it can be represented by a drawing in the plane 
 
 \paragraph*{Maximum degree of any state in task DFA.}
 
-The \emph{degree} $deg(q)$ of a state $q \in Q$ in a DFA $A$ is defined as $deg(q) = |d^-(q)| + |d^+(q)|$, so the total number of transitions in which $q$ participates. By capping the maximum degree for all states, the graphical representation of the DFA would be more clear. In this work the inclusion of a maximum degree parameter is omitted.
+The \emph{degree} $deg(q)$ of a state $q \in Q$ in a DFA $A$ is defined as $deg(q) = d^-(q) + d^+(q)$, so the total number of transitions in which $q$ participates. By capping the maximum degree for all states, the graphical representation of the DFA would be more clear. In this work the inclusion of a maximum degree parameter is omitted.
 
 %Note that $deg(q) \geq |\Sigma|$ for any complete DFA, since states of complete DFAs have to use all alphabet symbols on outgoing transitions.
 
 \section{Approach and general algorithm}
 
-In this work we will first build the solution DFA (step 1), and - based on that - the task DFA by creating equivalent states and adding unreachable states (step 2). Both steps will fulfill all criteria chosen above and are covered in depth in chapter~\ref{ch:3} respectively chapter~\ref{ch:4}.
+In this work we will first build the solution DFA (step 1), and - based on that - the task DFA by creating equivalent states and adding unreachable states (step 2). Both steps together will fulfill all criteria chosen above and are covered each in depth in chapter~\ref{ch:3} respectively chapter~\ref{ch:4}.
 
 We will see that $\mmD$ and $L$ of both DFAs will be set when building $A_{sol}$. We know that creating equivalent states and adding unreachable does not change $L(A_{task})$ in comparison to $A_{sol}$, else \MinAlg\ would not work (a minimal DFA has in particular the same language as the original DFA). However we must ensure, that adding those states does not change $\mmD$. Since unreachable states are eliminated before \CompDist\ is applied, we need only to prove, that creating equivalent states does not change the $\mmD$-value. We will do this during the discussion of step 2, more specifically in section~\ref{ch:4:sec-D-proof}.
 

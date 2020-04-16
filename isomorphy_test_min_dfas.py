@@ -55,12 +55,12 @@ def isomorphy_test_min_dfas(dfa1, dfa2):
                 
                     bijection[p1] = p2
                     
-		    if p1 not in finished_states:
-		        observed_states.append(p1)
+            if p1 not in finished_states:
+                observed_states.append(p1)
                     
-                else:
+            else:
                 
-                    return False
+                return False
     
         if not observed_states:
             break

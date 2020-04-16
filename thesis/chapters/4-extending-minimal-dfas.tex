@@ -155,7 +155,7 @@ The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma|
 
 \subsection{Creating equivalent state pairs does not change D} \label{ch:4:sec-D-proof}
 
-In this section we want to prove that our method of creating state pairs does not affect the $\mmD$-value. Using this information we can be sure that $\mmD(A_{sol}) = \mmD(A_{task})$ and our just explained algorithm does not have to care about possibly changing this value.
+In this section we want to prove that our method of creating state pairs does not affect the number of \CompDist-iterations. Using this information we can be sure that $\mmD(A_{sol}) = \mmD(A_{task})$ and our just explained algorithm does not have to care about possibly changing this value.
 
 To do this proof, we will first introduce two auxiliary definitions and then prove two minor lemmas. As a side effect, Lemma~\ref{ch:4:semantics-of-m(n)} will describe a central property of \CompDist\ and Lemma~\ref{ch:4:semantics-of-D(A)} will show an extended characterization of $\mmD(A)$ compared to its definition (def.~\ref{ch:2:def:D(A)}).
 
@@ -223,7 +223,7 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 \end{proof}
 
 \begin{lemma}\label{ch:4:semantics-of-D(A)}
-    If \CompDist\ has done $\mmD(A)$ iterations and terminated, then the longest word $w$, that is a shortest distinguishing word for any state pair, has length $\mmD(A)-1$.
+    If \CompDist\ has done $n$ iterations and terminated (so $\mmD(A) = n$), then the longest word $w$, that is a shortest distinguishing word for any state pair, has length $\mmD(A)-1$.
 \end{lemma}
 
 \begin{proof}
@@ -244,7 +244,7 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 	There cannot be any shortest distinguishing word $w'$ with $|w'| = k > n-1$ for any two states $p',q'\in Q$. Following Lemma~\ref{ch:4:semantics-of-m(n)} again, $m(k)$ for some $k > n-1$ would be defined and non-empty, which is contradictory to observations 2 and 3.
 \end{proof}
 
-\begin{theorem}
+\begin{theorem}\label{ch:4:th-D}
 	Given two DFAs $A$, $A'$. If both are accessible and their language is the same $(L(A) = L(A'))$, then \CompDist\ runs with the same number of iterations on them $(\mmD(A) = \mmD(A'))$.
 \end{theorem}
 
@@ -287,8 +287,12 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 \end{proof}
 
 \begin{corollary}
-	Since our method of creating equivalent state pairs in a DFA does not change the DFA language, it will thus also not change the $\mmD$-value.
+	Our method of creating equivalent state pairs in a DFA does not change the DFAs $\mmD$-value.
 \end{corollary}
+
+\begin{proof}
+	Creating equivalent state pairs does not change the language of a DFA --- otherwise the reverse procedure, \MinAlg, could not guarantee the language stays the same. So since the language stays the same when creating those pairs, by Theorem~\ref{ch:4:th-D} the number of \CompDist-iterations will preserve as well.
+\end{proof}
 
 \section{Adding unreachable states}
 

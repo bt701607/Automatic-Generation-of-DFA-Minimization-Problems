@@ -99,7 +99,7 @@ Regarding the unreachable states, we can just use \CompUnr\ and test whether the
 	\EndFunction
 \end{algorithmic}
 
-\subsection{Ensuring planarity}
+\subsection{Ensuring planarity}\label{ch:3:sec:planarity}
 
 There exist several algorithms for planarity testing of graphs. In this work, the library \emph{pygraph}\footnote{\url{https://github.com/jciskey/pygraph}} has been used, which implements the Hopcroft-Tarjan planarity algorithm. More information on this can be found for example in this~\cite{Koc93} introduction from William Kocay. The original paper describing the algorithm is by Hopcroft and Tarjan~\cite{HT74}.
 
@@ -451,7 +451,7 @@ Concerning combinatorial properties of DFAs, several authors (e.g.~\cite{BN07, D
 
 Implementations (e.g.~\cite{AAA09, BDN07}) of various random and enumeration generation methods have given rise to several empirical observations concerning the number of minimal DFAs, their fraction among all DFAs and so forth.
 
-Domaratzki, Kisman, and Shallit~\cite{DKS02} give some asymptotic estimates and explicit computations for the number of each several types of languages and automata that are distinct. The here relevant results have been subsumed and extended in~\cite[p. 8]{AMR09} by means of exact enumeration and are confirmed in~\cite{BDN07}.
+Domaratzki, Kisman, and Shallit~\cite{DKS02} give some asymptotic estimates and explicit computations for the number of several types of distinct languages and automata. The here relevant results have been subsumed and extended in~\cite[p. 8]{AMR09} and were empirically confirmed in~\cite{BDN07}.
 
 \begin{figure}[H]
 	\centering
@@ -478,14 +478,14 @@ Domaratzki, Kisman, and Shallit~\cite{DKS02} give some asymptotic estimates and 
 		$k = 5$ & $2$ & \textbf{1984} & 4096 & 0.48 \\
 		& $3$ & \textbf{36818904} & 114791256 & 0.32\\\hline
 	\end{tabular}
-	\caption{Table depicting the amount of minimal complete DFAs among all complete DFAs for various sizes of $Q, \Sigma$. The numbers of minimal DFAs (bold numbers) are taken from~\cite[p. 8]{AMR09}.}
+	\caption{Table depicting the exact amount of minimal complete DFAs among all complete DFAs for various sizes of $Q, \Sigma$. The numbers of minimal DFAs (bold numbers) are taken from~\cite[p. 8]{AMR09}.}
 	\label{fig:dfa_minimal_ratios}
 \end{figure}
 
-\noindent In table~\ref{fig:dfa_minimal_ratios} we use these results to determine the ratios of minimal complete DFAs among all complete DFAs for given $|Q|$ and $|\Sigma|$. The number of all DFAs is computed as follows:
+\noindent In Figure~\ref{fig:dfa_minimal_ratios} we use these results to determine the ratios of minimal complete DFAs among all complete DFAs for given $|Q|$ and $|\Sigma|$. The number of all DFAs is computed as follows:
 \[
 |\mathcal{A}_{n,k}| = \underbrace{n^{n*k}}_{\#\text{possible }\delta\text{'s}} * \underbrace{2^n}_{\#\text{possible sets }F}
 \]
-Thus we gain an insight into how probable the generation of a distinct minimal test DFA is without applying further constraints. For our proposed default parameters $n\in[4-5]$ and $k\in[2-3]$ the probabilities of successful generation range from $1\%$ to $5\%$. Practical tests have shown that this leads to sufficient short run times for our implementation.
+Thus we gain an insight into how probable the random generation of a distinct minimal test DFA is without applying further constraints. For our proposed default parameters $n\in[4-5]$ and $k\in[2-3]$ the probabilities of successful generation range from $1\%$ to $5\%$. Practical tests have shown that this leads to sufficient short run times for our implementation.
 
-Further interesting results in this area include the determination of the fraction of minimal automata among accessible complete DFAs~\cite{BDS11} and asymptotic estimates for the number of states that a random minimized DFA has~\cite{BK13}.
+Further interesting results in this area include the determination of the fraction of all minimal automata among all accessible complete DFAs~\cite{BDS11} and asymptotic estimates for the number of states that a random minimized DFA has~\cite{BK13}.

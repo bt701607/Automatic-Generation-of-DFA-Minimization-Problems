@@ -12,7 +12,7 @@ We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a ta
 	\nEQ \in \mathbb{N}\ \ \ & \emph{number of states creating equivalent state pairs} \\
 	\nUN \in \mathbb{N}\ \ \ & \emph{number of unreachable states} \\
 	p \in \{0,1\}\ \ \ & \emph{planarity-bit} \\
-	c \in \{0,1\}\ \ \ & \emph{completeness-bit}
+	c \in \{0,1\}\ \ \ & \emph{completeness-bit for unreachable states}
 	\end{align*}
 	\noindent $\underline{\emph{Task:}}$ \emph{Compute, if it exists, a task DFA $A_{task}$ with}
 	\begin{itemize}
@@ -25,7 +25,27 @@ We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a ta
 		\item $A_{sol}$ \emph{being isomorph to} $\MinAlg(A_{task})$
 	\end{itemize}
 \end{definition}
-\noindent In order to fulfill these requirements we will deduce for both kinds of states how they may be added by examining their desired properties. We will show for the action of adding equivalent states, that this does not change a DFAs $\mmD$-value - thus we do not have to care whether we are possibly changing it by adding such states.
+\noindent In order to fulfill these requirements we will deduce for both kinds of states how they may be added by examining their desired properties. If we get to have the choice between several equally good options, we will choose by randomization. We will be guided by the separation of creating equivalent and unreachable states:
+\vspace{0.2cm}
+\begin{spacing}{1}
+	\begin{algorithmic}[1]
+		\Function{ExtendMinimalDFA}{$A_{sol}, \nEQ, \nUN, p, c$}
+		\If{$p = 0$}
+			\State $A_{re} \gets$ \textsc{AddUnreachableStates}($A_{sol}, \nUN, c$)
+			\State \Return \textsc{CreateEquivalentStatePairs}$(A_{re}, \nEQ$)
+		\Else
+			\State $A_{task} \gets \bot$
+			\While{$A_{task}$ not planar}
+				\State $A_{re} \gets$ \textsc{AddUnreachableStates}($A_{sol}, \nUN, c$)
+				\State $A_{task} \gets$ \textsc{CreateEquivalentStatePairs}$(A_{re}, \nEQ$)
+			\EndWhile
+			\State \Return $A_{task}$
+		\EndIf
+		\EndFunction
+	\end{algorithmic}
+\end{spacing}
+\vspace{0.2cm}
+\noindent Concerning the planarity option, we use a rejection algorithm again and the same test as before (see sec.~\ref{ch:3:sec:planarity}). We will show for the action of adding equivalent states, that this does not change a DFAs $\mmD$-value - thus we do not have to care whether we are possibly changing it.
 
 \section{Creating equivalent state pairs}
 
@@ -58,7 +78,7 @@ Regarding the outgoing transitions of any $r_i$ equivalent to a state $e$, we ar
 \end{itemize}
 We may thus formulate the rule for adding outgoing transitions to a new state quite straightforward:
 \begin{description}
-	\item[R1:] For each symbol $\sigma \in \Sigma$ choose exactly one state (completeness requirement for $A$) $q\in[\delta(e, \sigma)]_{\sim_A}$ and set $\delta(r_i, \sigma) = q$.
+	\item[R1:] For each symbol $\sigma \in \Sigma$ choose exactly one state ($A$ shall be complete) $q\in[\delta(e, \sigma)]_{\sim_A}$ and set $\delta(r_i, \sigma) = q$.
 \end{description}
 Since the solution DFA is complete and since every here added state gets a transition for every alphabet symbol, we know that every $[\delta(e, \sigma)]_{\sim_A} \neq \emptyset$, so the rule is guaranteed to be fulfillable.
 

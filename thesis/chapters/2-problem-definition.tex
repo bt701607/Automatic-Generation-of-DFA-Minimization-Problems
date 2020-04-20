@@ -26,7 +26,7 @@ Given a state $q \in Q$. With $d^-(q)$ we denote the set of all \emph{ingoing} t
 \end{definition}
 \noindent If all states of a DFA $A$ are reachable, then we call $A$ \emph{accessible}~\cite[p. 2]{CP05}.
 
-A DFA is called \emph{complete} iff for all states, every symbol of the alphabet is used on an outgoing transition: $\forall q\in Q\colon \forall\sigma\in\Sigma\colon \exists p\in Q\colon \delta(q,\sigma) = p$. Note, that every incomplete DFA can be converted to a complete one by adding a so called \emph{dead state}~\cite[p. 67]{HMU01}. The resulting automaton has the same language.
+A DFA is called \emph{complete} iff for all states, every symbol of the alphabet is used on an outgoing transition: $\forall q\in Q\colon \forall\sigma\in\Sigma\colon \exists p\in Q\colon \delta(q,\sigma) = p$. Note, that every incomplete DFA can be converted to a complete one by adding a so called \emph{dead state}~\cite[p. 67]{HMU01}. The resulting automaton has the same language. From now on we will only work with complete DFAs.
 
 \begin{figure}[H]
 	\begin{subfigure}{.5\textwidth}\centering\resizebox{1.\linewidth}{!}{
@@ -76,7 +76,7 @@ A DFA is called \emph{complete} iff for all states, every symbol of the alphabet
 	\begin{displaymath}
 	q_1 \sim_A q_2 \text{ is true}\ \Leftrightarrow_{def}\ \forall z \in \Sigma^* \colon\ (\delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)
 	\end{displaymath}
-	If $q_0 \not\sim_A q_1$, then $q_0$ and $q_1$ are called a \emph{distinguishable} state pair. The relation $\sim_A$ is an equivalence relation. \gregor{Proof?}
+	If $q_0 \not\sim_A q_1$, then $q_0$ and $q_1$ are called a \emph{distinguishable} state pair. It is well-known (see for instance~\cite[p. 160]{HMU01}) that the relation $\sim_A$ is an equivalence relation.
 \end{definition}
 
 \subsection{Isomorphy of DFAs}\label{ch:2:sec:isom}
@@ -142,7 +142,7 @@ This minimization algorithm \MinAlg\ works in four major steps, essentially remo
 		\State \Return $Q^2 \setminus M$
 		\EndFunction
 	\end{algorithmic}
-	Note that \CompDist\ requires its input automaton to be complete. \gregor{Why?}
+	Note that \CompDist\ requires its input automaton to be complete.\footnote{Most authors implicitly assume this or define DFAs to be complete from the beginning.}
 
 	\item Merge all equivalent state pairs, which are exactly those in $\sim_A$. Inspired by Högberg and Larsson~\cite[p. 10]{HL20}.
 	
@@ -164,7 +164,6 @@ This minimization algorithm \MinAlg\ works in four major steps, essentially remo
 			\State \Return $(Q_E, \Sigma, \delta_E, [s], F_E)$
 		\EndFunction
 	\end{algorithmic}
-	Note that \RemEq\ creates complete automatons.
 \end{enumerate}
 
 \vspace{0.2cm}
@@ -303,7 +302,7 @@ We list some statements and requirements. Firstly, we can state that
 	\item $A_{re} = \RemUnr(A_{task}, \CompUnr(A_{task}))$ and
 	\item $A_{sol} = \RemEq(A_{re}, \CompDist(A_{re}))$\ .
 \end{itemize}
-Therefore $A_{sol}$ is minimal regarding $A_{re}$ and $A_{task}$. Secondly the languages of $A_{task}, A_{re}$ and $A_{sol}$ are the same. We know that \CompDist\ requires $A_{re}$ to be complete and that \RemEq\ creates complete DFAs, so $A_{sol}$ is complete too. Furthermore we know that every state of $A_{re}$ is reachable since it is the output of \RemUnr.
+Therefore $A_{sol}$ is minimal regarding $A_{re}$ and $A_{task}$. Secondly the languages of $A_{task}, A_{re}$ and $A_{sol}$ are the same. Furthermore we know that every state of $A_{re}$ is reachable since it is the output of \RemUnr.
 
 \subsection{Difficulty adjustment possibilities and sensible requirements}\label{ch:2:requirements-analysis}
 
@@ -347,7 +346,9 @@ Note that, if $A_{sol}$ is indeed \emph{new} in that sense, then $A_{task}$ will
 
 \paragraph*{Completeness of task DFA.}
 
-Even though \CompUnr\ and \RemUnr\ do not require their input DFA $A_{task}$ to be complete, it is sensible to build it that way. The implications of the completeness-property are - in comparison to the other concepts involved here - rather subtle. This is especially due to its purely representational nature, a DFA has the same language and $\mmD$-value, whether it is represented in its complete form or not. Nonetheless we shall introduce a parameter $c$, that determines if there exist unreachable states, that make $A_{task}$ incomplete. Thus an exercise lecturer could showcase this matter on a DFA and generate according exercises.
+In opposition to \CompDist, \CompUnr\ and \RemUnr\ do not require their input DFA $A_{task}$ to be complete. So we could have unreachable states in $A_{task}$, to which $\delta$ is not defined for all alphabet symbols, but all other states have to be complete. It is however sensible, to build task DFAs complete too to avoid possible confusion: Such subtleties do not highlight the main ideas of \MinAlg.
+
+Nonetheless we shall introduce a parameter $c$, that determines if there exist unreachable states, that make $A_{task}$ incomplete. Thus an exercise lecturer has the option, to showcase this matter on a DFA and generate according exercises.
 
 \paragraph*{Planar drawing of task DFA.}
 

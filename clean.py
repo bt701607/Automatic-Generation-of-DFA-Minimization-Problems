@@ -6,9 +6,9 @@ import DB_MinimalDFAs         as db1
 import DB_EnumerationProgress as db2
 
 
-ENDINGS_OF_REMOVABLE_FILES_CODE = (".tex", ".pdf", ".aux", ".log", ".gz")
+ENDINGS_OF_REMOVABLE_FILES_THESIS = (".toc", ".pdf", ".aux", ".log", ".gz", ".bbl", ".blg", ".out")
 
-ENDINGS_OF_REMOVABLE_FILES_THESIS = (".toc", ".pdf", ".aux", ".log", ".gz")
+ENDINGS_OF_REMOVABLE_FILES_CODE = ENDINGS_OF_REMOVABLE_FILES_THESIS + (".tex",)
 
 
 def _clean(directory_path, removable_endings):
@@ -18,7 +18,7 @@ def _clean(directory_path, removable_endings):
     for _file in _listdir:
         for _ending in removable_endings:
             if _file.endswith(_ending):
-                os.remove(_file)
+                os.remove(directory_path + "\\" + _file)
 
 
 def clean_code_dir():
@@ -32,7 +32,7 @@ def clean_code_dir_keep_results():
 
 def clean_thesis_dir():
 
-    _clean(os.getcwd() + "/thesis", set(ENDINGS_OF_REMOVABLE_FILES_THESIS))
+    _clean(os.getcwd() + "\\thesis", set(ENDINGS_OF_REMOVABLE_FILES_THESIS))
     
     
 def clean_db():
@@ -50,6 +50,6 @@ def clean_db():
 
 if __name__ == "__main__":
 
-    #clean_code_dir()
-    #clean_thesis_dir()
+    clean_code_dir()
+    clean_thesis_dir()
     clean_db()

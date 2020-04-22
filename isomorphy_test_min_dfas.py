@@ -38,35 +38,33 @@ def isomorphy_test_min_dfas(dfa1, dfa2):
     while True:
     
         for ((q1,c),p1) in dfa1.transitions:
-            if q1 == act_state:
+            if q1 != act_state:
+                continue
                 
-                p1Marked = p1 in bijection.keys()
-                
-                p2 = delta2[(bijection[act_state], c)]
+            p2 = delta2[(bijection[act_state], c)]
+
+            p1Marked = p1 in bijection.keys()
+            p2Marked = p2 in bijection.values()
+            
+            if p1Marked and p2Marked:
+            
+                if bijection[p1] != p2:
+                    return False
                     
-                p2Marked = p2 in bijection.values()
-                
-                if p1Marked and p2Marked:
-                
-                    if bijection[p1] != p2:
-                        return False
-                        
-                elif not p1Marked and not p2Marked:
-                
-                    bijection[p1] = p2
-                    
-            if p1 not in finished_states:
-                observed_states.append(p1)
-                    
+            elif not p1Marked and not p2Marked:
+            
+                bijection[p1] = p2
+                if p1 not in finished_states:
+                    observed_states.append(p1)
+
             else:
-                
+
                 return False
     
         if not observed_states:
             break
             
         act_state = observed_states.pop()
-        
         finished_states.append(act_state)
         
     for q in dfa1.accepting:

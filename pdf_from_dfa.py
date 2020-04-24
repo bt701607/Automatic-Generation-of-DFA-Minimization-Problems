@@ -18,23 +18,22 @@ if platform.system() == "Windows":
 
 
 def dot_from_dfa_graphviz(dfa):
-    """description of function"""
 
     graph = Digraph()
 
     graph.attr('node', shape='doublecircle')
     for q in dfa.accepting:
         graph.node(str(q))
-        
+
     graph.attr('node', shape='circle')
     for q in dfa.states:
         if q not in dfa.accepting:
             graph.node(str(q))
-    
+
     graph.attr('node', style='filled', color='white')
     graph.node("")
 
-            
+
     graph.edge("", str(dfa.start))
 
     for (q1,c),q2 in dfa.transitions:
@@ -43,13 +42,10 @@ def dot_from_dfa_graphviz(dfa):
     print(graph.source)
 
     return graph.source
-    
-    
-#    ""
-#    
-#    "" -> {}
+
+
 def dot_from_dfa_own(dfa):
-    
+
     templateDFA = """
 digraph {{
     node [shape=circle]
@@ -62,58 +58,60 @@ digraph {{
 
     templateTransition = """    {} -> {} [label={}]
 """
-    
+
     transitionsAsStr = ""
-    
+
     for (q1,c),q2 in dfa.transitions:
         transitionsAsStr += templateTransition.format(q1, q2, c)
-        
+
     statesAsStr = ""
-    
+
     for q in dfa.states:
         if q not in dfa.accepting:
             statesAsStr += """    {}\n""".format(q)
-        
+
     acceptingAsStr = ""
-    
+
     for q in dfa.accepting:
         acceptingAsStr += """    {}\n""".format(q)
-        
+
     return templateDFA.format(statesAsStr, acceptingAsStr, transitionsAsStr)
 
 
 def tex_from_dfa(dfa):
-    
+
     return dot2tex(dot_from_dfa_own(dfa), format='tikz', crop=True, program='dot')
-    
-    
+
+
 def postprocess_tex(tex):
+    """ adds tikz automata library to TeX-code,
+        to be able to display start states correctly"""
 
     lines = tex.split('\n')
-    
+
     i = 0
-    
-    while i != len(lines):     
-    
+
+    while i != len(lines):
+
         if lines[i].startswith("\\usetikzlibrary"):
-        
+
             lines.insert(i+1, "\\usetikzlibrary{automata}")
             i += 1
-            
+
         if "\\node (0)" in lines[i]:
-        
+
             lines[i] = lines[i].replace("\\node", "\\node[initial] (0)")
-	
+
         i += 1
-        
+
     return '\n'.join(lines)
-    
+
 
 def pdf_from_dfa(dfa, identifier):
 
     with open(FILE_NAME + identifier + ".tex", "w") as outputFile:
         outputFile.write(postprocess_tex(tex_from_dfa(dfa)))
-        
+
     os.popen("pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape {}".format(EXE_ENDING, FILE_NAME + identifier + ".tex")).read()
 
 
@@ -142,9 +140,9 @@ if __name__ == "__main__":
         '0',
         ['3', '6']
     )
-    
+
     pdf_from_dfa(testDFA, "_dfa2tex")
-    
+
     #os.popen("""{}""".format("output_dfa2tex.tex")).read()
     #os.popen("""{}""".format("output_dfa2tex.pdf")).read()
 

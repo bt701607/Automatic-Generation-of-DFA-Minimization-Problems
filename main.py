@@ -2,90 +2,53 @@ from DFA                   import DFA
 from DFABuilderRandomized  import build_random_minimal_dfa
 from DFABuilderEnumerating import build_next_minimal_dfa
 from DFAExtender           import extend_minimal_complete_dfa
-from minimize_dfa          import minimize_dfa
 from pdf_from_dfa          import pdf_from_dfa
 from clean                 import clean_code_dir_keep_results
 
-
-BUILD_RANDOM_MINIMAL_DFA = False
-
-BUILD_ENUMERATED_MINIMAL_DFA = True
+import argparse
 
 
 def main():
 
+    parser = argparse.ArgumentParser(description='Generates a DFA minimization problem and its solution.', formatter_class=argparse.MetavarTypeHelpFormatter)
+
+    parser.add_argument('-k', type=int, default=2, help='alphabet size of generated DFAs (default: 2)')
+    parser.add_argument('-n', type=int, default=4, help='number of states of solution DFA (default: 4)')
+    parser.add_argument('-f', type=int, default=1, help='number of final states of solution DFA (default: 1)')
+    parser.add_argument('-dmin', type=int, default=2, help='lower bound for D-value (default: 2)')
+    parser.add_argument('-dmax', type=int, default=3, help='upper bound for D-value (default: 3)')
+    parser.add_argument('-ps', type=bool, default=True, help='toggle whether solution DFA shall be planar (default: True)')
+    parser.add_argument('-pt', type=bool, default=True, help='toggle whether task DFA shall be planar (default: True)')
+
+    parser.add_argument('-b', type=str, choices=['enum','random'], default='enum', help='toggle whether solution DFA shall be build by enumeration or randomization (default: enum)')
+
+    parser.add_argument('-e', type=int, default=2, help='number of distinct equivalent reachable state pairs in task DFA (default: 2)')
+    parser.add_argument('-u', type=int, default=1, help='number of unreachable states in task DFA (default: 1)')
+    parser.add_argument('-c', type=bool, default=True, help='toggle whether all unreachable states shall be complete (default: True)')
+
+    args = parser.parse_args()
+
     # construct dfa
 
-    orig_dfa = None
-    
-    alphabetSize = 2
-    numberOfStates = 4
-    numberOfAcceptingStates = 1
-    minMinmarkDepth = 2
-    maxMinmarkDepth = 2
-    planar = True
-    
-    if BUILD_ENUMERATED_MINIMAL_DFA:
+    if args.b == 'enum':
 
-        orig_dfa = build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar)
+        solution_dfa = build_next_minimal_dfa(args.k, args.n, args.f, args.dmin, args.dmax, args.ps)
 
-    elif BUILD_RANDOM_MINIMAL_DFA:
+    else: # args.b == 'random'
 
-        orig_dfa = build_random_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar)
-
-    else:
-
-        orig_dfa = DFA(
-            ['a','b','c','d','e'],
-            ['1','2','3','4','5'],
-            [
-                (('1','a'),'1'),
-                (('1','b'),'2'),
-                (('2','c'),'4'),
-                (('5','d'),'1'),
-                (('2','e'),'5')
-            ],
-            '1',
-            ['4','5']
-        )
-
-        orig_dfa = DFA(
-            ['0', '1'],
-            ['AD', 'B', 'CE', 'G'],
-            [
-                (('AD','1'),'CE'),
-                (('AD','0'),'G' ),
-                
-                (('B' ,'0'),'CE'),
-                (('B' ,'1'),'CE'),
-                
-                (('CE','0'),'B' ),
-                (('CE','1'),'AD'),
-                
-                (('G' ,'0'),'B' ),
-                (('G' ,'1'),'CE'),
-            ],
-            'AD',
-            ['CE']
-        )
+        solution_dfa = build_random_minimal_dfa(args.k, args.n, args.f, args.dmin, args.dmax, args.ps)
 
     # extend dfa
 
-    task_dfa, duplicate_states, unreachable_states, equiv_classes = extend_minimal_complete_dfa(orig_dfa, 2, 1)
-    
+    task_dfa, duplicate_states, unreachable_states, equiv_classes = extend_minimal_complete_dfa(solution_dfa, args.e, args.u)
+
+    print(solution_dfa)
     print(task_dfa)
 
-    # test if duplication and minimization work
-    
-    min_dfa = minimize_dfa(task_dfa)
+    # generate graphical representation of solution and task dfa
 
-    # generate graphical representation of original and extended dfa
-
-    print(duplicate_states, unreachable_states, equiv_classes)
-
-    pdf_from_dfa(orig_dfa, "1")
-    pdf_from_dfa(task_dfa, "2")
-    pdf_from_dfa(min_dfa, "3")
+    pdf_from_dfa(solution_dfa, "_solution_dfa")
+    pdf_from_dfa(task_dfa, "_task_dfa")
 
     # clean up directory
 

@@ -285,7 +285,7 @@ def tex_minimization_table(dfa):
 
     # create tex code for minimization table
 
-    tex = '\\newcommand{\\x}{$\\blacksquare$}\n'
+    tex = ''
 
     column_spec = '|'.join((dfa.numberOfStates+1) * 'c' )
     tex += '\\begin{tabular}{' + column_spec + '}\n'

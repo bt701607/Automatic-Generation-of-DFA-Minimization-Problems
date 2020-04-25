@@ -1,4 +1,5 @@
-from DFA import DFA
+from DFA          import DFA
+from minimize_dfa import tex_minimization_table
 
 from clean import clean_code_dir_keep_results
 
@@ -15,6 +16,50 @@ EXE_ENDING = ""
 # no ending for e.g. Linux, MacOS
 if platform.system() == "Windows":
     EXE_ENDING = ".exe"
+
+
+TEMPLATE_TASK = r'''
+\documentclass{{article}}
+\usepackage[x11names, svgnames, rgb]{{xcolor}}
+\usepackage[utf8]{{inputenc}}
+\usepackage{{tikz}}
+\usetikzlibrary{{snakes,arrows,shapes}}
+\usetikzlibrary{{automata}}
+\usepackage{{amsmath}}
+
+\begin{{document}}
+
+\pagestyle{{empty}}
+\enlargethispage{{100cm}}
+{}
+
+\end{{document}}
+'''
+
+TEMPLATE_SOLUTION = r'''
+\documentclass{{article}}
+\usepackage[x11names, svgnames, rgb]{{xcolor}}
+\usepackage[utf8]{{inputenc}}
+\usepackage{{tikz}}
+\usetikzlibrary{{snakes,arrows,shapes}}
+\usetikzlibrary{{automata}}
+\usepackage{{amsmath}}
+\usepackage{{MnSymbol}}
+
+\newcommand{{\x}}{{$\blacksquare$}}
+
+\begin{{document}}
+
+\pagestyle{{empty}}
+\enlargethispage{{100cm}}
+{}
+
+\vspace{{1cm}}
+
+{}
+
+\end{{document}}
+'''
 
 
 def dot_from_dfa_graphviz(dfa):
@@ -80,10 +125,10 @@ digraph {{
 
 def tex_from_dfa(dfa):
 
-    return dot2tex(dot_from_dfa_own(dfa), format='tikz', crop=True, program='dot')
+    return dot2tex(dot_from_dfa_own(dfa), format='tikz', crop=True, program='dot', figonly=True)
 
 
-def postprocess_tex(tex):
+def postprocess_tex(tex, minimization_table=None):
     """ adds tikz automata library to TeX-code,
         to be able to display start states correctly"""
 
@@ -92,11 +137,6 @@ def postprocess_tex(tex):
     i = 0
 
     while i != len(lines):
-
-        if lines[i].startswith("\\usetikzlibrary"):
-
-            lines.insert(i+1, "\\usetikzlibrary{automata}")
-            i += 1
 
         if "\\node (0)" in lines[i]:
 
@@ -107,12 +147,31 @@ def postprocess_tex(tex):
     return '\n'.join(lines)
 
 
-def pdf_from_dfa(dfa, identifier):
+def save_task(task_dfa, identifier):
 
-    with open(FILE_NAME + identifier + ".tex", "w") as outputFile:
-        outputFile.write(postprocess_tex(tex_from_dfa(dfa)))
+    fileName = 'output_task_' + identifier + ".tex"
 
-    os.popen("pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape {}".format(EXE_ENDING, FILE_NAME + identifier + ".tex")).read()
+    with open(fileName, "w") as outputFile:
+        outputFile.write(
+            TEMPLATE_TASK.format(postprocess_tex(tex_from_dfa(task_dfa)))
+        )
+
+    os.popen("pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape {}".format(EXE_ENDING, fileName)).read()
+
+
+def save_solution(solution_dfa, reach_dfa, identifier):
+
+    fileName = 'output_solution_' + identifier + ".tex"
+
+    with open(fileName, "w") as outputFile:
+        outputFile.write(
+            TEMPLATE_SOLUTION.format(
+                tex_minimization_table(reach_dfa),
+                postprocess_tex(tex_from_dfa(solution_dfa))
+            )
+        )
+
+    os.popen("pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape {}".format(EXE_ENDING, fileName)).read()
 
 
 
@@ -140,8 +199,6 @@ if __name__ == "__main__":
         '0',
         ['3', '6']
     )
-
-    pdf_from_dfa(testDFA, "_dfa2tex")
 
     #os.popen("""{}""".format("output_dfa2tex.tex")).read()
     #os.popen("""{}""".format("output_dfa2tex.pdf")).read()

@@ -2,8 +2,9 @@ from DFA                   import DFA
 from DFABuilderRandomized  import build_random_minimal_dfa
 from DFABuilderEnumerating import build_next_minimal_dfa
 from DFAExtender           import extend_minimal_complete_dfa
-from pdf_from_dfa          import pdf_from_dfa
-from clean                 import clean_code_dir_keep_results
+from pdf_from_dfa          import save_task, save_solution
+
+from clean import clean_code_dir_keep_results
 
 import argparse
 
@@ -40,15 +41,16 @@ def main():
 
     # extend dfa
 
-    task_dfa, duplicate_states, unreachable_states, equiv_classes = extend_minimal_complete_dfa(solution_dfa, args.e, args.u)
+    task_dfa, reach_dfa, duplicate_states, unreachable_states, equiv_classes = extend_minimal_complete_dfa(solution_dfa, args.e, args.u)
 
     print(solution_dfa)
+    print(reach_dfa)
     print(task_dfa)
 
     # generate graphical representation of solution and task dfa
 
-    pdf_from_dfa(solution_dfa, "_solution_dfa")
-    pdf_from_dfa(task_dfa, "_task_dfa")
+    save_task(task_dfa, '0')
+    save_solution(solution_dfa, reach_dfa, '0')
 
     # clean up directory
 

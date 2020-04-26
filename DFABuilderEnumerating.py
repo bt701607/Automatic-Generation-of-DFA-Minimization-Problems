@@ -33,7 +33,6 @@ def build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates
         # generate next dfa with correct alphabetSize, numberOfStates, numberOfAcceptingStates
 
         if enumProgress.finished:
-            print("Enum.progress finished.")
             testDFA = None
             break
 
@@ -64,8 +63,8 @@ def build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates
         db1.saveNewDFA(dbConn, testDFA) # db1.saveNewDFA needs testDFA.minmarkDepth and testDFA.isPlanar to be set
         break
 
-    print(enumProgress)
-    print("unreach. states/dupl. states/wrong mmDep./not planar/has isom. = {} | {} | {} | {} | {}\n".format(urs, ds, wmmd, np, him))
+    #print(enumProgress)
+    #print("unreach. states/dupl. states/wrong mmDep./not planar/has isom. = {} | {} | {} | {} | {}\n".format(urs, ds, wmmd, np, him))
 
     db2.updateEnumerationProgress(dbConn, enumProgress)
     dbConn.close()

@@ -29,8 +29,7 @@ TEMPLATE_TASK = r'''
 
 \begin{{document}}
 
-\pagestyle{{empty}}
-\enlargethispage{{100cm}}
+\subsection*{{Task DFA}}
 {}
 
 \end{{document}}
@@ -50,11 +49,27 @@ TEMPLATE_SOLUTION = r'''
 
 \begin{{document}}
 
-\pagestyle{{empty}}
-\enlargethispage{{100cm}}
+\subsection*{{Remove unreachable states}}
+
+Unreachable states: {}
+
+\noindent DFA after removing all unreachable states:
+
+{}
+
+\subsection*{{Merge equivalent state pairs}}
+
+States to merge:
+\begin{{itemize}}
+    {}
+\end{{itemize}}
+Minimization table:
+\vspace{{1cm}}
+
 {}
 
 \vspace{{1cm}}
+\noindent Minimal DFA after merging all equivalent states:
 
 {}
 
@@ -147,27 +162,30 @@ def postprocess_tex(tex, minimization_table=None):
     return '\n'.join(lines)
 
 
-def save_task(task_dfa, identifier):
+def save_task(taskDFA, identifier):
 
     fileName = 'output_task_' + identifier + ".tex"
 
     with open(fileName, "w") as outputFile:
         outputFile.write(
-            TEMPLATE_TASK.format(postprocess_tex(tex_from_dfa(task_dfa)))
+            TEMPLATE_TASK.format(postprocess_tex(tex_from_dfa(taskDFA)))
         )
 
     os.popen("pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape {}".format(EXE_ENDING, fileName)).read()
 
 
-def save_solution(solution_dfa, reach_dfa, identifier):
+def save_solution(solDFA, reachDFA, taskDFA, identifier):
 
     fileName = 'output_solution_' + identifier + ".tex"
 
     with open(fileName, "w") as outputFile:
         outputFile.write(
             TEMPLATE_SOLUTION.format(
-                tex_minimization_table(reach_dfa),
-                postprocess_tex(tex_from_dfa(solution_dfa))
+                '$' + ', '.join(taskDFA.unrStates) + '$',
+                postprocess_tex(tex_from_dfa(reachDFA)),
+                '\n'.join(['\item $' + ', '.join(class_) + '$' for class_ in reachDFA.eqClasses if len(class_) > 1]),
+                tex_minimization_table(reachDFA),
+                postprocess_tex(tex_from_dfa(solDFA))
             )
         )
 

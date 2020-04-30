@@ -1,4 +1,5 @@
-import os
+import pathlib, shutil
+import argparse
 
 import sqlite3
 
@@ -6,50 +7,59 @@ import DB_MinimalDFAs         as db1
 import DB_EnumerationProgress as db2
 
 
-ENDINGS_OF_REMOVABLE_FILES_THESIS = (".toc", ".pdf", ".aux", ".log", ".gz", ".bbl", ".blg", ".out")
-
-ENDINGS_OF_REMOVABLE_FILES_CODE = ENDINGS_OF_REMOVABLE_FILES_THESIS + (".tex",)
+REMOV_ENDINGS_BASE = set(('.pyc', '.toc', '.aux', '.log', '.gz', '.bbl', '.blg', '.out'))
 
 
 def _clean(directory_path, removable_endings):
 
-    _listdir = os.listdir(directory_path)
-
-    for _file in _listdir:
-        for _ending in removable_endings:
-            if _file.endswith(_ending):
-                os.remove(directory_path + "\\" + _file)
-
-
-def clean_code_dir():
-
-    _clean(os.getcwd(), set(ENDINGS_OF_REMOVABLE_FILES_CODE))
+    for f in directory_path.iterdir():
+        if f.suffix in removable_endings:
+            f.unlink()
                 
                 
-def clean_code_dir_keep_results():
+def basic(workingDir=pathlib.Path.cwd()):
 
-    _clean(os.getcwd(), set(ENDINGS_OF_REMOVABLE_FILES_CODE) - set((".pdf",".tex")))
+    pycachePath = pathlib.Path.cwd().joinpath('__pycache__')
 
-def clean_thesis_dir():
+    if pycachePath.exists():
+        shutil.rmtree(pycachePath)
 
-    _clean(os.getcwd() + "\\thesis", set(ENDINGS_OF_REMOVABLE_FILES_THESIS))
+    _clean(workingDir, REMOV_ENDINGS_BASE)
     
     
-def clean_db():
+def __complete(workingDir=pathlib.Path.cwd(), keepResults=False, keepDB=False):
 
-    conn = sqlite3.connect('dfa.db')
+    pycachePath = pathlib.Path.cwd().joinpath('__pycache__')
+
+    if pycachePath.exists():
+        shutil.rmtree(pycachePath)
+
+
+    # clean working dir
+
+    endingsToRemove = REMOV_ENDINGS_BASE.copy()
+
+    if not keepResults:
+        endingsToRemove |= set(('.pdf','.tex'))
+        
+    if not keepDB:
+        endingsToRemove |= set(('.db',))
+        
+    _clean(workingDir, endingsToRemove)
     
-    db1.clear(conn)
-    db2.clear(conn)
     
-    db1.ensureValidity(conn)
-    db2.ensureValidity(conn)
+    # clean thesis and presentation directories
     
-    conn.close()
+    _clean(pathlib.Path.cwd() / 'thesis',       REMOV_ENDINGS_BASE | set(('.pdf'),))
+    _clean(pathlib.Path.cwd() / 'presentation', REMOV_ENDINGS_BASE | set(('.pdf'),))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
-    clean_code_dir()
-    clean_thesis_dir()
-    clean_db()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', type=str, default=pathlib.Path.cwd())
+    parser.add_argument('-r', type=bool, default=False)
+    parser.add_argument('-db', type=bool, default=False)
+    args = parser.parse_args()
+
+    __complete(pathlib.Path(args.p), args.r, args.db)

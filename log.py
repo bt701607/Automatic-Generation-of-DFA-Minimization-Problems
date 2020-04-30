@@ -1,3 +1,7 @@
+def start(args):
+
+    print('Working directory: "{}".'.format(args.p), flush=True)
+
 def building_solution(args):
 
     planar = 'planar ' if args.ps else ''
@@ -10,7 +14,7 @@ def building_solution(args):
             args.dmin, args.dmax,
             method
         ), 
-        end=''
+        end='', flush=True
     )
     
 def extending_solution(args):
@@ -23,21 +27,21 @@ def extending_solution(args):
             complete, planar,
             args.e, args.u
         ),
-        end=''
+        end='', flush=True
     )
     
 def saving():
 
-    print('Saving task and solution..', end='')
+    print('Saving task and solution..', end='', flush=True)
     
 def cleaning():
 
-    print('Cleaning working directory..', end='')
+    print('Cleaning working directory..', end='', flush=True)
     
 def failed():
 
-    print('failed.')
+    print('failed.', flush=True)
     
 def done():
 
-    print('done.')
+    print('done.', flush=True)

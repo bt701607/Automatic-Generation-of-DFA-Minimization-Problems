@@ -1,5 +1,7 @@
 from DFA import DFA
 
+import log
+
 import pygraph
 
 
@@ -16,7 +18,13 @@ def planarity_test_dfa(dfa):
     for ((q1,c),q2) in dfa.transitions:
         graph.new_edge(bijection[q1], bijection[q2])
         
-    dfa.isPlanar = pygraph.is_planar(graph)
+    try:
+        dfa.isPlanar = pygraph.is_planar(graph)
+    except IndexError:
+        log.failed()
+        print('Error: Planarity test failed on the following DFA:')
+        print(dfa, '\n')
+        raise
         
     return dfa.isPlanar
 

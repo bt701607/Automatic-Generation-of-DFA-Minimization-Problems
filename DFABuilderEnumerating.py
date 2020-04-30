@@ -6,16 +6,14 @@ from planarity_test_dfa      import planarity_test_dfa
 import DB_MinimalDFAs         as db1
 import DB_EnumerationProgress as db2
 
-from clean import clean_code_dir_keep_results
-
 import sqlite3
 import random
 
 
 
-def build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar):
+def build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar, workingDir):
 
-    dbConn = sqlite3.connect('dfa.db')
+    dbConn = sqlite3.connect(workingDir / 'dfa.db')
 
     db1.ensureValidity(dbConn)
     db2.ensureValidity(dbConn)

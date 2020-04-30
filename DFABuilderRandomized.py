@@ -3,18 +3,15 @@ from minimize_dfa            import *
 from isomorphy_test_min_dfas import contains_isomorph_dfa
 from planarity_test_dfa      import planarity_test_dfa
 
-from clean import clean_code_dir_keep_results
-
 import DB_MinimalDFAs as db1
-
 
 import random
 import sqlite3
 
 
-def build_random_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar):
+def build_random_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar, workingDir):
 
-    dbConn = sqlite3.connect('dfa.db')
+    dbConn = sqlite3.connect(workingDir / 'dfa.db')
 
     db1.ensureValidity(dbConn)
 
@@ -60,5 +57,3 @@ if __name__ == "__main__":
 
     # alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar
     print(build_random_minimal_dfa(3, 6, 3, 2, 3, True))
-
-    clean_code_dir_keep_results()

@@ -1,19 +1,15 @@
 from DFA          import DFA
 from minimize_dfa import tex_minimization_table
 
-from clean import clean_code_dir_keep_results
+import clean
 
-from graphviz import Digraph
-from dot2tex  import dot2tex
+from dot2tex import dot2tex
 
-import os
-import platform
+import os, platform, pathlib
 
 
-FILE_NAME  = "output"
 EXE_ENDING = ""
 
-# no ending for e.g. Linux, MacOS
 if platform.system() == "Windows":
     EXE_ENDING = ".exe"
 
@@ -77,34 +73,7 @@ Minimization table:
 '''
 
 
-def dot_from_dfa_graphviz(dfa):
-
-    graph = Digraph()
-
-    graph.attr('node', shape='doublecircle')
-    for q in dfa.accepting:
-        graph.node(str(q))
-
-    graph.attr('node', shape='circle')
-    for q in dfa.states:
-        if q not in dfa.accepting:
-            graph.node(str(q))
-
-    graph.attr('node', style='filled', color='white')
-    graph.node("")
-
-
-    graph.edge("", str(dfa.start))
-
-    for (q1,c),q2 in dfa.transitions:
-        graph.edge(str(q1), str(q2), label=str(c))
-
-    print(graph.source)
-
-    return graph.source
-
-
-def dot_from_dfa_own(dfa):
+def dot_from_dfa(dfa):
 
     templateDFA = """
 digraph {{
@@ -140,7 +109,7 @@ digraph {{
 
 def tex_from_dfa(dfa):
 
-    return dot2tex(dot_from_dfa_own(dfa), format='tikz', crop=True, program='dot', figonly=True)
+    return dot2tex(dot_from_dfa(dfa), format='tikz', crop=True, program='dot', figonly=True)
 
 
 def postprocess_tex(tex, minimization_table=None):
@@ -162,34 +131,47 @@ def postprocess_tex(tex, minimization_table=None):
     return '\n'.join(lines)
 
 
-def save_task(taskDFA, identifier):
 
-    fileName = 'output_task_' + identifier + ".tex"
+def save_task(taskDFA, workingDir):
 
-    with open(fileName, "w") as outputFile:
-        outputFile.write(
-            TEMPLATE_TASK.format(postprocess_tex(tex_from_dfa(taskDFA)))
+    if platform.system() == "Windows":
+        workingDir = pathlib.WindowsPath(workingDir)
+    else:
+        workingDir = pathlib.PosixPath(workingDir)
+
+    workingDir.joinpath('task.tex').write_text(
+        TEMPLATE_TASK.format(
+            postprocess_tex(tex_from_dfa(taskDFA))
         )
+    )
 
-    os.popen("pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape {}".format(EXE_ENDING, fileName)).read()
+    os.popen(
+        'pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory="{}" "{}"'
+        .format(EXE_ENDING, workingDir, workingDir.joinpath('task.tex'))
+    ).read()
 
 
-def save_solution(solDFA, reachDFA, taskDFA, identifier):
+def save_solution(solDFA, reachDFA, taskDFA, workingDir):
 
-    fileName = 'output_solution_' + identifier + ".tex"
+    if platform.system() == "Windows":
+        workingDir = pathlib.WindowsPath(workingDir)
+    else:
+        workingDir = pathlib.PosixPath(workingDir)
 
-    with open(fileName, "w") as outputFile:
-        outputFile.write(
-            TEMPLATE_SOLUTION.format(
-                '$' + ', '.join(taskDFA.unrStates) + '$',
-                postprocess_tex(tex_from_dfa(reachDFA)),
-                '\n'.join(['\item $' + ', '.join(class_) + '$' for class_ in reachDFA.eqClasses if len(class_) > 1]),
-                tex_minimization_table(reachDFA),
-                postprocess_tex(tex_from_dfa(solDFA))
-            )
+    workingDir.joinpath('solution.tex').write_text(
+        TEMPLATE_SOLUTION.format(
+            '$' + ', '.join(taskDFA.unrStates) + '$',
+            postprocess_tex(tex_from_dfa(reachDFA)),
+            '\n'.join(['\item $' + ', '.join(class_) + '$' for class_ in reachDFA.eqClasses if len(class_) > 1]),
+            tex_minimization_table(reachDFA),
+            postprocess_tex(tex_from_dfa(solDFA))
         )
+    )
 
-    os.popen("pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape {}".format(EXE_ENDING, fileName)).read()
+    os.popen(
+        'pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory="{}" "{}"'
+        .format(EXE_ENDING, workingDir, workingDir.joinpath('solution.tex'))
+    ).read()
 
 
 
@@ -223,4 +205,4 @@ if __name__ == "__main__":
 
     # clean up directory
 
-    clean_code_dir_keep_results()
+    clean.basic()

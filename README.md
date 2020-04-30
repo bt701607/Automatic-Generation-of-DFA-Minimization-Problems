@@ -6,7 +6,6 @@ Dependencies:
 * Graphviz (https://graphviz.org/download/)
 Note for the "Stable 2.38 Windows install packages": The installer does not automatically add "C:\Program Files (x86)\Graphviz2.38\bin" (or similar) to the PATH environment variable, this must thus be done manually.
 
-* graphviz (pip install graphviz)
 * pyparsing (pip install pyparsing)
 
 Profiling needs:

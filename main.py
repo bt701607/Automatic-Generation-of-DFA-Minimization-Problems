@@ -5,8 +5,9 @@ from DFAExtender           import extend_minimal_complete_dfa
 from pdf_from_dfa          import save_task, save_solution
 
 import clean
-import log as LOG
+import log
 
+import pathlib
 import argparse
 
 
@@ -28,23 +29,39 @@ def main():
     parser.add_argument('-u', type=int, default=1, help='number of unreachable states in task DFA (default: 1)')
     parser.add_argument('-c', type=bool, default=True, help='toggle whether all unreachable states shall be complete (default: True)')
 
+    parser.add_argument('-p', type=str, default=pathlib.Path.cwd(), help='working directory; here results will be saved (default: {})'.format(pathlib.Path.cwd()))
+    
+    
+    # check paramters
+
     args = parser.parse_args()
     
+    args.p = pathlib.Path(args.p)
+    
+    if not args.p.exists():
+        print("Error: Path '{}' does not exist.".format(args.p))
+        return
+    
+    if not args.p.exists() or not args.p.is_dir():
+        print("Error: '{}' does not specify a directory.".format(args.p))
+        return
     
     if args.k < 2 and args.e > 0:
         print('Error: DFAs with less than two alphabet symbols cannot be extended with equivalent state pairs.')
         return
+        
+    log.start(args)
     
 
     # construct solution dfa
 
-    LOG.building_solution(args)
+    log.building_solution(args)
 
     if args.b == 'enum':
-        solDFA = build_next_minimal_dfa(args.k, args.n, args.f, args.dmin, args.dmax, args.ps)
+        solDFA = build_next_minimal_dfa(args.k, args.n, args.f, args.dmin, args.dmax, args.ps, args.p)
         
         if solDFA == None:
-            LOG.failed()
+            log.failed()
             print('Error: All DFAs with the specified parameters have been enumerated. Generate respective random DFA instead (y/n)?')
             
             if input() in ('y',''):
@@ -53,37 +70,37 @@ def main():
                 return
         
     if args.b == 'random':
-        solDFA = build_random_minimal_dfa(args.k, args.n, args.f, args.dmin, args.dmax, args.ps)
+        solDFA = build_random_minimal_dfa(args.k, args.n, args.f, args.dmin, args.dmax, args.ps, args.p)
     
-    LOG.done()
+    log.done()
 
 
     # extend dfa
     
-    LOG.extending_solution(args)
+    log.extending_solution(args)
 
     reachDFA, taskDFA = extend_minimal_complete_dfa(solDFA, args.e, args.u, args.pt, args.c)
     
-    LOG.done()
+    log.done()
     
 
     # generate graphical representation of solution and task dfa
 
-    LOG.saving()
+    log.saving()
     
-    save_task(taskDFA, '0')
-    save_solution(solDFA, reachDFA, taskDFA, '0')
+    save_task(taskDFA, args.p)
+    save_solution(solDFA, reachDFA, taskDFA, args.p)
     
-    LOG.done()
+    log.done()
     
 
     # clean up directory
     
-    LOG.cleaning()
+    log.cleaning()
 
-    clean.clean_code_dir_keep_results()
+    clean.basic(args.p)
     
-    LOG.done()
+    log.done()
     
 
 

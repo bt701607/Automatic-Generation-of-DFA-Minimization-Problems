@@ -1,6 +1,6 @@
 def start(args):
 
-    print('Working directory: "{}".'.format(args.p), flush=True)
+    print("Working directory: '{}'.".format(args.p), flush=True)
 
 def building_solution(args):
 

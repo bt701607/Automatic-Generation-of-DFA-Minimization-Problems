@@ -18,7 +18,7 @@ def build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates
     db1.ensureValidity(dbConn)
     db2.ensureValidity(dbConn)
 
-    matchingUsedDFAs = db1.fetchMatchingDFAs(dbConn, alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar)
+    matchingUsedDFAs = db1.fetchMatchingDFAs(dbConn, alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth)
 
     enumProgress = db2.fetchEnumerationProgress(dbConn, alphabetSize, numberOfStates, numberOfAcceptingStates)
 
@@ -62,7 +62,7 @@ def build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates
         break
 
     #print(enumProgress)
-    #print("unreach. states/dupl. states/wrong mmDep./not planar/has isom. = {} | {} | {} | {} | {}\n".format(urs, ds, wmmd, np, him))
+    #print('unreach. states/dupl. states/wrong mmDep./not planar/has isom. = {} | {} | {} | {} | {}\n'.format(urs, ds, wmmd, np, him))
 
     db2.updateEnumerationProgress(dbConn, enumProgress)
     dbConn.close()
@@ -71,7 +71,7 @@ def build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates
 
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     # alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar
     dfa = build_next_minimal_dfa(2, 6, 2, 2, 3, True)

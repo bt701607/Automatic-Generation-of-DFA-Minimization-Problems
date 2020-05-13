@@ -36,17 +36,17 @@ class DFA(object):
         
     def __str__(self):
         
-        string = "(\n"
-        string += "\t" + str(self.alphabet) + ",\n"
-        string += "\t" + str(self.states) + ",\n"
-        string += "\t[\n"
+        string = '(\n'
+        string += '\t' + str(self.alphabet) + ',\n'
+        string += '\t' + str(self.states) + ',\n'
+        string += '\t[\n'
 
         for transition in self.transitions:
-            string += "\t\t" + str(transition) + ",\n"
+            string += '\t\t' + str(transition) + ',\n'
             
-        string += "\t],\n"
-        string += "\t'" + str(self.start) + "',\n"
-        string += "\t" + str(self.accepting) + "\n"
-        string += ")\n"
+        string += '\t],\n'
+        string += '\t'' + str(self.start) + '',\n'
+        string += '\t' + str(self.accepting) + '\n'
+        string += ')\n'
 
         return string

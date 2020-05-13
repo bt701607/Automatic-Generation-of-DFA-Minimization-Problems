@@ -25,10 +25,10 @@ def clear(dbConn):
     
 def __encodeListOfInts(intList):
 
-    resultString = ""
+    resultString = ''
    
     for n in intList:
-        resultString += str(n) + ","
+        resultString += str(n) + ','
         
     return resultString[:-1]
     
@@ -67,8 +67,8 @@ def fetchEnumerationProgress(dbConn, alphabetSize, numberOfStates, numberOfAccep
         
         acceptingStatesProgress, transitionsProgress, finished = dbResult
         
-        acceptingStatesProgress = [int(i) for i in acceptingStatesProgress.split(",")]
-        transitionsProgress     = [int(i) for i in transitionsProgress.split(",")]
+        acceptingStatesProgress = [int(i) for i in acceptingStatesProgress.split(',')]
+        transitionsProgress     = [int(i) for i in transitionsProgress.split(',')]
         finished                = bool(finished)
         
         return EnumerationProgress.fromExisting(alphabetSize, numberOfStates, numberOfAcceptingStates, acceptingStatesProgress, transitionsProgress, finished)
@@ -104,7 +104,7 @@ class EnumerationProgress(object):
     def __init__(self, alphabetSize, numberOfStates, numberOfAcceptingStates):
     
         if numberOfStates < 1:
-            raise Exception("Number of states must be greater than zero for a DFA.")
+            raise Exception('Number of states must be greater than zero for a DFA.')
     
         self.alphabetSize   = alphabetSize
         self.numberOfStates = numberOfStates
@@ -126,7 +126,7 @@ class EnumerationProgress(object):
     def fromExisting(alphabetSize, numberOfStates, numberOfAcceptingStates, acceptingStatesProgress, transitionsProgress, finished):
     
         if numberOfStates < 1:
-            raise Exception("Number of states must be greater than zero for a DFA.")
+            raise Exception('Number of states must be greater than zero for a DFA.')
             
         enumProg = EnumerationProgress(alphabetSize, numberOfStates, numberOfAcceptingStates)
         
@@ -195,7 +195,7 @@ class EnumerationProgress(object):
         )
     
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     dbConn = sqlite3.connect('dfa.db')
     
@@ -203,15 +203,15 @@ if __name__ == "__main__":
     ensureValidity(dbConn)
     
     test_progress = fetchEnumerationProgress(dbConn, 2, 3, 1)
-    print(str(test_progress) + "\n")
+    print(str(test_progress) + '\n')
     print(test_progress.dfa())
     test_progress.increment()
     updateEnumerationProgress(dbConn, test_progress)
     
-    print("\n")
+    print('\n')
     
     test_progress = fetchEnumerationProgress(dbConn, 2, 3, 1)
-    print(str(test_progress) + "\n")
+    print(str(test_progress) + '\n')
     print(test_progress.dfa())
     
     clear(dbConn)

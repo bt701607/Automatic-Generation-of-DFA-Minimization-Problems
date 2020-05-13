@@ -316,7 +316,7 @@ def tex_minimization_table(dfa):
 
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     test_dfa = DFA(
         ['0','1','2'],
@@ -341,14 +341,14 @@ if __name__ == "__main__":
         ['C','E']
     )
 
-    print(str(test_dfa) + "\n")
+    print(str(test_dfa) + '\n')
 
     test_dfa = __delete_unreachable_states(test_dfa)
 
     print(tex_minimization_table(test_dfa))
 
-    print("\n" + str(test_dfa) + "\n")
+    print('\n' + str(test_dfa) + '\n')
 
     test_dfa = __delete_duplicate_states(test_dfa)
 
-    print("\n" + str(test_dfa) + "\nminmarkDepth = " + str(test_dfa.minmarkDepth))
+    print('\n' + str(test_dfa) + '\nminmarkDepth = ' + str(test_dfa.minmarkDepth))

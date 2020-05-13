@@ -74,9 +74,9 @@ def isomorphy_test_min_dfas(dfa1, dfa2):
     return True
    
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
-    print("Executing test cases.\n")
+    print('Executing test cases.\n')
 
     test_dfa1 = DFA(
         ['0', '1'],
@@ -129,8 +129,8 @@ if __name__ == "__main__":
         ['E']
     )
     
-    print("TestDFA1. Expected - True. Result: " + str(isomorphy_test_min_dfas(test_dfa1, test_dfa1_isomorph)))
-    print("TestDFA1. Expected - False. Result: " + str(isomorphy_test_min_dfas(test_dfa1, test_dfa1_not_isomorph)))
+    print('TestDFA1. Expected - True. Result: ' + str(isomorphy_test_min_dfas(test_dfa1, test_dfa1_isomorph)))
+    print('TestDFA1. Expected - False. Result: ' + str(isomorphy_test_min_dfas(test_dfa1, test_dfa1_not_isomorph)))
     
     test_dfa2 = DFA(
         ['a', 'b', 'c', 'd', 'e'],
@@ -174,8 +174,8 @@ if __name__ == "__main__":
         [3]
     )
     
-    print("TestDFA2. Expected - True. Result: " + str(isomorphy_test_min_dfas(test_dfa2, test_dfa2_isomorph)))
-    print("TestDFA2. Expected - False. Result: " + str(isomorphy_test_min_dfas(test_dfa2, test_dfa2_not_isomorph)))
+    print('TestDFA2. Expected - True. Result: ' + str(isomorphy_test_min_dfas(test_dfa2, test_dfa2_isomorph)))
+    print('TestDFA2. Expected - False. Result: ' + str(isomorphy_test_min_dfas(test_dfa2, test_dfa2_not_isomorph)))
     
     
    

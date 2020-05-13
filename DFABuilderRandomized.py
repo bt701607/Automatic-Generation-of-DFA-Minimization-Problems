@@ -15,7 +15,7 @@ def build_random_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStat
 
     db1.ensureValidity(dbConn)
 
-    matchingUsedDFAs = db1.fetchMatchingDFAs(dbConn, alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar)
+    matchingUsedDFAs = db1.fetchMatchingDFAs(dbConn, alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth)
 
     A = [ chr(i) for i in range(ord('a'), ord('a')+alphabetSize) ]
     Q = [ str(i) for i in range(numberOfStates) ]
@@ -24,7 +24,7 @@ def build_random_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStat
 
         # generate random dfa with correct alphabetSize, numberOfStates, numberOfAcceptingStates
 
-        testDFA = DFA(A, Q, [], '0', random.sample(Q, numberOfAcceptingStates), alphabetSize, numberOfStates, numberOfAcceptingStates)
+        testDFA = DFA(A, Q, [], '0', random.sample(Q,numberOfAcceptingStates), alphabetSize, numberOfStates, numberOfAcceptingStates)
 
         for q in testDFA.states:
             for sigma in testDFA.alphabet:
@@ -53,7 +53,7 @@ def build_random_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStat
         return testDFA
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     # alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar
     print(build_random_minimal_dfa(3, 6, 3, 2, 3, True))

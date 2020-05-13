@@ -29,7 +29,7 @@ def planarity_test_dfa(dfa):
     return dfa.isPlanar
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     test_dfa = DFA(
         ['a','b','c','d','e'],

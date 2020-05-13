@@ -8,10 +8,10 @@ from dot2tex import dot2tex
 import os, platform, pathlib
 
 
-EXE_ENDING = ""
+EXE_ENDING = ''
 
-if platform.system() == "Windows":
-    EXE_ENDING = ".exe"
+if platform.system() == 'Windows':
+    EXE_ENDING = '.exe'
 
 
 TEMPLATE_TASK = r'''
@@ -75,7 +75,7 @@ Minimization table:
 
 def dot_from_dfa(dfa):
 
-    templateDFA = """
+    templateDFA = '''
 digraph {{
     node [shape=circle]
 {}
@@ -83,26 +83,26 @@ digraph {{
 {}
     node [color=white style=filled]
 {}
-}}"""
+}}'''
 
-    templateTransition = """    {} -> {} [label={}]
-"""
+    templateTransition = '''    {} -> {} [label={}]
+'''
 
-    transitionsAsStr = ""
+    transitionsAsStr = ''
 
     for (q1,c),q2 in dfa.transitions:
         transitionsAsStr += templateTransition.format(q1, q2, c)
 
-    statesAsStr = ""
+    statesAsStr = ''
 
     for q in dfa.states:
         if q not in dfa.accepting:
-            statesAsStr += """    {}\n""".format(q)
+            statesAsStr += '''    {}\n'''.format(q)
 
-    acceptingAsStr = ""
+    acceptingAsStr = ''
 
     for q in dfa.accepting:
-        acceptingAsStr += """    {}\n""".format(q)
+        acceptingAsStr += '''    {}\n'''.format(q)
 
     return templateDFA.format(statesAsStr, acceptingAsStr, transitionsAsStr)
 
@@ -113,8 +113,8 @@ def tex_from_dfa(dfa):
 
 
 def postprocess_tex(tex, minimization_table=None):
-    """ adds tikz automata library to TeX-code,
-        to be able to display start states correctly"""
+    ''' adds tikz automata library to TeX-code,
+        to be able to display start states correctly'''
 
     lines = tex.split('\n')
 
@@ -122,9 +122,9 @@ def postprocess_tex(tex, minimization_table=None):
 
     while i != len(lines):
 
-        if "\\node (0)" in lines[i]:
+        if '\\node (0)' in lines[i]:
 
-            lines[i] = lines[i].replace("\\node", "\\node[initial] (0)")
+            lines[i] = lines[i].replace('\\node', '\\node[initial] (0)')
 
         i += 1
 
@@ -134,7 +134,7 @@ def postprocess_tex(tex, minimization_table=None):
 
 def save_task(taskDFA, workingDir):
 
-    if platform.system() == "Windows":
+    if platform.system() == 'Windows':
         workingDir = pathlib.WindowsPath(workingDir)
     else:
         workingDir = pathlib.PosixPath(workingDir)
@@ -146,14 +146,14 @@ def save_task(taskDFA, workingDir):
     )
 
     os.popen(
-        'pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory="{}" "{}"'
+        """pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory='{}' '{}'"""
         .format(EXE_ENDING, workingDir, workingDir.joinpath('task.tex'))
     ).read()
 
 
 def save_solution(solDFA, reachDFA, taskDFA, workingDir):
 
-    if platform.system() == "Windows":
+    if platform.system() == 'Windows':
         workingDir = pathlib.WindowsPath(workingDir)
     else:
         workingDir = pathlib.PosixPath(workingDir)
@@ -169,13 +169,13 @@ def save_solution(solDFA, reachDFA, taskDFA, workingDir):
     )
 
     os.popen(
-        'pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory="{}" "{}"'
+        """pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory='{}' '{}'"""
         .format(EXE_ENDING, workingDir, workingDir.joinpath('solution.tex'))
     ).read()
 
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     testDFA = DFA(
         ['a', 'b'],
@@ -200,8 +200,8 @@ if __name__ == "__main__":
         ['3', '6']
     )
 
-    #os.popen("""{}""".format("output_dfa2tex.tex")).read()
-    #os.popen("""{}""".format("output_dfa2tex.pdf")).read()
+    #os.popen('''{}'''.format('output_dfa2tex.tex')).read()
+    #os.popen('''{}'''.format('output_dfa2tex.pdf')).read()
 
     # clean up directory
 

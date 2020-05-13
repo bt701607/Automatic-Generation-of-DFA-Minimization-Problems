@@ -24,26 +24,25 @@ def clear(dbConn):
 
 
 # sets dfa.minMinmarkDepth and dfa.isPlanar
-def fetchMatchingDFAs(dbConn, alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar):
+def fetchMatchingDFAs(dbConn, alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth):
     
-    qFindMatchingDFA = '''SELECT dfa, minmarkDepth FROM MinimalDFAs WHERE 
+    qFindMatchingDFA = '''SELECT dfa, minmarkDepth, isPlanar FROM MinimalDFAs WHERE 
         alphabetSize = ? AND
         numberOfStates = ? AND
         numberOfAcceptingStates = ? AND
         minmarkDepth >= ? AND
-        minmarkDepth <= ? AND
-        isPlanar = ?
+        minmarkDepth <= ?
     '''
     
-    dbTuple = (alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar)
+    dbTuple = (alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth)
             
     dfaList = []
             
-    for encodedDFA, minmarkDepth in dbConn.execute(qFindMatchingDFA, dbTuple):
+    for encodedDFA, minmarkDepth, isPlanar in dbConn.execute(qFindMatchingDFA, dbTuple):
     
         dfa = __decodeDFA(encodedDFA)
         dfa.minmarkDepth = minmarkDepth
-        dfa.isPlanar     = planar
+        dfa.isPlanar     = isPlanar
         dfaList.append(dfa)
             
     return dfaList
@@ -52,6 +51,9 @@ def fetchMatchingDFAs(dbConn, alphabetSize, numberOfStates, numberOfAcceptingSta
     
 # requires dfa.minMinmarkDepth and dfa.isPlanar to be set
 def saveNewDFA(dbConn, dfa):
+
+    assert dfa.minmarkDepth != None, 'dfa.minmarkDepth is required to be set'
+    assert dfa.isPlanar     != None, 'dfa.isPlanar is required to be set'
     
     dbTuple = (__encodeDFA(dfa), dfa.alphabetSize, dfa.numberOfStates, dfa.numberOfAcceptingStates, dfa.minmarkDepth, dfa.isPlanar)
 
@@ -64,27 +66,27 @@ def saveNewDFA(dbConn, dfa):
 
 def __encodeDFA(dfa):
 
-    encodedDFA = ""
+    encodedDFA = ''
     
     for c in dfa.alphabet:
-        encodedDFA += str(c) + ","
+        encodedDFA += str(c) + ','
     if len(dfa.alphabet) != 0:
-        encodedDFA = encodedDFA[:-1] + ";"
+        encodedDFA = encodedDFA[:-1] + ';'
     
     for q in dfa.states:
-        encodedDFA += str(q) + ","
+        encodedDFA += str(q) + ','
     if len(dfa.states) != 0:
-        encodedDFA = encodedDFA[:-1] + ";"
+        encodedDFA = encodedDFA[:-1] + ';'
     
     for ((q1,c),q2) in dfa.transitions:
-        encodedDFA += str(q1) + "." + str(c) + "." + str(q2) + ","
+        encodedDFA += str(q1) + '.' + str(c) + '.' + str(q2) + ','
     if len(dfa.transitions) != 0:
-        encodedDFA = encodedDFA[:-1] + ";"
+        encodedDFA = encodedDFA[:-1] + ';'
     
-    encodedDFA += str(dfa.start) + ";"
+    encodedDFA += str(dfa.start) + ';'
     
     for q in dfa.accepting:
-        encodedDFA += str(q) + ","
+        encodedDFA += str(q) + ','
     if len(dfa.accepting) != 0:
         encodedDFA = encodedDFA[:-1]
     
@@ -93,25 +95,25 @@ def __encodeDFA(dfa):
     
 def __decodeDFA(encodedDFA):
 
-    encodedElements = encodedDFA.split(";")
+    encodedElements = encodedDFA.split(';')
     
-    alphabet = encodedElements[0].split(",")
+    alphabet = encodedElements[0].split(',')
     if '' in alphabet:
         alphabet.remove('')
     
-    states = encodedElements[1].split(",")
+    states = encodedElements[1].split(',')
     if '' in states:
         states.remove('')
     
-    transitions = encodedElements[2].split(",")
+    transitions = encodedElements[2].split(',')
     if '' in transitions:
         transitions.remove('')
-    transitions = [t.split(".") for t in transitions]
+    transitions = [t.split('.') for t in transitions]
     transitions = [((q1, c), q2) for (q1,c,q2) in transitions]
     
     start = encodedElements[3]
     
-    accepting = encodedElements[4].split(",")
+    accepting = encodedElements[4].split(',')
     if '' in accepting:
         accepting.remove('')
     
@@ -119,7 +121,7 @@ def __decodeDFA(encodedDFA):
 
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     test_dfa1 = DFA(
         ['a','b','c','d','e'],
@@ -155,12 +157,12 @@ if __name__ == "__main__":
         ['CE']
     )
     
-    #print("En-/Decode-Test 1. Expecting equal DFAs:\n")
+    #print('En-/Decode-Test 1. Expecting equal DFAs:\n')
     
     #print(str(test_dfa1))
-    #print(str(__decodeDFA(__encodeDFA(test_dfa1))) + "\n\n")
+    #print(str(__decodeDFA(__encodeDFA(test_dfa1))) + '\n\n')
     
-    #print("En-/Decode-Test 2. Expecting equal DFAs:\n")
+    #print('En-/Decode-Test 2. Expecting equal DFAs:\n')
     
     #print(str(test_dfa2))
     #print(str(__decodeDFA(__encodeDFA(test_dfa2))))

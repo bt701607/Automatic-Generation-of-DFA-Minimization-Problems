@@ -98,9 +98,19 @@ In~\cite[p. 45]{Sch01} we can find the following statement:
 \end{theorem}
 \noindent We describe a simple isomorphism test for DFAs in appendix~\ref{ch:app:ism-test}.
 
-\subsection{The minimization algorithm}
+\subsection{Hopcroft's Minimization Algorithm}
 
-This minimization algorithm \MinAlg\ works in four major steps, essentially removing states in such a way, that no unreachable states and no equivalent state pairs are left.
+There are three major algorithms for DFA minimization found by Moore, Brzozowski and Hopcroft, respectively (\cite[p. 2]{BBC10}). On the latter an easy algorithm is based, that is presented in the textbook~\cite{HMU01} and will be described here more precisely. We will call Hopcroft's algorithm `the minimization algorithm' from now on. Its general structure is the following:
+\vspace{0.2cm}
+\begin{algorithmic}[1] \label{ch:2:minalg}
+	\Function{\MinAlg}{$A$}
+	\State $A' \gets \RemUnr(A, \CompUnr(A))$
+	\State \Return $\RemEq(A', \CompDist(A'))$
+	\EndFunction
+\end{algorithmic}
+\vspace{0.2cm}
+
+\noindent It can be seen that \MinAlg\ works in four major steps. In step 1 and 2 unreachable states are found and removed. In step 3 all equivalent state pairs are found. Step 4 removes states in such a way, that no equivalent state pairs are left.
 \begin{enumerate}
 	\item Compute all unreachable states via breadth-first search.
 	
@@ -130,7 +140,7 @@ This minimization algorithm \MinAlg\ works in four major steps, essentially remo
 		\EndFunction
 	\end{algorithmic}
 
-	\item Compute all equivalent state pairs ($\sim_A$). Inspired by Schöning~\cite[p. 46]{Sch01} and Martens and Schwentick~\cite[p. 17]{MS18}.
+	\item Compute all equivalent state pairs ($\sim_A$). The representation is inspired by Martens and Schwentick~\cite[ch.~4, p.~17]{MS18}. Note that \CompDist\ requires its input automaton to be complete (\cite[p.~13]{BBC10}).
 	\vspace{0.2cm}
 	\begin{algorithmic}[1]
 		\Function{\CompDist}{$A$} \label{ch:2:minmark}
@@ -142,39 +152,27 @@ This minimization algorithm \MinAlg\ works in four major steps, essentially remo
 		\State \Return $Q^2 \setminus M$
 		\EndFunction
 	\end{algorithmic}
-	Note that \CompDist\ requires its input automaton to be complete.\footnote{Most authors implicitly assume this or define DFAs to be complete from the beginning.}
 
-	\item Merge all equivalent state pairs, which are exactly those in $\sim_A$. Inspired by Högberg and Larsson~\cite[p. 10]{HL20}.
+	\item Merge all equivalent state pairs, which are exactly those in $\sim_A$. The representation is inspired by Högberg and Larsson~\cite[p.~10]{HL20}.
 	
 	\vspace{0.2cm}
 	\begin{algorithmic}[1] \label{ch:2:minmerge}
 		\Function{\RemEq}{$A$, $\sim_A$}
-            \State $Q_E \gets \emptyset$
-            \State $\delta_E \gets \emptyset$
-            \State $F_E \gets \emptyset$
+            \State $Q' \gets \emptyset, \delta' \gets \emptyset, F' \gets \emptyset$
             \For {$q$ \textbf{in} $Q$}
-                \State Add $[q]$ to $Q_E$ \Comment{$[\cdot]_{\sim_A}$ shall be abbreviated $[\cdot]$}
+                \State Add $[q]$ to $Q'$ \Comment{$[\cdot]_{\sim_A}$ shall be abbreviated $[\cdot]$}
                 \For {$\sigma$ \textbf{in} $\Sigma$}
-                    \State $\delta_E([q], \sigma) = [\delta(q, \sigma)]$
+                    \State $\delta'([q], \sigma) = [\delta(q, \sigma)]$
                 \EndFor
                 \If {$q \in F$}
-                    \State Add $[q]$ to $F_E$
+                    \State Add $[q]$ to $F'$
                 \EndIf
             \EndFor
-			\State \Return $(Q_E, \Sigma, \delta_E, [s], F_E)$
+			\State \Return $(Q', \Sigma, \delta', [s], F')$
 		\EndFunction
 	\end{algorithmic}
 \end{enumerate}
-
-\vspace{0.2cm}
-\begin{algorithmic}[1] \label{ch:2:minalg}
-    \Function{\MinAlg}{$A$}
-    \State $A' \gets \RemUnr(A, \CompUnr(A))$
-    \State \Return $\RemEq(A', \CompDist(A'))$
-    \EndFunction
-\end{algorithmic}
-\vspace{0.2cm}
-\noindent This DFA minimization algorithm has been found by Hopcroft~\cite{Hop71}.
+The following theorem states the most important property of \MinAlg.
 
 \begin{theorem}\label{ch:2:min-alg-correct}\textnormal{\cite[pp. 162-164]{HMU01}}
 	\MinAlg\ computes a minimal DFA to its input DFA.
@@ -183,7 +181,7 @@ This minimization algorithm \MinAlg\ works in four major steps, essentially remo
 \noindent When looking at \CompDist, one notes, that it computes distinct subsets of $Q \times Q$ on the way. Indeed, one could write the algorithm in such a way, that these subsets are explicitly computed in form of a function $m\colon\mathbb{N}\to\mathcal{P}(Q\times Q)$:
 \vspace{0.2cm}
 \begin{algorithmic}[1] \label{ch:2:m-minmark}
-	\Function{$m$-\CompDist}{$A$}
+	\Function{\mCompDist}{$A$}
 	\State $i \gets 0$
 	\State $m(0) \gets \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}$
 	\Do
@@ -194,15 +192,15 @@ This minimization algorithm \MinAlg\ works in four major steps, essentially remo
 	\EndFunction
 \end{algorithmic}
 \vspace{0.2cm}
-Using this redefinition, we can easier refer to the state pairs marked in a certain iteration. We will use both variants in exchange.
+Using this redefinition, we can easier refer to the state pairs marked in a certain iteration. We will use both variants of \CompDist\ in exchange.
 \begin{definition}\label{ch:2:def:D(A)}
 	We denote the number of iterations done by \CompDist\ on an DFA $A$ as $\mmD(A)$.
 \end{definition}
 \noindent This number will prove to be a major characteristic of difficulty for a minimization task.
 
-\section{Requirements analysis}
+\section{DFA Minimization Problems}
 
-Now that we have introduced all necessary basic definitions, we shall do a short analysis of an example DFA minimization task and its sample solution, as it could have been given to students in an introductory course on automata theory.
+Now that we have introduced all necessary basic definitions, we present an example DFA minimization task and its sample solution, as it could have been given to students in an introductory course on automata theory. In this context further naming conventions will be determined.
 
 \begin{figure}[ht]
 	{\raggedright\itshape \underline{Task:} Consider the below shown deterministic finite automaton $A$:}
@@ -295,24 +293,29 @@ Now that we have introduced all necessary basic definitions, we shall do a short
 	\label{fig:dfa_ex_sol}
 \end{figure}
 
-\noindent Figures~\ref{fig:dfa_ex_task} and~\ref{fig:dfa_ex_sol} show such a task and solution. The students are confronted with a \emph{task DFA} $A_{task}$. Firstly, unreachable states have to be eliminated, we then gain $A_{re}$ (having only \emph{reachable} states). Secondly equivalent state pairs of $A_{re}$ are merged such that the minimal \emph{solution DFA} $A_{sol}$ is found. The table $T$ displayed in figure~\ref{fig:dfa_ex_sol} is nothing else but a visualization of the function $m$ of $m$-\CompDist, whereas $T(q_0, q_1) = i \Leftrightarrow (q_0, q_1) \in m(i)$.
+\noindent Figures~\ref{fig:dfa_ex_task} and~\ref{fig:dfa_ex_sol} show a DFA minimization task and its solution. The students are confronted with a \emph{task DFA} $A_{task}$, which has to be minimized --- we will assume that Hopcroft's algorithm is used.
 
-We list some statements and requirements. Firstly, we can state that
-\begin{itemize}
-	\item $A_{re} = \RemUnr(A_{task}, \CompUnr(A_{task}))$ and
-	\item $A_{sol} = \RemEq(A_{re}, \CompDist(A_{re}))$\ .
-\end{itemize}
-Therefore $A_{sol}$ is minimal regarding $A_{re}$ and $A_{task}$. Secondly the languages of $A_{task}, A_{re}$ and $A_{sol}$ are the same. Furthermore we know that every state of $A_{re}$ is reachable since it is the output of \RemUnr.
+As a consequence (following alg.~\ref{ch:2:minalg}) firstly, unreachable states have to be eliminated, we then gain $A_{re}$ (having only \emph{reachable} states). Secondly equivalent state pairs of $A_{re}$ are merged such that the minimal \emph{solution DFA} $A_{sol}$ is found. The table $T$ displayed in Figure~\ref{fig:dfa_ex_sol} is nothing else but a visualization of the function $m$ of \mCompDist, where $T(q_0, q_1) = i \Leftrightarrow (q_0, q_1) \in m(i)$.
 
-\subsection{Difficulty adjustment possibilities and sensible requirements}\label{ch:2:requirements-analysis}
+Notice that step 2 and in particular the computation of $\sim_A$ can be seen as central: Step 1 is relatively easy, unreachable states can normally be detected visually without running a search algorithm. Moreover algorithms like breadth-first search are often introduced earlier in computer science education. In step 2 computing $\sim_A$ is conceptually harder to grasp than collapsing $A_{re}$ towards the solution DFA.
 
-Concerning the execution of \MinAlg\ we find that its difficulty can be classified through various classification numbers. Furthermore we can note some sensible requirements.
+We will call a pair $A_{sol}, A_{task}$ with $A_{sol} = \MinAlg(A_{task})$ a \emph{DFA minimization problem}. Our goal in this thesis is to automatically generate such problems. Before starting to think about concrete generation algorithms, we will devise some parameters and requirements.
 
-\paragraph*{\CompDist-iterations ($\mmD(A_{task})$).}
+\section{Requirements and Parameters for a Generation Algorithm}\label{ch:2:requirements-analysis}
 
-Consider the computation of the sets $m(i)$ in \CompDist\ (see alg.~\ref{ch:2:m-minmark}). Determining $m(0)$ is quite straightforward, because it consists simply of tests whether two states are in $F \times Q \setminus F$ (see alg.~\ref{ch:2:m-minmark}, line 3). Determining $m(1)$ is less easy: The rule for determining all $m(i), i > 0$ is different to that for $m(0)$ and more complicated (see alg.~\ref{ch:2:m-minmark}, line 6). Determining $m(2), m(3), \ldots$ requires the same rule. It shows nonetheless a students understanding of \CompDist' terminating behavior: The algorithm does not stop after computing $m(1)$, but only when no more distinguishable state pairs were found.
+Of some simple requirements we already know in advance. Firstly, we can state that $A_{sol}$ has to be minimal regarding $A_{re}$ and $A_{task}$. Secondly the languages of $A_{task}, A_{re}$ and $A_{sol}$ must be the same. Lastly we know that every state of $A_{re}$ needs to be reachable.
 
-It would therefore be sensible if $\mmD(A_{task})$ could be adjusted by parameters (we call them $m_{min}, m_{max}$) which give lower and upper bounds for that value.
+% Difficulty adjustment possibilities
+
+Besides some other sensible requirements we will devise especially parameters for generation algorithms in this section. These parameters are going to be adjustment possibilities, which will in almost all cases allow to influence the difficulty of the generated problem in some way.
+
+Since the difficulty of a DFA minimization task $A_{task}$ for students is mainly determined by the difficulty of executing \MinAlg$(A_{task})$, most parameters will influence certain aspects of the execution of \MinAlg.
+
+\paragraph*{\CompDist-iterations ($d$).}
+
+Consider the computation of the sets $m(i)$ in \mCompDist\ (see alg.~\ref{ch:2:m-minmark}). Determining $m(0)$ is quite straightforward, because it consists simply of tests whether two states are in $F \times Q \setminus F$ (see line 3). Determining $m(1)$ is less easy: The rule for determining all $m(i), i > 0$ is different to that for $m(0)$ and more complicated (see line 6). Determining $m(2), m(3), \ldots$ requires the same rule. It shows nonetheless a students understanding of \CompDist' terminating behavior: The algorithm does not stop after computing $m(1)$, but only when no more distinguishable state pairs were found.
+
+It would therefore be sensible if $\mmD(A_{task})$ could be adjusted by some parameter $d$.
 
 \paragraph*{Number of states \texorpdfstring{($\nSO, \nEQ, \nUN$)}{}.}
 
@@ -332,27 +335,29 @@ It is sensible to have $\nUN > 1, \nEQ > 1$, such that \RemUnr\ and \RemEq\ will
 
 \paragraph*{Alphabet size \texorpdfstring{($\kAL$)}{}.}
 
-The more symbols the alphabet of $A_{task}, A_{re}$ and $A_{sol}$ has (note that \MinAlg\ does not change the alphabet), the more transitions have to be followed when checking whether $(\delta(q,\sigma),\delta(p,\sigma))\in m(i-1)$ is true for each state pair $p,q$. In addition we will see later, that there exists no DFA with $k<2$ having equivalent state pairs, so $k\ge 2$ is sensible.
+The more symbols the alphabet of $A_{task}, A_{re}$ and $A_{sol}$ has (note that \MinAlg\ does not change the alphabet), the more transitions have to be followed when checking whether $(\delta(q,\sigma),\delta(p,\sigma))\in m(i-1)$ is true for each state pair $p,q$ (see line 6 of alg.~\ref{ch:2:m-minmark}). In addition we will see later, that there exists no DFA with $k<2$ having any equivalent state pairs, so $k\ge 2$ is sensible and even required if $\nEQ > 0$.
 
 \paragraph*{Number of final states \texorpdfstring{($\nF$)}{}.}
 
-Most DFAs in teaching have about 1 to 3 final states, so being able to set a number of final states allows concentrating on or deviating from familiar DFAs.
+Most DFAs in teaching have about 1 to 3 final states (see e.g.~\cite[pp. 48-78]{HMU01} or~\cite[pp. 28-48]{Sch01}), so being able to set a number of final states allows concentrating on or deviating from familiar DFAs.
+
+In this work $\nF$ shall determine the number of final states in $A_{sol}$. As a consequence, $A_{task}$ might have minimum $\nF$ and maximum $\nF + \nEQ + \nUN$ final states. The latter is the case, if all equivalent states are created from final states and if every unreachable state is created as final state.
 
 \paragraph*{Uniqueness of solution DFA language.}
 
-For example for an exam it would be sensible to be able to generate a task where the DFA language is unique, meaning there was no previously generated DFA with the same language. We will use the criterion of isomorphy (see Theorem~\ref{ch:2:thm:uniq-ism}) to categorize a possible DFA.
+For example for an exam it would be sensible to be able to generate a task where the DFA language is unique, meaning there was no previously generated DFA with the same language.
 
-Note that, if $A_{sol}$ is indeed \emph{new} in that sense, then $A_{task}$ will automatically have a unique language too, since $A_{sol}$ and $A_{task}$ have the same language.
+Note that, if $A_{sol}$ is indeed \emph{new} in that sense, then $A_{task}$ will automatically have a unique language too, since $A_{sol}$ and $A_{task}$ always have the same language.
 
-\paragraph*{Completeness of task DFA.}
+\paragraph*{Completeness of task DFA \texorpdfstring{($c$)}{}.}
 
-In opposition to \CompDist, \CompUnr\ and \RemUnr\ do not require their input DFA $A_{task}$ to be complete. So we could have unreachable states in $A_{task}$, to which $\delta$ is not defined for all alphabet symbols, but all other states have to be complete. It is however sensible, to build task DFAs complete too to avoid possible confusion: Such subtleties do not highlight the main ideas of \MinAlg.
+In opposition to \CompDist, \CompUnr\ and \RemUnr\ do not require their input DFA $A_{task}$ to be complete. So we could have unreachable states in $A_{task}$, to which $\delta$ is not defined for all alphabet symbols. It is however sensible, to build task DFAs complete too to avoid possible confusion: Such subtleties do not highlight the main ideas of \MinAlg.
 
-Nonetheless we shall introduce a parameter $c$, that determines if there exist unreachable states, that make $A_{task}$ incomplete. Thus an exercise lecturer has the option, to showcase this matter on a DFA and generate according exercises.
+Nonetheless we shall introduce a boolean parameter $c$, that determines if there exist unreachable states, that make $A_{task}$ incomplete. Thus an exercise lecturer has the option, to showcase this matter on a DFA and generate according exercises.
 
-\paragraph*{Planar drawing of task DFA.}
+\paragraph*{Planar drawing of task DFA \texorpdfstring{($p_{sol}, p_{task}$)}{}.}
 
-A graph $G$ is \emph{planar} if it can be represented by a drawing in the plane such that its edges do not cross. Such a drawing is then called \emph{planar drawing} of $G$. A visual aid for students would be given, if the task DFA were planar and presented as a planar drawing. In this work libraries and parameters $p_1, p_2 \in \{0,1\}$ (toggling planarity of $A_{sol}, A_{task}$) will be used to allow the option of planarity, but neither ensuring planarity nor planar drawing will be investigated further theoretically.
+A graph $G$ is \emph{planar} if it can be represented by a drawing in the plane such that its edges do not cross. Such a drawing is then called \emph{planar drawing} of $G$. A visual aid for students would be given, if the task DFA were planar and presented as a planar drawing. In this work libraries and parameters $p_{sol}, p_{task} \in \{0,1\}$ (toggling planarity of $A_{sol}, A_{task}$) will be used to allow the option of planarity, but neither ensuring planarity nor planar drawing will be investigated further theoretically.
 
 \paragraph*{Maximum degree of any state in task DFA.}
 
@@ -360,20 +365,22 @@ The \emph{degree} $deg(q)$ of a state $q \in Q$ in a DFA $A$ is defined as $deg(
 
 %Note that $deg(q) \geq |\Sigma|$ for any complete DFA, since states of complete DFAs have to use all alphabet symbols on outgoing transitions.
 
-\section{Approach and general algorithm}
+\section{Approach and General Algorithm}
 
 In this work we will first build the solution DFA (step 1), and - based on that - the task DFA by creating equivalent states and adding unreachable states (step 2). Both steps together will fulfill all criteria chosen above and are covered each in depth in chapter~\ref{ch:3} respectively chapter~\ref{ch:4}.
-
-We will see that $\mmD$ and $L$ of both DFAs will be set when building $A_{sol}$. We know that creating equivalent states and adding unreachable does not change $L(A_{task})$ in comparison to $A_{sol}$, else \MinAlg\ would not work (a minimal DFA has in particular the same language as the original DFA). However we must ensure, that adding those states does not change $\mmD$. Since unreachable states are eliminated before \CompDist\ is applied, we need only to prove, that creating equivalent states does not change the $\mmD$-value. We will do this during the discussion of step 2, more specifically in section~\ref{ch:4:sec-D-proof}.
 
 At the beginning of chapter~\ref{ch:3} and~\ref{ch:4}, we will provide formal problem definitions for both steps, that specify precisely all requirements. Here we shall content ourselves with the definition of the main algorithm:
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{GenerateDFAMinimizationTask}{$\nSO, \kAL, \nF, m_{min}, m_{max}, p_1, p_2, \nEQ,\nUN, c$}
-	\State $A_{sol} \gets \textsc{GenerateNewMinimalDFA}(\nSO, \kAL, \nF, m_{min}, m_{max}, p_1)$
-	\State $A_{task} \gets \textsc{ExtendMinimalDFA}(A_{sol}, p_2, \nEQ,\nUN, c)$
+	\Function{GenDFAMinProblem}{$\nSO, \kAL, \nF, d, p_{sol}, p_{task}, \nEQ,\nUN, c$}
+	\State $A_{sol} \gets \textsc{GenNewMinDFA}(\nSO, \kAL, \nF, d, p_{sol})$
+	\State $A_{task} \gets \textsc{ExtendMinDFA}(A_{sol}, p_{task}, \nEQ, \nUN, c)$
 	\State \Return $A_{sol}, A_{task}$
 	\EndFunction
 \end{algorithmic}
+\vspace{0.2cm}
+\noindent One might notice, that we pass $d$ only to $\textsc{GenNewMinDFA}$, even though we want to ensure $d = A_{task}$ too. This is a valid approach due to the fact, that creating equivalent states and adding unreachable states does not change the $\mmD$-value, which we are going to prove. 
+
+However since unreachable states are eliminated before \CompDist\ is applied, we need only to prove, that creating equivalent states does not change the $\mmD$-value, which will be done during the discussion of step 2, more specifically in section~\ref{ch:4:sec-D-proof}.
 
 

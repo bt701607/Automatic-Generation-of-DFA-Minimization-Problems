@@ -2,27 +2,31 @@
 
 \chapter{Abstract}
 
-The theory of deterministic finite automatons (DFAs) is a classical topic of computer science-related courses. A typical task for students is to minimize a DFA. However generation of those DFAs that shall be minimized is often done manually by the exercise instructor. This work presents ideas to automize the generation of DFA minimization tasks.
+% chapter 1
 
-We start in chapter~\ref{ch:2} with introducing minimization tasks, which consist of a DFA $A_{task}$ which has to be minimized and the minimal solution DFA $A_{sol}$. We focus on the minimization algorithm by Hopcroft, which works in two steps: Firstly delete unreachable states, then merge equivalent state pairs.
+The theory of deterministic finite automata (DFAs) is a classical topic of computer science-related courses. A typical problem to solve for students is: Given a task DFA $A_{task}$, minimize it. Generation of such tasks is often done manually by the exercise instructor. This work presents ideas to automize the generation of DFA minimization problems.
 
-Following this separation in reverse, our approach is to generate the solution DFA first, then create equivalent state pairs and lastly add unreachable states. We devise several sensible input parameters and requirements for each of these stages.
+% chapter 2
 
-Concerning the generation of solution DFAs (chapter~\ref{ch:3}) we make use of a simple rejection algorithm, that generates test DFAs by randomization or enumeration. Test DFAs are rejected, if they do not match the demanded properties. On this topic research has already been active, an overview about results there is made to draw conclusions for this work.
+We start in chapter~\ref{ch:2} with introducing some preliminaries, in particular Hopcroft's minimization method. Based on that algorithm, we will deduce requirements, parameters and structure for a generator of DFA minimization problems. The structure will be the following: Firstly generate the solution DFA, then create equivalent state pairs and lastly add unreachable states. This approach is, intuitively spoken, Hopcroft's algorithm in reverse.
 
-In chapter~\ref{ch:4} we describe the extension of a solution DFA towards a task DFA. To archieve this, we can add states and transitions in an easy manner according to certain rules, which are derived from the properties of equivalent state pairs and unreachable states.
+% chapter 3
+
+Concerning the generation of solution DFAs (chapter~\ref{ch:3}) we make use of a simple rejection algorithm, that generates test DFAs by randomization or enumeration and rejects them, if they do not match the demanded properties. From results in related research some conclusions will be drawn for this work.
+
+% chapter 4
+
+In chapter~\ref{ch:4} we describe the extension of a solution DFA towards a task DFA. To archive this, we can add states and transitions in an easy manner according to certain rules, which are derived from the properties of equivalent state pairs and unreachable states. 
 
 
 
 \chapter{Zusammenfassung}
 
-Automatentheorie ist ein klassisches Thema in Lehre mit Informatikbezug. Eine typische Aufgabe für Studenten ist die Minimierung eines deterministischen endlichen Automaten (DEAs). Das Generieren solcher Minimierungsaufgaben wird allerdings häufig manuell vom Übungsleiter vorgenommen. In dieser Arbeit werden somit Ideen präsentiert um DEAs automatisiert zu generieren.
+Die Theorie endlicher deterministischer Automaten (DEAs) ist ein klassisches Thema in Lehre mit Informatikbezug. Eine typisches Problem das Studenten hier lösen sollen ist: Gegeben einen Aufgaben-DEA $A_{task}$, minimiere ihn. Das Generieren solcher Minimierungsaufgaben wird allerdings häufig manuell vom Übungsleiter vorgenommen. In dieser Arbeit werden somit Ideen präsentiert um DEA Minimierungsprobleme automatisiert zu generieren.
 
-Wir beginnen in Kapitel~\ref{ch:2} mit einer Beschreibung von Minimierungsaufgaben, die im Wesentlichen aus einem \emph{Aufgaben-DEA} $A_{task}$, dem zu minimierenden DEA, und dem bereits minimierten \emph{Lösungs-DEA} $A_{sol}$ bestehen. Wir werden uns hier auf den Minimierungsalgorithmus von Hopcroft beschränken, der in zwei Schritten abläuft: Zunächst werden unerreichbare Zustände entfernt und dann äquivalente Zustandspaare zusammengefasst.
+Wir beginnen in Kapitel~\ref{ch:2} mit einigen einführenden Definitionen, darunter insbesondere Hopcroft's Minimierungsalgorithmus. Auf dessen Basis werden wir Voraussetzungen, Parameter und Struktur eines Programms erarbeiten, das DFA Minimierungsprobleme generiert. Die Struktur dieses Programms wird wie folgt sein: Zunächst wird der Lösungs-DEA generiert, dann werden äquivalente Zustandspaare erzeugt und schließlich unerreichbare Zustände hinzugefügt. Diesen Ansatz kann man grob als Umkehrung von Hopcroft's Algorithmus charakterisieren.
 
-In unserem Ansatz nutzen wir diese Zweiteilung indem wir sie umdrehen, sodass zunächst der Lösungs-DEA generiert wird, woraufhin äquivalente Zustandspaare erzeugt und unerreichbare Zustände hinzugefügt werden. Für jeden dieser Schritte werden wir sinnvolle Eingabeparameter und Anforderungen definieren.
-
-Um die Lösungs-DEAs zu generieren (Kapitel~\ref{ch:3}) machen wir Gebrauch von einem simplen Algorithmus, der wiederholt Test-DEAs mittels Randomisierung oder Enumerierung erzeugt und sie immer dann ablehnt, wenn sie den gewünschten Eigenschaften nicht entsprechen. Zu diesem Thema gab es bereits einige Forschungsarbeit, folglich werden wir einen Überblick über relevante Ergebnisse geben um dann Schlussfolgerungen für diese Arbeit zu ziehen.
+Um die Lösungs-DEAs zu generieren (Kapitel~\ref{ch:3}) machen wir Gebrauch von einem simplen Algorithmus, der wiederholt Test-DEAs mittels Randomisierung oder Enumerierung erzeugt und sie immer dann ablehnt, wenn sie den gewünschten Eigenschaften nicht entsprechen. Aus relevante Ergebnissen verwandter Forschungsarbeit werden wir einige Schlussfolgerungen für diese Arbeit ziehen können.
 
 In Kapitel~\ref{ch:4} beschreiben wir, wie Lösungs-DEAs zu Aufgaben-DEAs erweitert werden können. Um das zu erreichen können wir Zustände und Transitionen recht einfach mithilfe gewisser Regeln hinzufügen. Diese Regeln werden direkt von den Eigenschaften äquivalenter Zustandspaare und unerreichbarer Zustände abgeleitet.
 	

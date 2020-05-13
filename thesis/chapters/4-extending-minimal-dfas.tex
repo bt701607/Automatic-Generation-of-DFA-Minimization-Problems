@@ -1,9 +1,9 @@
 % !TeX spellcheck = en_US
 
-\chapter{Extending minimal DFAs} \label{ch:4}
+\chapter{Extending Minimal DFAs} \label{ch:4}
 
 We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a task DFA $A_{task}$ based on our requirements analysis (see sec.~\ref{ch:2:requirements-analysis}):
-\begin{definition}[ExtendMinimalDFA] $ $ \\
+\begin{definition}[ExtendMinDFA] $ $ \\
 	$ $ \vspace{-0.cm} \\
 	\noindent $\underline{\emph{Given:}}$
 	\vspace{-0.2cm}
@@ -17,7 +17,7 @@ We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a ta
 	\noindent $\underline{\emph{Task:}}$ \emph{Compute, if it exists, a task DFA $A_{task}$ with}
 	\begin{itemize}
 		\item $Q_{task} = Q_{sol} \cup \{ r_1, \ldots, r_\nEQ, u_1, \ldots, u_\nUN \}$
-		\item $r_1, \ldots, r_\nEQ$ \emph{each creating an equivalent state pair}
+		\item $r_1, \ldots, r_\nEQ$ \emph{each creating an equivalent state pair\footnotemark}
 		\item $u_1, \ldots, u_\nUN$ \emph{unreachable}
 		\item $\Sigma_{task} = \Sigma_{sol}$, $s_{task} = s_{sol}$, $F_{task} \subseteq F_{sol}$
 		\item $A_{task}$ \emph{being planar iff} $p = 1$
@@ -25,19 +25,21 @@ We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a ta
 		\item $A_{sol}$ \emph{being isomorph to} $\MinAlg(A_{task})$
 	\end{itemize}
 \end{definition}
-\noindent In order to fulfill these requirements we will deduce for both kinds of states how they may be added by examining their desired properties. If we get to have the choice between several equally good options, we will choose by randomization. We will be guided by the separation of creating equivalent and unreachable states:
+\footnotetext{The states $r_1, \ldots, r_\nEQ$ can be seen as being \emph{redundant}.}
+\noindent In order to fulfill these requirements we will deduce for both kinds of states how they may be added by examining their desired properties. If we get to have the choice between several equally good options, we will randomly select one.
+We will be guided by the separation of creating equivalent and unreachable states, thus distinct algorithms will be devised to create each kind of states. Concerning the planarity option, we again use a rejection algorithm with the same test as before (see sec.~\ref{ch:3:sec:planarity}). These decisions lead to the following main formulation of \textsc{ExtendMinDFA}:
 \vspace{0.2cm}
 \begin{spacing}{1}
 	\begin{algorithmic}[1]
-		\Function{ExtendMinimalDFA}{$A_{sol}, \nEQ, \nUN, p, c$}
+		\Function{ExtendMinDFA}{$A_{sol}, \nEQ, \nUN, p, c$}
 		\If{$p = 0$}
-			\State $A_{re} \gets$ \textsc{AddUnreachableStates}($A_{sol}, \nUN, c$)
-			\State \Return \textsc{CreateEquivalentStatePairs}$(A_{re}, \nEQ$)
+			\State $A_{re} \gets$ \textsc{AddUnrStates}($A_{sol}, \nUN, c$)
+			\State \Return \textsc{CreateEquivPairs}$(A_{re}, \nEQ$)
 		\Else
 			\State $A_{task} \gets \bot$
 			\While{$A_{task}$ not planar}
-				\State $A_{re} \gets$ \textsc{AddUnreachableStates}($A_{sol}, \nUN, c$)
-				\State $A_{task} \gets$ \textsc{CreateEquivalentStatePairs}$(A_{re}, \nEQ$)
+				\State $A_{re} \gets$ \textsc{AddUnrStates}($A_{sol}, \nUN, c$)
+				\State $A_{task} \gets$ \textsc{CreateEquivPairs}$(A_{re}, \nEQ$)
 			\EndWhile
 			\State \Return $A_{task}$
 		\EndIf
@@ -45,9 +47,9 @@ We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a ta
 	\end{algorithmic}
 \end{spacing}
 \vspace{0.2cm}
-\noindent Concerning the planarity option, we use a rejection algorithm again and the same test as before (see sec.~\ref{ch:3:sec:planarity}). We will show for the action of adding equivalent states, that this does not change a DFAs $\mmD$-value - thus we do not have to care whether we are possibly changing it.
+We will show for the action of adding equivalent states, that this does not change a DFAs $\mmD$-value - thus we do not have to care whether we are possibly changing it.
 
-\section{Creating equivalent state pairs}
+\section{Creating Equivalent State Pairs}
 
 Step 3 and 4 of the minimization algorithm are concerned with detection and elimination of equivalent state pairs. We now want to add states $r_1,\ldots,r_\nEQ$ to a DFA $A_{sol}$, gaining $A_{re}$ with $Q_{re} = Q_{sol} \cup \{r_1,\ldots,r_\nEQ\}$, such that each of these states is equivalent to a state in $Q_{re}$. Note that, for reasons of clarity, we are going to abbreviate from now on $A_{re} = A$, $Q_{re} = Q$, $\sim_{A_{re}} = \sim_A$ etc.
 
@@ -57,7 +59,7 @@ In our algorithm we will add each $r_i$ separately starting from $A_{sol}$. Cons
 \]
 In other words: Every new state $r_i$ is by transitivity equivalent to a state $e$ of $A_{sol}$. In our algorithm, we will first choose a to-be-equivalent-state $e\in Q_{sol}$ for each state we add.
 
-\subsection{Adding outgoing transitions}
+\subsection{Adding Outgoing Transitions}
 
 Regarding the outgoing transitions of any $r_i$ equivalent to a state $e$, we are directly restricted by the equivalency relationship:
 \begin{itemize}
@@ -84,7 +86,7 @@ Since the solution DFA is complete and since every here added state gets a trans
 
 Note that this substep does not affect the belonging-to-an-equivalence-class of any other now existing state, since $r_i$ cannot be reached yet - it has no ingoing transitions.
 
-\subsection{Adding ingoing transitions}
+\subsection{Adding Ingoing Transitions}
 
 First of all, we know, that $r_i$ must be reachable, since we decided that all unreachable states are added later. So we need to give $r_i$ at least one ingoing transition. Doing this, we have to ensure, that any state $q$, that gets an outgoing transition to $r_i$ remains in its equivalence class.
 
@@ -128,12 +130,12 @@ The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma|
 %	\label{fig:dfa_create_equivalent_states}
 %\end{figure}
 
-\subsection{The algorithm}
+\subsection{The Algorithm}
 
 \vspace{0.2cm}
 \begin{spacing}{1}
 \begin{algorithmic}[1]
-	\Function{CreateEquivalentStatePairs}{$A, \nEQ$}
+	\Function{CreateEquivPairs}{$A, \nEQ$}
     \State $Q \gets Q_{sol}$
     \State $\delta \gets \delta_{sol}$
     \State $F \gets F_{sol}$
@@ -173,7 +175,7 @@ The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma|
 \vspace{0.2cm}
 \noindent Note that computing an unused state label can be easily done by e.g.\ taking the maximum of all solution DFA states (which are nothing else but numbers) and adding one.
 
-\subsection{Creating equivalent state pairs does not change D} \label{ch:4:sec-D-proof}
+\subsection{Creating Equivalent State Pairs does not change D} \label{ch:4:sec-D-proof}
 
 In this section we want to prove that our method of creating state pairs does not affect the number of \CompDist-iterations. Using this information we can be sure that $\mmD(A_{sol}) = \mmD(A_{task})$ and our just explained algorithm does not have to care about possibly changing this value.
 
@@ -314,13 +316,13 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 	Creating equivalent state pairs does not change the language of a DFA --- otherwise the reverse procedure, \MinAlg, could not guarantee the language stays the same. So since the language stays the same when creating those pairs, by Theorem~\ref{ch:4:th-D} the number of \CompDist-iterations will preserve as well.
 \end{proof}
 
-\section{Adding unreachable states}
+\section{Adding Unreachable States}
 
 From step 1 of the minimization algorithm we can deduce how to add unreachable states. These can easily be added to a DFA by adding non-start states with no ingoing transitions (see def.~\ref{ch:2:unreachable-states}). Number and nature of outgoing transitions may be arbitrary.
 
 \vspace{0.2cm}
 \begin{algorithmic}[1]
-	\Function{AddUnreachableStates\ }{$A, \nUN, c$}
+	\Function{AddUnrStates\ }{$A, \nUN, c$}
 	\For {$\nUN$ \textbf{times}}
 		\State $q \gets$ unused state label
 		\State $Q \gets Q \cup \{ q \}$

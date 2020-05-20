@@ -9,10 +9,6 @@ Note for the "Stable 2.38 Windows install packages": The installer does not auto
 
 * pyparsing (pip install pyparsing)
 
-Profiling needs:
-
-* vprof (pip install vprof)
-
 The dot2tex library has been obtained from https://github.com/kjellmf/dot2tex .
 It is included here, to be able to apply a fix.
 

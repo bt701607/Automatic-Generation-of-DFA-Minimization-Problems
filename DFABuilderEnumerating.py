@@ -6,6 +6,7 @@ from planarity_test_dfa      import planarity_test_dfa
 import DB_MinimalDFAs         as db1
 import DB_EnumerationProgress as db2
 
+import pathlib
 import sqlite3
 import random
 
@@ -74,7 +75,7 @@ def build_next_minimal_dfa(alphabetSize, numberOfStates, numberOfAcceptingStates
 if __name__ == '__main__':
 
     # alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth, planar
-    dfa = build_next_minimal_dfa(2, 6, 2, 2, 3, True)
+    dfa = build_next_minimal_dfa(2, 6, 2, 2, 3, True, pathlib.Path.cwd())
 
     print(dfa)
 

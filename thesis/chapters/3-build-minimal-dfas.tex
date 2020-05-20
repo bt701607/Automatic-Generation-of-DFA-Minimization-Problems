@@ -156,7 +156,7 @@ We now approach the task of generating a random DFA where alphabet and number of
 
 The remaining elements that need to be defined are $\delta$ and $F$. The set of final states is supposed to have a size of $\nF$ and be a subset of $Q$. Therefore we can simply choose randomly $\nF$ distinct states from $Q$.
 
-The transition function has to make the DFA complete, so we have to choose an ``end'' state $q'$ for every state-symbol-pair $q,\sigma$ in $Q \times \Sigma$. There is no restriction concerning $q'$, so we can randomly choose $\delta(q, \sigma) = q'$ from $Q$.
+\noindent The transition function has to make the DFA complete, so we have to choose an ``end'' state $q'$ for every state-symbol-pair $q,\sigma$ in $Q \times \Sigma$. There is no restriction concerning $q'$, so we can randomly choose $\delta(q, \sigma) = q'$ from $Q$.
 
 With defining how to compute $\delta$ we have covered all elements of a DFA.
 
@@ -397,7 +397,7 @@ In the following variant of \textsc{GenNewMinimalDFA} it can be seen how the enu
 		\EndIf
 		
 		\vspace{-0.2cm}
-		
+		\newpage
 		\While {True}
 		
 			\vspace{0.2cm}
@@ -431,10 +431,6 @@ In the following variant of \textsc{GenNewMinimalDFA} it can be seen how the enu
 	\EndFunction
 \end{algorithmic}
 \vspace{0.2cm}
-
-\section{On Alternative Approaches}
-
-Build $m$ from $m$-\CompDist\ iteratively. (Why would this basically result in running \CompDist\ all the time?)
 
 \section{Related Work on DFA Generation}
 
@@ -480,7 +476,15 @@ More recent implementations (e.g.~\cite{AAA09, BDN07}) of various random and enu
 
 Domaratzki, Kisman, and Shallit~\cite{DKS02} give some asymptotic estimates and explicit computations for the number of several types of distinct languages and automata. The here relevant results have been subsumed and extended in~\cite[p. 8]{AMR09} and were empirically confirmed in~\cite{BDN07}.
 
-\begin{figure}[H]
+In Figure~\ref{fig:dfa_minimal_ratios} we use these results to determine the ratios of minimal complete DFAs among all complete DFAs for given $|Q|$ and $|\Sigma|$. The number of all DFAs is computed as follows:
+\[
+|\mathcal{A}_{n,k}| = \underbrace{n^{n*k}}_{\#\text{possible }\delta\text{'s}} * \underbrace{2^n}_{\#\text{possible sets }F}
+\]
+Thus we gain an insight into how probable the random generation of a distinct minimal test DFA is without applying further constraints. For our proposed default parameters $n\in[4-5]$ and $k\in[2-3]$ the probabilities of successful generation range from $1\%$ to $5\%$. Practical tests have shown that this leads to sufficient short run times for our implementation.
+
+Further interesting results in this area include the determination of the fraction of all minimal automata among all accessible complete DFAs~\cite{BDS11} and asymptotic estimates for the number of states that a random minimized DFA has~\cite{BK13}.
+
+\begin{figure}[t]
 	\centering
 	\begin{tabular}{|c|c|l|l|l|}
 		\hline
@@ -508,11 +512,3 @@ Domaratzki, Kisman, and Shallit~\cite{DKS02} give some asymptotic estimates and 
 	\caption{Table depicting the exact amount of minimal complete DFAs among all complete DFAs for various sizes of $Q, \Sigma$. The numbers of minimal DFAs (bold numbers) are taken from~\cite[p. 8]{AMR09}.}
 	\label{fig:dfa_minimal_ratios}
 \end{figure}
-
-\noindent In Figure~\ref{fig:dfa_minimal_ratios} we use these results to determine the ratios of minimal complete DFAs among all complete DFAs for given $|Q|$ and $|\Sigma|$. The number of all DFAs is computed as follows:
-\[
-|\mathcal{A}_{n,k}| = \underbrace{n^{n*k}}_{\#\text{possible }\delta\text{'s}} * \underbrace{2^n}_{\#\text{possible sets }F}
-\]
-Thus we gain an insight into how probable the random generation of a distinct minimal test DFA is without applying further constraints. For our proposed default parameters $n\in[4-5]$ and $k\in[2-3]$ the probabilities of successful generation range from $1\%$ to $5\%$. Practical tests have shown that this leads to sufficient short run times for our implementation.
-
-Further interesting results in this area include the determination of the fraction of all minimal automata among all accessible complete DFAs~\cite{BDS11} and asymptotic estimates for the number of states that a random minimized DFA has~\cite{BK13}.

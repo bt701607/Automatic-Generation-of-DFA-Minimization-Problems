@@ -29,6 +29,7 @@ We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a ta
 \noindent In order to fulfill these requirements we will deduce for equivalent and equivalent states how they may be added by examining their desired properties. If we get to have the choice between several equally good options, we will randomly select one.
 
 We will be guided by the separation of creating equivalent and unreachable states as in Hopcrofts algorithm, thus distinct algorithms will be devised to create each kind of states. Concerning the planarity option, we again use a rejection algorithm with the same test as before (see sec.~\ref{ch:3:sec:planarity}). These decisions lead to the following formulation of \textsc{ExtendMinDFA}:
+\newpage
 \vspace{0.2cm}
 \begin{spacing}{1}
 	\begin{algorithmic}[1]
@@ -125,7 +126,7 @@ We integrate our strategy of creating equivalent state pairs in the following al
 %	\State $k(q) = C$ such that $q \in C$ and $C \in K$ \Comment{returns the equivalence class to $q$}
 	
 	\vspace{0.2cm}
-	
+	\newpage
     \For {$i$ \textbf{in} $[1,\nEQ]$}
     
     	\vspace{0.2cm}

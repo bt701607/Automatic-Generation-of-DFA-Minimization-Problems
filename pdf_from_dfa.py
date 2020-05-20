@@ -129,7 +129,28 @@ def postprocess_tex(tex, minimization_table=None):
         i += 1
 
     return '\n'.join(lines)
+    
+    
+def next_task_path(workingDir):
 
+    counter = 0
+    
+    while True:
+        path = workingDir / 'task_{:03d}.tex'.format(counter)
+        if not path.exists():
+            return path
+        counter += 1
+    
+    
+def next_solution_path(workingDir):
+
+    counter = 0
+    
+    while True:
+        path = workingDir / 'solution_{:03d}.tex'.format(counter)
+        if not path.exists():
+            return path
+        counter += 1
 
 
 def save_task(taskDFA, workingDir):
@@ -139,7 +160,9 @@ def save_task(taskDFA, workingDir):
     else:
         workingDir = pathlib.PosixPath(workingDir)
 
-    workingDir.joinpath('task.tex').write_text(
+    path = next_task_path(workingDir)
+
+    path.write_text(
         TEMPLATE_TASK.format(
             postprocess_tex(tex_from_dfa(taskDFA))
         )
@@ -147,7 +170,7 @@ def save_task(taskDFA, workingDir):
 
     os.popen(
         """pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory='{}' '{}'"""
-        .format(EXE_ENDING, workingDir, workingDir.joinpath('task.tex'))
+        .format(EXE_ENDING, workingDir, path)
     ).read()
 
 
@@ -158,7 +181,9 @@ def save_solution(solDFA, reachDFA, taskDFA, workingDir):
     else:
         workingDir = pathlib.PosixPath(workingDir)
 
-    workingDir.joinpath('solution.tex').write_text(
+    path = next_solution_path(workingDir)
+
+    path.write_text(
         TEMPLATE_SOLUTION.format(
             '$' + ', '.join(taskDFA.unrStates) + '$',
             postprocess_tex(tex_from_dfa(reachDFA)),
@@ -170,7 +195,7 @@ def save_solution(solDFA, reachDFA, taskDFA, workingDir):
 
     os.popen(
         """pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory='{}' '{}'"""
-        .format(EXE_ENDING, workingDir, workingDir.joinpath('solution.tex'))
+        .format(EXE_ENDING, workingDir, path)
     ).read()
 
 

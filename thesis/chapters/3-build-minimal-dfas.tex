@@ -108,11 +108,11 @@ There exist several algorithms for planarity testing of graphs. In this work, th
 
 In our requirements we stated, that we wanted the generated solution DFA to be new, meaning it should have a unique language compared to all previously generated solution DFAs. This implies the need of a database, such that we can save and load the list $l$ of already found DFAs. We name this database $\text{DB}_\text{found}$.
 
-In $\text{DB}_\text{found}$ only minimal DFAs will be saved, since every solution DFA is minimal. Furthermore every test DFA $A_{test}$ is guaranteed to be minimal, since non-minimal test DFAs are filtered out beforehand.
+In DB$_{found}$ only minimal DFAs will be saved, since every solution DFA is minimal. Furthermore every test DFA $A_{test}$ is guaranteed to be minimal, since non-minimal test DFAs are filtered out beforehand.
 
 Theorem~\ref{ch:2:thm:uniq-ism} states that two minimal DFAs have the same language, iff they are isomorph. So we can use an isomorphism test to decide whether two DFAs have the same language.
 
-However this test can be constructed more efficient: Two minimal DFAs cannot be isomorph, if their number of states, alphabet size or number of final states differ. It would thus suffice to compare the test DFA only against those DFAs from the database that match the parameters $\nSO, k, \nF$. As a consequence we propose the following scheme for $\text{DB}_\text{found}$, which is assumed to be a relational database:
+However this test can be constructed more efficient: Two minimal DFAs cannot be isomorph, if their number of states, alphabet size or number of final states differ. It would thus suffice to compare the test DFA only against those DFAs from the database that match the parameters $\nSO, k, \nF$. As a consequence we propose the following scheme for DB$_{found}$, which is assumed to be a relational database:
 \begin{center}
 	\begin{tabular}{c c c c c c}
 	$|Q_A|$ & |$\Sigma_A$| & $|F_A|$ & $\mmD(A)$ & $isPlanar(A)$ & $encode(A)$
@@ -127,7 +127,7 @@ A more concrete specification of the above discussed proceeding is shown below, 
 	
 		\vspace{0.2cm}
 	
-		\State $l \gets$ all DFAs in DB1 matching $\nSO, \kAL, \nF$
+		\State $l \gets$ all DFAs in DB$_{found}$ matching $\nSO, \kAL, \nF$
 		
 		\vspace{0.2cm}
 		
@@ -142,7 +142,7 @@ A more concrete specification of the above discussed proceeding is shown below, 
 			
 			\vspace{0.2cm}
 			
-			\State save $A_{test}$ and its respective properties in DB1
+			\State save $A_{test}$ and its respective properties in DB$_{found}$
 			\State\Return $A_{test}$
 		\EndWhile
 	\EndFunction
@@ -211,19 +211,13 @@ With defining how to compute $\delta$ we have covered all elements of a DFA.
 
 % enumerating instead of random
 
-The second method of test DFA generation is based on the idea, that instead of randomly generating $F$ and $\delta$, we could enumerate through all possible final state sets and transition functions, given $\nSO, k, \nF$.
-
-% finite enumerations, how many
-
-Both enumerations are finite. Having a requirement of $\nF$ final states, then $\binom{\nSO}{\nF}$ is the number of possible $F$-configurations. On the other hand there are $\nSO^{\nSO\kAL}$ possible $\delta$-configurations: We have to choose one of $\nSO$ possible end states for every combination in $Q\times\Sigma$ - so $\nSO\kAL$ times.
+The second method of test DFA generation is based on the idea, that instead of randomly generating $F$ and $\delta$, we could enumerate through all possible final state sets and transition functions. We will use the given parameters $\nSO, k, \nF$ to split up the enumeration space --- every enumeration yields only DFAs with the same $\nSO, k, \nF$.
 
 % enumeration states
 
-As a consequence we are going to 
+An enumeration is represented by an \emph{enumeration state} $s_{\nSO, k, \nF} = (F_F,F_\delta)$ consisting of two arrays\footnotemark. The first array shall have $\nSO$ Bits, where Bit $F_F[i] \in \{0,1\}$ represents the information, whether $i$ is a final state or not. The second array shall have $\nSO\kAL$ entries containing state names, such that entry $F_\delta[i * \kAL + j] = q, q\in [[\nSO]]$ says, that $\delta(i, j) = q$.
 
-% Two fields
-
-Again we will call our states and symbols $[[\nSO]]$ resp.\ $[[\kAL]]$. We will represent the state of an enumeration with two fields $F_F$ and $F_\delta$. The first field shall have $\nSO$ Bits, where Bit $F_F[i] \in \{0,1\}$ represents the information, whether $i$ is a final state or not. The second field shall have $\nSO\kAL$ entries containing state names, such that entry $F_\delta[i * \kAL + j] = q, q\in [[\nSO]]$ says, that $\delta(i, j) = q$.
+\footnotetext{We denote the two arrays (or \emph{fields}) as $F_F,F_\delta$ instead of $A_F,A_\delta$ to avoid confusion with the notation of DFAs.}
 
 % -- EX example of the two fields and their meaning
 
@@ -276,33 +270,44 @@ Again we will call our states and symbols $[[\nSO]]$ resp.\ $[[\kAL]]$. We will 
 		\end{tikzpicture}
 	}\end{tabbing}\vspace{-0.5cm}\hfill$\square$
 \end{example}
-
 % how to compute next DFA
 
-\noindent Given an enumeration state $F_F, F_\delta$ and $\nSO, \kAL, \nF$ we will then compute the next DFA based on this state as follows. We will treat both fields as numbers, $F_F$ as $2$-ary and $F_\delta$ as $\nSO$-ary. To get to the next DFA, we will first increment $F_\delta$ by $1$. If $F_\delta = \nSO-1 \ldots \nSO-1$, then we increment $F_F$ until it contains $\nF$ $1$'s (again) and set $F_\delta$ to $0 \ldots 0$. This behavior is summarized in the following algorithm:
+\noindent Given an enumeration state $s_{\nSO, \kAL, \nF} = (F_F, F_\delta)$ we will then compute the next DFA based on this state as described in the following algorithm. We assume, that adding $1$ to a $n$-ary number $n-1\ n-1\ \ldots n-1$ yields $00\ldots0$.
 \vspace{0.2cm}
 \begin{algorithmic}[1]
 	\Function{IncrementEnumProgress\ }{$F_F, F_\delta, \nSO, \kAL, \nF$}
 	\State add $1$ to $(F_\delta)_\nSO$
 	\If {$F_\delta = 0 \ldots 0$}
-		\While {$\#_1(F_F) \neq \nF$} \Comment{if the number of $1$'s in $F_F$ is not $\nF$}
+		\If {$F_F = 1\ldots10\ldots0$ \textbf{and} $\#_1(F_F) = \nF$}
+			\State \Return $\bot$
+		\EndIf
+		\While {$\#_1(F_F) \neq \nF$}
 			\State add $1$ to $(F_F)_2$
-			\If {$F_F = 0\ldots 0$}
-				\State \Return $\bot$ \Comment{both $F_F, F_\delta$ are `finished'}
-			\EndIf
-		\State $F_\delta = 0 \ldots 0$
 		\EndWhile
 	\EndIf
 	\State \Return $F_F, F_\delta$
 	\EndFunction
 \end{algorithmic}
-\vspace{0.2cm}
-A note on initial values. If 
-Note that the initial values for both fields are $F_F = 0\ldots01\ldots 1$ and $F_\delta = 0\ldots 0$. In this algorithm we assume, that adding $1$ to a $n$-ary number $n-1\ n-1\ \ldots n-1$ yields $00\ldots0$.
+\vspace{0.2cm} We will treat both fields as numbers, $F_F$ as $2$-ary and $F_\delta$ as $\nSO$-ary. To get to the next DFA, we will first increment $F_\delta$ by $1$. If all transitions functions have been enumerated ($F_\delta$ becomes $0\ldots0$), then we increment $F_F$ until it contains $\nF$ $1$'s (again) and enumerate all transition functions again.
+
+Concerning the terminating behavior of \textsc{IncrementEnumProgress} consider the following observation:
+
+% finite enumerations, how many
+
+\begin{observation}
+	An enumeration of DFAs given $\nSO, k, \nF$ will eventually terminate. Having a requirement of $\nF$ final states, then $\binom{\nSO}{\nF}$ is the number of possible $F$-configurations. On the other hand there are $\nSO^{\nSO\kAL}$ possible $\delta$-configurations: We have to choose one of $\nSO$ possible end states for every combination in $Q\times\Sigma$ - so $\nSO\kAL$ times.
+\end{observation}
+
+\noindent This leads us to the range of an enumeration which can be expressed using the first and last enumeration state:
+\begin{itemize}
+	\item $s_{\nSO, \kAL, \nF} = (F_F, F_\delta) = (0\ldots0\underbrace{1\ldots 1}_{\nF\ 1's},\ 0\ldots0)$
+	\item $s_{\nSO, \kAL, \nF} = (F_F, F_\delta) = (\underbrace{1\ldots 1}_{\nF\ 1's}0\ldots0,\ \nSO-1 \ldots \nSO-1)$
+\end{itemize}
+Consequently the algorithm can terminate in two ways. Either a next DFA could be enumerated or all DFAs with $|Q|=\nSO, |\Sigma|=k, |F|=\nF$ have been found.
+
+%As a consequence we will create enumeration states $F_F,F_\delta$ to concrete values of $\nSO, k, \nF$ only if DFAs of that kind are requested.
 
 %The algorithm may terminate in two ways. Either $F_F, F_\delta$ have been successfully incremented, then line 9 is reached. Or $F_F = 1\ldots 1$ and $F_\delta = \nSO-1 \ldots \nSO-1$. Then $F_\delta$ becomes $0\ldots 0$ after incrementing and $F_F$ does not reach a state with $\nF$ $1$'s again through increment --- in this case all DFAs with $|Q|=\nSO, |\Sigma|=k, |F|=\nF$ have been enumerated.
-
-The algorithm can terminate in two ways. Either a matching DFA has been found or all DFAs with $|Q|=\nSO, |\Sigma|=k, |F|=\nF$ have been enumerated. The latter is the case, if $F_F = 1\ldots 1$ and $F_F$ does not reach a state with $\nF$ $1$'s again through increment.
 
 % EX -- example of an enumProgress increment
 	
@@ -314,7 +319,7 @@ The algorithm can terminate in two ways. Either a matching DFA has been found or
 		
 		(3). In this state however $F_\delta$ becomes $0\ldots0$ (4) after adding $1$. Thus we add $1$ to $F_F$, until it contains the required number of ones again (so we always have $f$ final states). The next $4$-ary number with $2$ ones after $0011$ is $0101$ (5).\newline
 		
-		(6). Here $F_\delta$ is at its maximum and there is no higher $4$-ary number with $2$ ones. So if the algorithm is now applied and tries to get the next valid $F_F$-value, it will eventually reach (7), which indicates the enumeration has found its end.
+		(6). Here $F_\delta$ is at its maximum and there is no higher $4$-ary number with $2$ ones. Thus the next enumeration step yields the state (7), that marks the enumeration end.
 	\end{minipage}
 	\hfill
 	\begin{minipage}{0.4\textwidth}
@@ -327,14 +332,14 @@ The algorithm can terminate in two ways. Either a matching DFA has been found or
 		\node (5) at (0,-3.75) {\color{ForestGreen} (5)\ \ $(0101)_2\ \ (00\ 00\ 00\ 00)_4$} ;
 		\node (6) at (0,-4.5) {$\ldots$} ;
 		\node (7) at (0,-5.25) {\color{ForestGreen} (6)\ \ $(1100)_2\ \ (33\ 33\ 33\ 33)_4$} ;
-		\node (8) at (0,-6) {$\ldots$} ;
-		\node (9) at (0,-6.75) {(7)\ \ $(1111)_2\ \ (33\ 33\ 33\ 33)_4$} ;
+		\node (8) at (0,-6) {(7)\ \ $(1100)_2\ \ (00\ 00\ 00\ 00)_4$};
 		
 		\path[->]
 		(0.east) edge [bend left] node [right] {$+1$} (1.east)
 		(1.east) edge [bend left] node [right] {$+x$} (3.east)
 		(3.east) edge [bend left] node [right] {$+1$} (5.east)
 		(5.east) edge [bend left] node [right] {$+x$} (7.east)
+		(7.east) edge [bend left] node [right] {$+1$} (8.east)
 		;
 		\end{tikzpicture}
 	\end{minipage}\par
@@ -366,23 +371,32 @@ The algorithm can terminate in two ways. Either a matching DFA has been found or
 
 % saving enumProgress for later progression
 
-Once the enumeration within a call of \textsc{BuildNewMinimalDFA} has been finished, it is reasonable to \emph{save} the enumeration progress (meaning the current content of $F_F, F_\delta$), such that during the next call enumeration can be resumed from that point on. The alternative would mean, that the enumeration is run in its entirety until that point again, whereas all so far found DFAs would be found to be not new. Thus we introduce a second database $DB2$ with the following table:
+\noindent Since it is not sensible to create initial enumeration states for all possible enumeration (there are infinite many, due to $\nSO\in\mathbb{N}$) we will create states by demand.
+
+Once the enumeration to the next DFA within a call of \textsc{GenNewMinimalDFA} has been finished, it is reasonable to save the enumeration state, such that during the next call enumeration can be resumed from that point on. Thus we introduce a second database DB$_{states}$ with the following table:
 \begin{center}
 	\begin{tabular}{c c c c c c}
 		$|Q_A|$ & |$\Sigma_A$| & $F_F$ & $F_\delta$
 	\end{tabular}
 \end{center}
-We reduce the enumeration room for each calculation.
+In the following variant of \textsc{GenNewMinimalDFA} it can be seen how the enumeration method is integrated:
 \vspace{0.2cm}
 \begin{algorithmic}[1]
 	\Function{GenNewMinDFA-3b\ }{$\nSO, \kAL, \nF, d, p$}
 	
 		\vspace{0.2cm}
 	
-		\State $l \gets$ all DFAs in DB1 matching $\nSO, \kAL, \nF, d, p$
-		\State $F_F, F_\delta \gets$ load enumeration progress for $\nSO, \kAL, \nF$ from DB2
+		\State $l \gets$ all DFAs in DB$_{found}$ matching $\nSO, \kAL, \nF, d, p$
 		
 		\vspace{0.2cm}
+		
+		\If {$\exists$ enum.\ state for $\nSO, \kAL, \nF$ in DB$_{states}$}
+			\State $F_F, F_\delta \gets$ load $s_{\nSO, \kAL, \nF}$ from DB$_{states}$
+		\Else
+			\State $F_F,F_\delta \gets 0\ldots0\underbrace{1\ldots1}_{\nF\ 1's}, 0\ldots0$
+		\EndIf
+		
+		\vspace{-0.2cm}
 		
 		\While {True}
 		
@@ -410,8 +424,8 @@ We reduce the enumeration room for each calculation.
 			
 			\vspace{0.2cm}
 			
-			\State save $F_F, F_\delta$ in DB2
-			\State save $A_{test}$ and its respective properties in DB1
+			\State save $F_F, F_\delta$ in DB$_{states}$
+			\State save $A_{test}$ and its respective properties in DB$_{found}$
 			\State\Return $A_{test}$
 		\EndWhile
 	\EndFunction
@@ -436,7 +450,7 @@ Champarnaud and Paranthoën~\cite{CP05} continue ideas started by Nicaud in his 
 \]
 In~\cite[p. 6]{CP05} it is shown that there exists a bijection $\varphi$ between $\mathfrak{F_{n,m}}$ and $\mathfrak{R_{m,n}}$ which maps to $k_i$, $i\in[1,s]$ of a tuple the number of leaves visited before the $i$th leaf in a tree. The connection to accessible DFAs is established by proving that  ``transition structures\footnotemark''\ with $|Q|=n$, $|\Sigma|=m$ reduced to the set of the smallest paths from the $s$ to each other state are in bijection with extended $m$-ary trees of order $n$ (see~\cite[p. 8]{CP05}).
 
-As a consequence they are able to construct a random generation of accessible complete DFAs using the ``recursive method'' from~\cite{NW78} which generates $n$-tuples~\cite[p. 10]{CP05}. Nicaud states in his survey that the algorithm's runtime is $\mathcal{O}(n^2)$ but notes, that generation of DFAs with more than ``a few thousand states'' is practically hard to do~\cite[pp. 10-11]{Nic14}.
+As a consequence Champarnaud and Paranthoën are able to construct a random generator of accessible complete DFAs using the ``recursive method'' from~\cite{NW78} which generates $n$-tuples~\cite[p. 10]{CP05}. Nicaud states in his survey that the algorithm's runtime is $\mathcal{O}(n^2)$ but notes, that generation of DFAs with more than ``a few thousand states'' is practically hard to do~\cite[pp. 10-11]{Nic14}.
 \footnotetext{Those are essentially DFAs without final state sets.}
 
 Almeida et al.~\cite{AAA09, AMR09, RMA05} present and implement methods using a string-encoding of DFAs for exact enumeration and random generation of DFAs. Nicaud~\cite[p. 11]{Nic14} states in a remark, that this approach uses the same recursive method and differs only in the DFA encoding.
@@ -445,11 +459,11 @@ Almeida et al.~\cite{AAA09, AMR09, RMA05} present and implement methods using a 
 
 Bassino, David and Nicaud present and implement a more efficient random generator of accessible complete DFAs in~\cite{BDN07, BN07}. Their idea is based on so called Boltzmann samplers. This framework of samplers is characterized in particular by the fact that the size of its generated objects are not fixed but in an interval around a given input size - this stands in opposition to most random generators in literature~\cite[p. 2]{DFL04}.
 
-In~\cite{BN07} the authors use a Boltzmann sampler to generate set partitions that are shown to be in bijection with so called box diagrams~\cite[p. 8]{BN07} which are in turn in bijection to accessible complete DFAs~\cite[p. 4]{BN07}. They thus acquire an average runtime complexity of $\mathcal{O}(n^{3/2})$ for a single random generation.
+In~\cite{BN07} the authors use a Boltzmann sampler to generate set partitions that are shown to be in bijection with so called box diagrams~\cite[p. 8]{BN07} which are in turn in bijection to accessible complete DFAs~\cite[p. 4]{BN07}. They thus acquire an average runtime complexity of $\mathcal{O}(n^{1.5})$ for a single random generation.
 
 \paragraph*{Using a Rejection Algorithm.}
 
-Carayol and Nicaud~\cite{CN12} give a simple algorithm with the same runtime complexity. They use a result stating that the size of accessible DFAs is concentrated around some computable value. In the end random possibly inaccessible DFAs of a specific size are generated, of which afterwards all unreachable states are deleted. This is thus essentially a rejection algorithm with clever generation of test DFAs. They furthermore show that allowing approximate sampling with the number of states being in $[n-\varepsilon\sqrt{n}, n+\varepsilon\sqrt{n}]$ results in linear expected runtime.
+Carayol and Nicaud~\cite{CN12} give a simple algorithm with the same runtime complexity ($\mathcal{O}(n^{1.5})$). They use a result stating that the size of accessible DFAs is concentrated around some computable value. In the end random (possibly inaccessible) DFAs of a specific size are generated, of which afterwards all unreachable states are deleted. This is thus essentially a rejection algorithm with clever generation of test DFAs. They furthermore show that allowing approximate sampling with the number of states being in $[n-\varepsilon\sqrt{n}, n+\varepsilon\sqrt{n}]$ results in linear expected runtime.
 
 \paragraph*{Others and Comparison to Algorithm Presented in this Work.}
 
@@ -462,7 +476,7 @@ In this work we use a rejection algorithm that generates test DFAs either by ran
 
 Concerning combinatorial properties of DFAs, several authors (e.g.~\cite{BN07, DKS02, HJ14}) consider a work from Vyssotsky~\cite{Vys59} in the Bell laboratories to be the first on this subject. A contribution by Korshunov~\cite{Kor78} is often cited in this regard, for he firstly ``determines an asymptotic estimate of the number of accessible complete and deterministic $n$-state automata over a finite alphabet''~\cite{BDS11}.
 
-Implementations (e.g.~\cite{AAA09, BDN07}) of various random and enumeration generation methods have given rise to several empirical observations concerning the number of minimal DFAs, their fraction among all DFAs and so forth.
+More recent implementations (e.g.~\cite{AAA09, BDN07}) of various random and enumeration generation methods have given rise to several empirical observations concerning the number of minimal DFAs, their fraction among all DFAs and so forth.
 
 Domaratzki, Kisman, and Shallit~\cite{DKS02} give some asymptotic estimates and explicit computations for the number of several types of distinct languages and automata. The here relevant results have been subsumed and extended in~\cite[p. 8]{AMR09} and were empirically confirmed in~\cite{BDN07}.
 

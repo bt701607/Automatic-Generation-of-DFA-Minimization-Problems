@@ -61,7 +61,8 @@ Here follows a simple isomorphy test that tries essentially to build a bijection
 	\EndFunction
 \end{algorithmic}
 \vspace{0.2cm}
-This algorithm \emph{visits} one by one all states of $A_1$ and tries to build $\pi$ on the way. The currently visited state is denoted $q_c$. In $V \subseteq Q_1$ we save all already visited states. The set $O \subseteq Q_1$ shall contain all \emph{observed} states, meaning those, that we encountered while following a transition, but have not visited yet.
+\newpage
+\noindent This algorithm \emph{visits} one by one all states of $A_1$ and tries to build $\pi$ on the way. The currently visited state is denoted $q_c$. In $V \subseteq Q_1$ we save all already visited states. The set $O \subseteq Q_1$ shall contain all \emph{observed} states, meaning those, that we encountered while following a transition, but have not visited yet.
 
 We call states of $A_1$, $A_2$ \emph{marked}, if they have been assigned to another state by $\pi$. So if $\pi(q_1)=q_2$, then $q_1$, $q_2$ are marked. States in $O$ will have the property, that they are marked.
 

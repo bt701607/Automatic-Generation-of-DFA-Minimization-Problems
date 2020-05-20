@@ -26,8 +26,9 @@ We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a ta
 	\end{itemize}
 \end{definition}
 \footnotetext{The states $r_1, \ldots, r_\nEQ$ can be seen as being \emph{redundant}.}
-\noindent In order to fulfill these requirements we will deduce for both kinds of states how they may be added by examining their desired properties. If we get to have the choice between several equally good options, we will randomly select one.
-We will be guided by the separation of creating equivalent and unreachable states, thus distinct algorithms will be devised to create each kind of states. Concerning the planarity option, we again use a rejection algorithm with the same test as before (see sec.~\ref{ch:3:sec:planarity}). These decisions lead to the following main formulation of \textsc{ExtendMinDFA}:
+\noindent In order to fulfill these requirements we will deduce for equivalent and equivalent states how they may be added by examining their desired properties. If we get to have the choice between several equally good options, we will randomly select one.
+
+We will be guided by the separation of creating equivalent and unreachable states as in Hopcrofts algorithm, thus distinct algorithms will be devised to create each kind of states. Concerning the planarity option, we again use a rejection algorithm with the same test as before (see sec.~\ref{ch:3:sec:planarity}). These decisions lead to the following formulation of \textsc{ExtendMinDFA}:
 \vspace{0.2cm}
 \begin{spacing}{1}
 	\begin{algorithmic}[1]
@@ -47,21 +48,21 @@ We will be guided by the separation of creating equivalent and unreachable state
 	\end{algorithmic}
 \end{spacing}
 \vspace{0.2cm}
-We will show for the action of adding equivalent states, that this does not change a DFAs $\mmD$-value - thus we do not have to care whether we are possibly changing it.
+\noindent We will show for the action of adding equivalent states, that this does not influence a DFAs $\mmD$-value - thus we do not have to care whether we are possibly changing it.
 
 \section{Creating Equivalent State Pairs}
 
-Step 3 and 4 of the minimization algorithm are concerned with detection and elimination of equivalent state pairs. We now want to add states $r_1,\ldots,r_\nEQ$ to a DFA $A_{sol}$, gaining $A_{re}$ with $Q_{re} = Q_{sol} \cup \{r_1,\ldots,r_\nEQ\}$, such that each of these states is equivalent to a state in $Q_{re}$. Note that, for reasons of clarity, we are going to abbreviate from now on $A_{re} = A$, $Q_{re} = Q$, $\sim_{A_{re}} = \sim_A$ etc.
+Step 3 and 4 of the minimization algorithm are concerned with detection and elimination of equivalent state pairs. We now want to add states $r_1,\ldots,r_\nEQ$ to a DFA $A_{sol}$, gaining $A_{re}$ with $Q_{re} = Q_{sol} \cup \{r_1,\ldots,r_\nEQ\}$, such that each of the added states is equivalent to a state in $Q_{re}$. Note that, for reasons of clarity, we are going to abbreviate from now on $A_{re} = A$, $Q_{re} = Q$, $\sim_{A_{re}} = \sim_A$ etc.
 
-In our algorithm we will add each $r_i$ separately starting from $A_{sol}$. Consider the properties $r_1,\ldots,r_\nEQ$ must have. Since we start from $A_{sol}$, and add in each step a state, that will be equivalent to a state in the so-far constructed DFA, it follows by transitivity, that each of $r_1,\ldots,r_\nEQ$ will be equivalent to a state $e$ of $A_{sol}$.
+In our algorithm we will add each $r_i$ separately to $A_{sol}$. Consider the properties $r_1,\ldots,r_\nEQ$ must have. Since we start from $A_{sol}$, and add in each step a state, that will be equivalent to a state in the so-far constructed DFA, it follows by transitivity, that each of $r_1,\ldots,r_\nEQ$ will be equivalent to a state $e$ of $A_{sol}$.
 \[
 	\forall i \in [1,\nEQ] \colon\ \exists e \in Q_{sol}\colon\ r_i \sim_A e
 \]
-In other words: Every new state $r_i$ is by transitivity equivalent to a state $e$ of $A_{sol}$. In our algorithm, we will first choose a to-be-equivalent-state $e\in Q_{sol}$ for each state we add.
+In our algorithm, we will first choose a to-be-equivalent-state $e\in Q_{sol}$ for each state $r_i$ we create, then we add its transitions.
 
 \subsection{Adding Outgoing Transitions}
 
-Regarding the outgoing transitions of any $r_i$ equivalent to a state $e$, we are directly restricted by the equivalency relationship:
+Regarding the outgoing transitions of any $r_i$ equivalent to a state $e$, we are directly restricted by their equivalency relationship:
 \begin{itemize}
 	\item[] $r_i \sim_A e$
 	\item[$\Rightarrow$] $\forall z \in \Sigma^* \colon\ (\delta^*(r_i, z) \in F \Leftrightarrow \delta^*(e, z) \in F)$
@@ -78,95 +79,86 @@ Regarding the outgoing transitions of any $r_i$ equivalent to a state $e$, we ar
 	
 	\item[$\Rightarrow$] $\forall \sigma \in \Sigma \colon [\delta(r_i, \sigma)]_{\sim_A} = [\delta(e, \sigma)]_{\sim_A}$
 \end{itemize}
-We may thus formulate the rule for adding outgoing transitions to a new state quite straightforward:
+So we see, that the state $\delta(r_i, \sigma) = q$ must be in the same equivalency class as $\delta(e, \sigma) = p$. We may thus formulate the rule for adding outgoing transitions to a new state quite straightforward:
 \begin{description}
 	\item[R1:] For each symbol $\sigma \in \Sigma$ choose exactly one state ($A$ shall be complete) $q\in[\delta(e, \sigma)]_{\sim_A}$ and set $\delta(r_i, \sigma) = q$.
 \end{description}
 Since the solution DFA is complete and since every here added state gets a transition for every alphabet symbol, we know that every $[\delta(e, \sigma)]_{\sim_A} \neq \emptyset$, so the rule is guaranteed to be fulfillable.
 
-Note that this substep does not affect the belonging-to-an-equivalence-class of any other now existing state, since $r_i$ cannot be reached yet - it has no ingoing transitions.
+Note that this substep does not change the equivalence class of any other now existing state, since $r_i$ cannot be reached yet (and thus it can not lie on a path from any other state to a final state) - it has no ingoing transitions.
 
 \subsection{Adding Ingoing Transitions}
 
 First of all, we know, that $r_i$ must be reachable, since we decided that all unreachable states are added later. So we need to give $r_i$ at least one ingoing transition. Doing this, we have to ensure, that any state $q$, that gets an outgoing transition to $r_i$ remains in its equivalence class.
 
-Thus a fitting state $q$ has to have a transition to some state in $[r_i]_{\sim_A} = [e]_{\sim_A}$ already. So, given a state $q$ with $\delta(q, \sigma) = p$ and $p \in [e]_{\sim_A}$, we can set $\delta(q, \sigma) = r_i$ and thus ``steal'' $q$ its ingoing transition.
+Thus a fitting state $q$ has to have a transition to some state in $[r_i]_{\sim_A} = [e]_{\sim_A}$ already. So, given a state $q$ with $\delta(q, \sigma) = p$ and $p \in [e]_{\sim_A}$, we can set $\delta(q, \sigma) = r_i$ and thus ``steal'' $p$ its ingoing transition.
 
-We see here, that $q$ must have at least $2$ ingoing transitions, else it would become unreachable. Thus we summarize:
+We see here, that $p$ must have at least $2$ ingoing transitions, else it would become unreachable. Thus we summarize:
 \begin{description}
 	\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $d^-(p) \geq 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
 \end{description}
-These finding lead us to a general requirement regarding the choice of a state $e$ for an $r_i$: The equivalence class of any $e$ has to contain at least one state with at least $2$ ingoing transitions. We establish the following notion to pin down this restriction:
+These findings lead us to a general requirement regarding the choice of a state $e$ for an $r_i$: The equivalence class of any $e$ has to contain at least one state with at least $2$ ingoing transitions. We establish the following notion to pin down this restriction:
 \[
 	duplicatable(q) \Leftrightarrow_{def} (\exists p \in [q]_{\sim_A}\colon |d^-(p)| \geq 2)
 \]
-The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma| \leq 1$ (due to the restriction $|d^-(p)| \geq 2$) and greater than $0$ for $|\Sigma| > 1$ due to the pigeonhole principle: An accessible complete DFA has $|Q||\Sigma|$ transitions which have to be spread across $|Q|$ states.
-%\begin{example}
-%	\begin{tikzpicture}[initial text={},scale=1., every node/.style={transform shape}]
-%	\tikzstyle{every state}=[minimum size=5mm, inner sep=0pt]
-%	
-%	\node[initial, state]  (03) at (0, 0)   {$03$};
-%	\node[state] 		   (1) at (6, 0)   {$1$};
-%	\node[state,accepting] (24) at (4,0)    {$24$};
-%	\node[state]           (6) at (2,0)    {$6$};
-%	
-%	\path[->]
-%	(03) edge node [above=-0.07cm]  {$a$}   (6)
-%	(03) edge [bend left] node [above=-0.07cm]  {$b$}   (24)
-%	
-%	(1) edge node [above=-0.13cm]  {$a,b$}   (24)
-%	
-%	(24) edge [bend left=50] node [above=-0.07cm]  {$a$}   (1)
-%	(24) edge [bend right=50] node [above=-0.07cm]  {$b$}   (03)
-%	
-%	(6) edge [bend right] node [below=-0.07cm]  {$a$}   (1)
-%	(6) edge node [above=-0.07cm]  {$b$}   (24)
-%	;
-%	\end{tikzpicture}
-%\end{example}
-%\begin{figure}
-%	\includegraphics[width=\linewidth]{images/dfa_create_equivalent_states.png}
-%	\caption{If an equivalence class (here denoted by the states in the dashed area) contains a state with 2 or more ingoing transitions (in this case $p$), then a state equivalent to any of the classes states may be added. Here $r$ is equivalent to $o$ and is ``stealing'' the ingoing transition $\delta(q, a)$ from $p$.}
-%	\label{fig:dfa_create_equivalent_states}
-%\end{figure}
+\begin{observation}
+	The number of duplicatable states in any accessible DFA $A$ is $0$ for $|\Sigma| \leq 1$ (due to the restriction $|d^-(p)| \geq 2$) and greater than $0$ for $|\Sigma| > 1$ due to the pigeonhole principle: An accessible complete DFA has $|Q||\Sigma|$ transitions which have to be spread across $|Q|$ states.
+\end{observation}
+\noindent This observation guarantees, that the above mentioned condition is fulfilled, if $k > 1$.
 
 \subsection{The Algorithm}
+
+We integrate our strategy of creating equivalent state pairs in the following algorithm. It basically consists of a for-loop that adds one state per iteration. In each iteration first a duplicatable state in the so-far built DFA is determined. Then the new state is created and outgoing and ingoing transitions are added.
 
 \vspace{0.2cm}
 \begin{spacing}{1}
 \begin{algorithmic}[1]
 	\Function{CreateEquivPairs}{$A, \nEQ$}
+	\If {$k \leq 1$}
+		\State \Return $\bot$
+	\EndIf
     \State $Q \gets Q_{sol}$
     \State $\delta \gets \delta_{sol}$
     \State $F \gets F_{sol}$
-	\State $K \gets \{\ \{q\}\ |\ q \in Q\ \}$ \Comment{tracks the equivalence classes of $A$}
-	\State $k(q) = C$ such that $q \in C$ and $C \in K$ \Comment{returns the equivalence class to $q$}
-	\State $in(q) = |d^-(q)|$ for all $q \in Q$ \Comment{tracks the number of ingoing t.}
+    \State $\sim_A \gets Q\times Q$
+%	\State $K \gets \{\ \{q\}\ |\ q \in Q\ \}$ \Comment{tracks the equivalence classes of $A$}
+%	\State $k(q) = C$ such that $q \in C$ and $C \in K$ \Comment{returns the equivalence class to $q$}
+	
+	\vspace{0.2cm}
 	
     \For {$i$ \textbf{in} $[1,\nEQ]$}
+    
+    	\vspace{0.2cm}
+    
 		\For {$q$ \textbf{in} $Q$} \Comment{find a duplicatable state $e$}
-			\If {$in(q) \geq 2$}
-				\State $e \gets$ random chosen state from $k(q)$
+			\If {$|d^-(q)| \geq 2$}
+				\State $e \gets$ random chosen state from $[q]_{\sim_A}$
 				\State \textbf{break}
 			\EndIf
 		\EndFor
 		
+		\vspace{0.2cm}
+		
 		\State $r_i \gets$ unused state label \Comment{create to $e$ equivalent state $r_i$}
         \State Add $r_i$ to $Q$
-		\State Add $r_i$ to $k(e)$
-		\State $in(r_i) \gets 0$
+		\State Add $(r_i,r_i), (e,r_i), (r_i,e)$ to $\sim_A$
+		
+		\vspace{0.2cm}
 		
 		\For {$\sigma$ \textbf{in} $\Sigma$} \Comment{\textbf{R1:} add $d^+(r_i)$}
-			\State $\delta(r_i, \sigma) =$ random chosen state from $k(\delta(e, \sigma))$
+			\State $\delta(r_i, \sigma) =$ random chosen state from $[\delta(e, \sigma)]_{\sim_A}$
 		\EndFor
 		
-		\State $P \gets \{\ ((s, \sigma), t) \in \delta\ |\ t \in k(e),\ in(t) \geq 2\ \}$ \Comment{\textbf{R2:} add $d^-(r_i)$}
+		\vspace{0.2cm}
+		
+		\State $P \gets \{\ ((s, \sigma), t) \in \delta\ |\ t \in [e]_{\sim_A},\ |d^-(t)| \geq 2\ \}$ \Comment{\textbf{R2:} add $d^-(r_i)$}
 		\State $C \gets$ random nonempty subset of $P$
 		\For {$((s, \sigma), t)$ \textbf{in} $C$}
-			\State $in(t) \gets in(t) - 1$
-			\State $in(r_i) \gets in(r_i) + 1$
             \State $\delta(s, \sigma) = r_i$
 		\EndFor
+		
+		\vspace{0.2cm}
+		
 	\EndFor
     \State \Return $(Q, \Sigma_{sol}, \delta, s_{sol}, F)$
 	\EndFunction

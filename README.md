@@ -1,4 +1,4 @@
-# Generation-of-DFA-Minimization-Problems
+# Automatic Generation of DFA Minimization Problems
 
 Dependencies:
 

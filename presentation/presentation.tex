@@ -1,4 +1,4 @@
-\documentclass[handout]{beamer}%
+\documentclass[handout,10pt]{beamer}%
 
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
@@ -8,10 +8,45 @@
 \usepackage{bm}
 
 \usepackage{tikz}
-\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{positioning,automata}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
 
 
-\title{Generation of DFA minimization problems}
+% -----------
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+
+\newcommand{\MinAlg}{\textsc{MinimizeDFA}}
+\newcommand{\CompUnr}{\textsc{FindUnreachables}}
+\newcommand{\RemUnr}{\textsc{RemUnreachables}}
+\newcommand{\CompDist}{\textsc{FindEquivPairs}}
+\newcommand{\mCompDist}{\textsc{$m$-FindEquivPairs}}
+\newcommand{\RemEq}{\textsc{RemEquivPairs}}
+
+\newcommand{\mmD}{\mathfrak{D}}
+
+\newcommand{\nSO}{{n_s}}
+\newcommand{\nEQ}{{n_e}}
+\newcommand{\nUN}{{n_u}}
+\newcommand{\nF}{{n_F}}
+\newcommand{\kAL}{k}
+
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\Amin}{{\mathcal{A}_{min}}}
+
+\newcommand{\gregorColor}{Violet}
+\newcommand{\gregor}[1]{\textcolor{\gregorColor}{\textbf{Gregor:} #1}}
+
+\newcommand{\x}{$\blacksquare$}
+
+
+
+% -----------
+
+\title{Generation of DFA Minimization Problems}
 
 \author{Gregor Sönnichsen}
 \institute{Universität Bayreuth}
@@ -37,21 +72,247 @@
 	
 	% Introduction
 	
+	\section{Introduction}
+	
 	\begin{frame}
 		\frametitle{Introduction}
+		Automata theory is a classical topic in computer science curricula.
+		
+		Minimization of DFAs is a typical task for students:
+		\begin{itemize}
+			\item sufficiently easy to understand
+			\item practical applications
+			\item understanding can be tested easily
+		\end{itemize}
+		\vspace{0.3cm}
+		Consequently, studying automatized generation of DFA minimization problems is interesting because it could\ldots
+		\begin{itemize}
+			\item \ldots free up precious time
+			
+			(if a generator is implemented)
+			\item \ldots yield a deeper insight
+			
+			in the nature of such problems
+		\end{itemize}
+	{\vspace{-2cm}\hfill\includegraphics[width=0.2\linewidth]{zeitdiebe-besiegen-lebenszeit-gewinnen.jpg}\hspace{0.1cm}\tiny\footnotemark}
+	
+	\renewcommand{\footnotesize}{\tiny}
+	
+	{\footnotetext{\url{https://www.rindlerwahn.de/zeitdiebe-besiegen-und-mehr-lebenszeit-gewinnen}}}
+	
+	\end{frame}
+
+	\begin{frame}
+	\frametitle{Outline}
+	\tableofcontents % [pausesections]
+	\end{frame}
+	
+	% Thesis Content
+	
+	\section{Problem definition and approach}
+	
+	\begin{frame}
+		\frametitle{Problem definition}
+		\framesubtitle{Preliminaries (1/2)}
+		
+		A tuple $A = (Q, \Sigma, \delta, s, F)$ with $Q, \Sigma$ being a finite, $\delta \colon\ Q \times \Sigma \to Q$, $s \in Q$ and $F \subseteq Q$ is called \emph{deterministic finite automaton}.
+		\vspace{0.3cm}
+		
+		% Note: Completeness
+		
+		We define the \emph{extended transition function} $\delta^* : Q \times \Sigma^* \to Q$ as:
+		\begin{itemize}
+			\item $\delta^*(q,\varepsilon) = q$
+			\item $\delta^*(q,w\sigma) = \delta(\delta^*(q,w),\sigma)$ for all $q \in Q$, $w \in \Sigma^*$, $\sigma \in \Sigma$
+		\end{itemize}
+		\vspace{0.3cm}
+		
+		The \emph{language} of DFA is defined as $L(A) = \{\ w\ |\ \delta^*(w) \in F\ \}$.
+		\vspace{0.3cm}
+		
+		We call a DFA \emph{minimal}, if there exists no other DFA with the same language having less states.
+	\end{frame}
+		
+	\begin{frame}
+		\frametitle{Problem definition}
+		\framesubtitle{Preliminaries (2/2)}
+		
+		We say a state $q$ is \emph{unreachable}, iff there is no word $w \in \Sigma^*$ such that $\delta^*(s, w) = q$.
+		\vspace{0.3cm}
+		
+		A state pair $q_1, q_2 \in Q$ is called \emph{equivalent}, iff $\sim_A(q_1, q_2)$ is true, where
+		\begin{displaymath}
+		q_1 \sim_A q_2\ \Leftrightarrow_{def}\ \forall z \in \Sigma^* \colon\ (\delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)
+		\end{displaymath}
+		
+		\begin{example}
+			\centering
+			\begin{tikzpicture}[initial text={}]
+			\tikzstyle{every state}=[minimum size=5mm, inner sep=0pt]
+			
+			\node[initial, state]  (0) at (0, 0) {$0$};
+			
+			\node[state]           (1) at (1.5,-1) {$1$};
+			\node[state]           (2) at (1.5, 1) {$2$};
+			
+			\node[accepting,state] (3) at (3, 0) {$3$};
+			
+			\node[state]           (4) at (4.5,0) {$4$};
+			
+			\path[->]
+			(0) edge node [above right]  {$a$} (1)
+			(0) edge node [above left]  {$b$} (2)
+			
+			(1) edge node [above left=-0.1cm] {$a,b$} (3)
+			(2) edge node [above right=-0.1cm] {$a,b$} (3)
+			
+			(3) edge [loop below] node [right] {$a,b$} (3)
+			
+			(4) edge node [above] {$a,b$} (3)
+			;
+			\end{tikzpicture}
+		\end{example}
+	
+		\begin{theorem}
+			A DFA is minimal, iff it has neither unreachable nor equivalent states.
+		\end{theorem}
+	\end{frame}
+
+
+	\begin{frame}
+		\frametitle{Problem definition}
+		\framesubtitle{Hopcroft's Minimization Algorithm}
+		\begin{enumerate}
+		\item Compute all unreachable states
+		\item Remove all unreachable states and their transitions
+		\item Compute all equivalent state pairs ($\sim_A$)
+		\begin{algorithmic}[1]
+			\Function{\CompDist}{$A$}
+			\State $i \gets 0$
+			\State $m(0) \gets \{ (p,q), (q,p)\ |\ p \in F, q \notin F \}$
+			\Do
+			\State $i \gets i + 1$
+			\State $m(i) \gets \{ (p,q), (q,p)\ |\ (p,q) \notin \bigcup{m(\cdot)} \land$
+			\State \hfill$\exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in m(i-1) \}$
+			\doWhile {$m(i) \neq \emptyset$}
+			\State \Return $\bigcup{m(\cdot)}$
+			\EndFunction
+		\end{algorithmic}
+		\item Merge all equivalent state pairs
+		\end{enumerate}
+	\end{frame}
+
+	
+	\begin{frame}
+		\frametitle{Problem definition}
+		\framesubtitle{A sample DFA minimization problem\ldots}
+		{\raggedright\itshape \underline{Task:} Consider the below shown deterministic finite automaton $A$:}
+		\begin{center}\resizebox{.75\linewidth}{!}{
+				\begin{tikzpicture}[initial text={},scale=1., every node/.style={transform shape}]
+				\tikzstyle{every state}=[minimum size=5mm, inner sep=0pt]
+				
+				\node[initial, state]  (0) at (0, 0)    {$0$};
+				\node[state] 		   (1) at (6, 0)    {$1$};
+				\node[state,accepting] (2) at (4,0)     {$2$};
+				\node[state]           (3) at (2, -1.5) {$3$};
+				\node[state,accepting] (4) at (4,-3)    {$4$};
+				\node[state]           (5) at (4,-1.5)  {$5$};
+				\node[state]           (6) at (2,0)     {$6$};
+				
+				\path[->]
+				(0) edge node [above=-0.07cm]  {$a$}   (6)
+				(0) edge [bend left] node [above=-0.07cm]  {$b$}   (2)
+				
+				(1) edge node [above=-0.07cm]  {$a$}   (2)
+				(1) edge node [below right=-0.15cm]  {$b$}   (4)
+				
+				(2) edge [bend left] node [above=-0.07cm]  {$a$}   (1)
+				(2) edge node [below right=-0.15cm]  {$b$}   (3)
+				
+				(3) edge node [left=-0.07cm]  {$a$}   (6)
+				(3) edge node [above right=-0.15cm]  {$b$}   (4)
+				
+				(4) edge [bend right] node [below right=-0.15cm]  {$a$}   (1)
+				(4) edge [bend left] node [below left=-0.15cm]  {$b$}   (0)
+				
+				(5) edge node [below right=-0.15cm]  {$a$}   (1)
+				(5) edge node [left=-0.07cm]  {$b$}   (4)
+				
+				(6) edge [bend right] node [below=-0.07cm]  {$a$}   (1)
+				(6) edge node [above=-0.07cm]  {$b$}   (2)
+				;
+				\end{tikzpicture}
+		}\end{center}
+		{\itshape Apply the minimization algorithm and illustrate for each state pair of $A$ during which \CompDist-iteration it was marked. Draw the resulting automaton.}
+		
+	\end{frame}
+
+
+	\begin{frame}
+		\frametitle{Problem definition}
+		\framesubtitle{\ldots and its solution}
+	
+		{\raggedright\itshape \underline{Solution:}\newline
+			Step 1: Detect and eliminate unreachable states.
+			\begin{tabbing}
+				\qquad\textnormal{State $5$ is unreachable.}
+			\end{tabbing}
+			Step 2: Apply \CompDist\ to $A$ and merge equivalent state pairs:\par
+		}
+		\begin{columns}
+		\begin{column}{.4\textwidth}
+			\vspace{0.5cm}
+			\qquad
+			\begin{tabular}{c|c|c|c|c|c|c}
+				& 0  & 1  & 2  & 3  & 4  & 6  \\\hline
+				0 & \x & 1  & 0  &    & 0  & 2  \\\hline
+				1 & \x & \x & 0  & 1  & 0  & 1  \\\hline
+				2 & \x & \x & \x & 0  &    & 0  \\\hline
+				3 & \x & \x & \x & \x & 0  & 2  \\\hline
+				4 & \x & \x & \x & \x & \x & 0  \\\hline
+				6 & \x & \x & \x & \x & \x & \x \\
+			\end{tabular}
+		\end{column}
+		\begin{column}{.5\textwidth}\centering\resizebox{1.\linewidth}{!}{
+			\begin{tikzpicture}[initial text={},scale=1., every node/.style={transform shape}]
+			\tikzstyle{every state}=[minimum size=5mm, inner sep=0pt]
+			
+			\node[initial, state]  (03) at (0, 0)   {$03$};
+			\node[state] 		   (1) at (6, 0)   {$1$};
+			\node[state,accepting] (24) at (4,0)    {$24$};
+			\node[state]           (6) at (2,0)    {$6$};
+			
+			\path[->]
+			(03) edge node [above=-0.07cm]  {$a$}   (6)
+			(03) edge [bend left] node [above=-0.07cm]  {$b$}   (24)
+			
+			(1) edge node [above=-0.13cm]  {$a,b$}   (24)
+			
+			(24) edge [bend left=50] node [above=-0.07cm]  {$a$}   (1)
+			(24) edge [bend right=50] node [above=-0.07cm]  {$b$}   (03)
+			
+			(6) edge [bend right] node [below=-0.07cm]  {$a$}   (1)
+			(6) edge node [above=-0.07cm]  {$b$}   (24)
+			;
+			\end{tikzpicture}
+		}\end{column}
+		\end{columns}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Approach}
+		
 		
 	\end{frame}
 	
-	\begin{frame}
-		\frametitle{Outline}
-		\tableofcontents % [pausesections]
-	\end{frame}
-
-	% Thesis Content
+	\section{Generating Minimal DFAs}
+	
+	\section{Extending Minimal DFAs}
+	
+	\section{Conclusion}
 
 	\begin{frame}
 		\frametitle{Conclusion}
-		\framesubtitle{}
 		
 		This presentation has\ldots
 		\begin{itemize}

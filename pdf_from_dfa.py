@@ -1,20 +1,29 @@
-from DFA          import DFA
-from minimize_dfa import tex_minimization_table
+"""
+module: pdf_from_dfa.py
+author: Gregor Soennichsen
 
-import clean
+
+"""
+
+import os
+import platform
+import pathlib
 
 from dot2tex import dot2tex
 
-import os, platform, pathlib
+import clean
+
+from dfa          import DFA
+from minimization import tex_min_table
 
 
-EXE_ENDING = ''
+__EXE_ENDING = ''
 
 if platform.system() == 'Windows':
     EXE_ENDING = '.exe'
 
 
-TEMPLATE_TASK = r'''
+__TEMPLATE_TASK = r'''
 \documentclass{{article}}
 \usepackage[x11names, svgnames, rgb]{{xcolor}}
 \usepackage[utf8]{{inputenc}}
@@ -31,7 +40,7 @@ TEMPLATE_TASK = r'''
 \end{{document}}
 '''
 
-TEMPLATE_SOLUTION = r'''
+__TEMPLATE_SOLUTION = r'''
 \documentclass{{article}}
 \usepackage[x11names, svgnames, rgb]{{xcolor}}
 \usepackage[utf8]{{inputenc}}
@@ -75,7 +84,7 @@ Minimization table:
 
 def dot_from_dfa(dfa):
 
-    templateDFA = '''
+    TEMPLATE_DFA = '''
 digraph {{
     node [shape=circle]
 {}
@@ -85,13 +94,13 @@ digraph {{
 {}
 }}'''
 
-    templateTransition = '''    {} -> {} [label={}]
+    TEMpPLATE_TRANSITION = '''    {} -> {} [label={}]
 '''
 
     transitionsAsStr = ''
 
     for (q1,c),q2 in dfa.transitions:
-        transitionsAsStr += templateTransition.format(q1, q2, c)
+        transitionsAsStr += TEMpPLATE_TRANSITION.format(q1, q2, c)
 
     statesAsStr = ''
 
@@ -104,7 +113,7 @@ digraph {{
     for q in dfa.accepting:
         acceptingAsStr += '''    {}\n'''.format(q)
 
-    return templateDFA.format(statesAsStr, acceptingAsStr, transitionsAsStr)
+    return TEMPLATE_DFA.format(statesAsStr, acceptingAsStr, transitionsAsStr)
 
 
 def tex_from_dfa(dfa):
@@ -112,7 +121,7 @@ def tex_from_dfa(dfa):
     return dot2tex(dot_from_dfa(dfa), format='tikz', crop=True, program='dot', figonly=True)
 
 
-def postprocess_tex(tex, minimization_table=None):
+def postprocess_tex(tex, minTable=None):
     ''' adds tikz automata library to TeX-code,
         to be able to display start states correctly'''
 
@@ -131,71 +140,71 @@ def postprocess_tex(tex, minimization_table=None):
     return '\n'.join(lines)
     
     
-def next_task_path(workingDir):
+def next_task_path(outDir):
 
     counter = 0
     
     while True:
-        path = workingDir / 'task_{:03d}.tex'.format(counter)
+        path = outDir / 'task_{:03d}.tex'.format(counter)
         if not path.exists():
             return path
         counter += 1
     
     
-def next_solution_path(workingDir):
+def next_solution_path(outDir):
 
     counter = 0
     
     while True:
-        path = workingDir / 'solution_{:03d}.tex'.format(counter)
+        path = outDir / 'solution_{:03d}.tex'.format(counter)
         if not path.exists():
             return path
         counter += 1
 
 
-def save_task(taskDFA, workingDir):
+def save_task(taskDFA, outDir):
 
     if platform.system() == 'Windows':
-        workingDir = pathlib.WindowsPath(workingDir)
+        workingDir = pathlib.WindowsPath(outDir)
     else:
-        workingDir = pathlib.PosixPath(workingDir)
+        workingDir = pathlib.PosixPath(outDir)
 
-    path = next_task_path(workingDir)
+    path = next_task_path(outDir)
 
     path.write_text(
-        TEMPLATE_TASK.format(
+        __TEMPLATE_TASK.format(
             postprocess_tex(tex_from_dfa(taskDFA))
         )
     )
 
     os.popen(
         """pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory='{}' '{}'"""
-        .format(EXE_ENDING, workingDir, path)
+        .format(__EXE_ENDING, outDir, path)
     ).read()
 
 
-def save_solution(solDFA, reachDFA, taskDFA, workingDir):
+def save_solution(solDFA, reachDFA, taskDFA, outDir):
 
     if platform.system() == 'Windows':
-        workingDir = pathlib.WindowsPath(workingDir)
+        workingDir = pathlib.WindowsPath(outDir)
     else:
-        workingDir = pathlib.PosixPath(workingDir)
+        workingDir = pathlib.PosixPath(outDir)
 
-    path = next_solution_path(workingDir)
+    path = next_solution_path(outDir)
 
     path.write_text(
-        TEMPLATE_SOLUTION.format(
+        __TEMPLATE_SOLUTION.format(
             '$' + ', '.join(taskDFA.unrStates) + '$',
             postprocess_tex(tex_from_dfa(reachDFA)),
             '\n'.join(['\item $' + ', '.join(class_) + '$' for class_ in reachDFA.eqClasses if len(class_) > 1]),
-            tex_minimization_table(reachDFA),
+            tex_min_table(reachDFA),
             postprocess_tex(tex_from_dfa(solDFA))
         )
     )
 
     os.popen(
         """pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory='{}' '{}'"""
-        .format(EXE_ENDING, workingDir, path)
+        .format(__EXE_ENDING, outDir, path)
     ).read()
 
 

@@ -1,10 +1,21 @@
+"""
+module: log.py
+author: Gregor Soennichsen
+
+
+"""
+
 def start(args):
 
     print("Working directory: '{}'.".format(args.p), flush=True)
 
+def creating_output_dir():
+
+    print("Working directory does not exist, creating...", end='', flush=True)
+
 def building_solution(args):
 
-    planar = 'planar ' if args.ps else ''
+    planar = 'planar '     if args.ps          else ''
     method = 'enumeration' if args.b == 'enum' else 'randomization'
 
     print(

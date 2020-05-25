@@ -1,18 +1,25 @@
-from DFA import DFA
+"""
+module: minimization.py
+author: Gregor Soennichsen
+
+
+"""
 
 import copy
+
+from dfa import DFA
 
 
 # returned dfa has minmarkDepth set
 def minimize_dfa(dfa):
 
-    return __delete_duplicate_states(__delete_unreachable_states(copy.deepcopy(dfa)))
+    return __del_dupl_states(__del_unr_states(copy.deepcopy(dfa)))
 
 
 # -----------------------------------------------------------
 
 
-def has_unreachable_states(dfa):
+def has_unr_states(dfa):
 
     # find unreachable states via breadth-first search
 
@@ -27,7 +34,7 @@ def has_unreachable_states(dfa):
 
     while len(observed) != 0:
 
-        new_observed = set()
+        newObserved = set()
 
         for q in observed:
             for sigma in dfa.alphabet:
@@ -35,16 +42,16 @@ def has_unreachable_states(dfa):
 
                     p = delta[(q,sigma)]
                     if p not in observed and p not in discovered:
-                        new_observed.add(p)
+                        newObserved.add(p)
 
-        undiscovered.difference_update(new_observed)
+        undiscovered.difference_update(newObserved)
         discovered.update(observed)
-        observed = new_observed
+        observed = newObserved
 
     return len(undiscovered) > 0
 
 
-def __delete_unreachable_states(dfa):
+def __del_unr_states(dfa):
 
     # find unreachable states via breadth-first search
 
@@ -59,7 +66,7 @@ def __delete_unreachable_states(dfa):
 
     while len(observed) != 0:
 
-        new_observed = set()
+        newObserved = set()
 
         for q in observed:
             for sigma in dfa.alphabet:
@@ -67,11 +74,11 @@ def __delete_unreachable_states(dfa):
 
                     p = delta[(q,sigma)]
                     if p not in observed.union(discovered):
-                        new_observed.add(p)
+                        newObserved.add(p)
 
-        undiscovered.difference_update(new_observed)
+        undiscovered.difference_update(newObserved)
         discovered.update(observed)
-        observed = new_observed
+        observed = newObserved
 
     # delete unreachable states
 
@@ -88,9 +95,9 @@ def __delete_unreachable_states(dfa):
 
     # update informations
 
-    dfa.alphabetSize            = len(dfa.alphabet)
-    dfa.numberOfStates          = len(dfa.states)
-    dfa.numberOfAcceptingStates = len(dfa.accepting)
+    dfa.k = len(dfa.alphabet)
+    dfa.n = len(dfa.states)
+    dfa.f = len(dfa.accepting)
 
     return dfa
 
@@ -98,8 +105,8 @@ def __delete_unreachable_states(dfa):
 # -----------------------------------------------------------
 
 
-# sets minmarkDepth of dfa
-def has_duplicate_states(dfa):
+# sets depth of dfa
+def has_dupl_states(dfa):
 
     # find duplicate states via the minimization-mark algorithm
 
@@ -113,7 +120,7 @@ def has_duplicate_states(dfa):
 
     delta = dict(dfa.transitions)
 
-    min_mark_depth = 0
+    depth = 0
 
     while True:
 
@@ -135,9 +142,7 @@ def has_duplicate_states(dfa):
         if len(N) == 0:
             break
         else:
-            min_mark_depth += 1
-
-    duplicate_state_pairs = [(p,q) for p in dfa.states for q in dfa.states if (p,q) not in M and p != q]
+            depth += 1
 
     for p in dfa.states:
         for q in dfa.states:
@@ -146,13 +151,13 @@ def has_duplicate_states(dfa):
 
     # update informations
 
-    dfa.minmarkDepth = min_mark_depth
+    dfa.depth = depth
 
     return True
 
 
-# sets minmarkDepth of dfa
-def __delete_duplicate_states(dfa):
+# sets depth of dfa
+def __del_dupl_states(dfa):
 
     # find duplicate states via the minimization-mark algorithm
 
@@ -166,7 +171,7 @@ def __delete_duplicate_states(dfa):
 
     delta = dict(dfa.transitions)
 
-    min_mark_depth = 0
+    depth = 0
 
     while True:
 
@@ -188,14 +193,19 @@ def __delete_duplicate_states(dfa):
         if len(N) == 0:
             break
         else:
-            min_mark_depth += 1
+            depth += 1
 
     # merge duplicate states
-    duplicate_state_pairs = [(p,q) for p in dfa.states for q in dfa.states if (p,q) not in M and p != q]
+    duplStatePairs = [
+        (p,q) 
+        for p in dfa.states 
+            for q in dfa.states 
+               if (p,q) not in M and p != q
+    ]
 
-    while len(duplicate_state_pairs) != 0:
+    while len(duplStatePairs) != 0:
 
-        (p,q) = duplicate_state_pairs.pop()
+        (p,q) = duplStatePairs.pop()
 
         if p == q:
             continue
@@ -218,29 +228,29 @@ def __delete_duplicate_states(dfa):
 
             dfa.transitions[i] = (q1,s),q2
 
-        for i in range(len(duplicate_state_pairs)):
-            (q1,q2) = duplicate_state_pairs[i]
+        for i in range(len(duplStatePairs)):
+            (q1,q2) = duplStatePairs[i]
             if q1 == q:
                 q1 = p
             if q2 == q:
                 q2 = p
-            duplicate_state_pairs[i] = (q1,q2)
+            duplStatePairs[i] = (q1,q2)
 
     dfa.transitions = list(set(dfa.transitions))
 
     # update informations
 
-    dfa.minmarkDepth = min_mark_depth
-    dfa.isPlanar     = None
+    dfa.depth  = depth
+    dfa.planar = None
 
-    dfa.alphabetSize            = len(dfa.alphabet)
-    dfa.numberOfStates          = len(dfa.states)
-    dfa.numberOfAcceptingStates = len(dfa.accepting)
+    dfa.k = len(dfa.alphabet)
+    dfa.n = len(dfa.states)
+    dfa.f = len(dfa.accepting)
 
     return dfa
 
 
-def tex_minimization_table(dfa):
+def tex_min_table(dfa):
 
     # find duplicate states via the minimization-mark algorithm
 
@@ -287,30 +297,30 @@ def tex_minimization_table(dfa):
 
     tex = ''
 
-    column_spec = '|'.join((dfa.numberOfStates+1) * 'c' )
-    tex += '\\begin{tabular}{' + column_spec + '}\n'
+    columnSpec = '|'.join((dfa.n+1) * 'c' )
+    tex += '\\begin{tabular}{' + columnSpec + '}\n'
 
-    inner_table_head = ''.join(['& {0}  '.format(p) for p in dfa.states])
-    tex += '	   ' + inner_table_head + '\\\\\\hline\n'
+    innerTableHead = ''.join(['& {0}  '.format(p) for p in dfa.states])
+    tex += '	   ' + innerTableHead + '\\\\\\hline\n'
 
-    for i in range(dfa.numberOfStates):
+    for i in range(dfa.n):
 
         q = dfa.states[i]
 
-        row_start = '	{0}  '.format(q)
+        rowStart = '	{0}  '.format(q)
 
-        for j in range(dfa.numberOfStates):
+        for j in range(dfa.n):
 
             p = dfa.states[j]
 
             if (j-i) < 1:
-                row_start += '& \\x '
+                rowStart += '& \\x '
             elif (q,p) in m:
-                row_start += '& {0}  '.format(m[(q,p)])
+                rowStart += '& {0}  '.format(m[(q,p)])
             else:
-                row_start += '&    '
+                rowStart += '&    '
 
-        tex += row_start + '\\\\\\hline\n'
+        tex += rowStart + '\\\\\\hline\n'
 
     return tex + '\\end{tabular}\n'
 
@@ -318,7 +328,7 @@ def tex_minimization_table(dfa):
 
 if __name__ == '__main__':
 
-    test_dfa = DFA(
+    testDFA = DFA(
         ['0','1','2'],
         ['A','B','C','D','E','F','G'],
         [
@@ -341,14 +351,14 @@ if __name__ == '__main__':
         ['C','E']
     )
 
-    print(str(test_dfa) + '\n')
+    print(str(testDFA) + '\n')
 
-    test_dfa = __delete_unreachable_states(test_dfa)
+    testDFA = __del_unr_states(testDFA)
 
-    print(tex_minimization_table(test_dfa))
+    print(tex_min_table(testDFA))
 
-    print('\n' + str(test_dfa) + '\n')
+    print('\n' + str(testDFA) + '\n')
 
-    test_dfa = __delete_duplicate_states(test_dfa)
+    testDFA = __del_dupl_states(testDFA)
 
-    print('\n' + str(test_dfa) + '\nminmarkDepth = ' + str(test_dfa.minmarkDepth))
+    print('\n' + str(testDFA) + '\ndepth = ' + str(testDFA.depth))

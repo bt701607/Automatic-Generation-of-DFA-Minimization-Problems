@@ -1,17 +1,33 @@
-from DFA import DFA
+"""
+module: db_dfa.py
+author: Gregor Soennichsen
+
+
+"""
 
 import sqlite3
 
+from dfa import DFA
 
 
-def ensureValidity(dbConn):
+def ensure_validity(dbConn):
     
     with dbConn:
         dbConn.execute('''
             CREATE TABLE IF NOT EXISTS MinimalDFAs 
-            (id INTEGER PRIMARY KEY AUTOINCREMENT, dfa TEXT, alphabetSize INT, numberOfStates INT, numberOfAcceptingStates INT, minmarkDepth INT, isPlanar INT)'''
+            (
+                id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                
+                dfa TEXT, 
+                
+                k INT, 
+                n INT, 
+                f INT, 
+                
+                depth  INT, 
+                planar INT
+            )'''
         )
-    
     
     
 def clear(dbConn):
@@ -23,39 +39,38 @@ def clear(dbConn):
 # -----------------------------------------------------------
 
 
-# sets dfa.minMinmarkDepth and dfa.isPlanar
-def fetchMatchingDFAs(dbConn, alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth):
+# sets dfa.depth and dfa.planar
+def fetch(dbConn, k, n, f, dmin, dmax):
     
-    qFindMatchingDFA = '''SELECT dfa, minmarkDepth, isPlanar FROM MinimalDFAs WHERE 
-        alphabetSize = ? AND
-        numberOfStates = ? AND
-        numberOfAcceptingStates = ? AND
-        minmarkDepth >= ? AND
-        minmarkDepth <= ?
+    query = '''
+        SELECT dfa, depth, planar FROM MinimalDFAs WHERE 
+            k = ? AND
+            n = ? AND
+            f = ? AND
+            depth >= ? AND depth <= ?
     '''
-    
-    dbTuple = (alphabetSize, numberOfStates, numberOfAcceptingStates, minMinmarkDepth, maxMinmarkDepth)
+    qTuple = (k, n, f, dmin, dmax)
             
     dfaList = []
             
-    for encodedDFA, minmarkDepth, isPlanar in dbConn.execute(qFindMatchingDFA, dbTuple):
+    for encodedDFA, depth, planar in dbConn.execute(query, qTuple):
     
-        dfa = __decodeDFA(encodedDFA)
-        dfa.minmarkDepth = minmarkDepth
-        dfa.isPlanar     = isPlanar
+        dfa = __decode_dfa(encodedDFA)
+        dfa.depth  = depth
+        dfa.planar = planar
         dfaList.append(dfa)
             
     return dfaList
             
     
     
-# requires dfa.minMinmarkDepth and dfa.isPlanar to be set
-def saveNewDFA(dbConn, dfa):
+# requires dfa.depth and dfa.planar to be set
+def save(dbConn, dfa):
 
-    assert dfa.minmarkDepth != None, 'dfa.minmarkDepth is required to be set'
-    assert dfa.isPlanar     != None, 'dfa.isPlanar is required to be set'
+    assert dfa.depth  != None, 'dfa.depth  is required to be set'
+    assert dfa.planar != None, 'dfa.planar is required to be set'
     
-    dbTuple = (__encodeDFA(dfa), dfa.alphabetSize, dfa.numberOfStates, dfa.numberOfAcceptingStates, dfa.minmarkDepth, dfa.isPlanar)
+    dbTuple = (__encode_dfa(dfa), dfa.k, dfa.n, dfa.f, dfa.depth, dfa.planar)
 
     with dbConn:
         dbConn.execute('''INSERT INTO MinimalDFAs VALUES (NULL,?,?,?,?,?,?)''', dbTuple)
@@ -64,7 +79,7 @@ def saveNewDFA(dbConn, dfa):
 # -----------------------------------------------------------
 
 
-def __encodeDFA(dfa):
+def __encode_dfa(dfa):
 
     encodedDFA = ''
     
@@ -93,7 +108,7 @@ def __encodeDFA(dfa):
     return encodedDFA
     
     
-def __decodeDFA(encodedDFA):
+def __decode_dfa(encodedDFA):
 
     encodedElements = encodedDFA.split(';')
     
@@ -117,7 +132,8 @@ def __decodeDFA(encodedDFA):
     if '' in accepting:
         accepting.remove('')
     
-    return DFA(alphabet, states, transitions, start, accepting, len(alphabet), len(states), len(accepting))
+    return DFA(alphabet, states, transitions, start, accepting,
+               len(alphabet), len(states), len(accepting))
 
 
 

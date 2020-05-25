@@ -1,12 +1,19 @@
-from DFA import DFA
+"""
+module: planarity.py
+author: Gregor Soennichsen
 
-import log
+
+"""
 
 import pygraph
 
+import log
 
-# sets dfa.isPlanar
-def planarity_test_dfa(dfa):
+from dfa import DFA
+
+
+# sets dfa.planar
+def planarity_test(dfa):
 
     graph = pygraph.UndirectedGraph()
     
@@ -19,19 +26,19 @@ def planarity_test_dfa(dfa):
         graph.new_edge(bijection[q1], bijection[q2])
         
     try:
-        dfa.isPlanar = pygraph.is_planar(graph)
+        dfa.planar = pygraph.is_planar(graph)
     except IndexError:
         log.failed()
         print('Error: Planarity test failed on the following DFA:')
         print(dfa, '\n')
         raise
         
-    return dfa.isPlanar
+    return dfa.planar
 
 
 if __name__ == '__main__':
 
-    test_dfa = DFA(
+    dfa = DFA(
         ['a','b','c','d','e'],
         ['1','2','3','4','5'],
         [
@@ -45,4 +52,4 @@ if __name__ == '__main__':
         ['4','5']
     )
     
-    print(planarity_test_dfa(test_dfa))
+    print(planarity_test(dfa))

@@ -1,26 +1,27 @@
-from DFA import DFA
+"""
+module: isomorphy.py
+author: Gregor Soennichsen
+
+
+"""
+
+from dfa import DFA
         
         
 def contains_isomorph_dfa(testDFA, dfaList):
     
     for dfa in dfaList:
 
-        if isomorphy_test_min_dfas(testDFA, dfa) == True:
+        if isomorphy_test(testDFA, dfa) == True:
     
             return True
             
     return False
 
 
-def isomorphy_test_min_dfas(dfa1, dfa2):
+def isomorphy_test(dfa1, dfa2):
 
-    if dfa1.numberOfStates != dfa2.numberOfStates:
-        return False
-
-    if dfa1.numberOfAcceptingStates != dfa2.numberOfAcceptingStates:
-        return False
-        
-    if dfa1.alphabet != dfa2.alphabet:
+    if dfa1.n != dfa2.n or dfa1.f != dfa2.f or dfa1.k != dfa2.k:
         return False
         
     delta2 = dict(dfa2.transitions)
@@ -29,19 +30,19 @@ def isomorphy_test_min_dfas(dfa1, dfa2):
     
     bijection[dfa1.start] = dfa2.start
     
-    finished_states = [dfa1.start]
-    observed_states = []
+    finished = [dfa1.start]
+    observed = []
     
-    act_state = dfa1.start
+    actState = dfa1.start
     
     
     while True:
     
         for ((q1,c),p1) in dfa1.transitions:
-            if q1 != act_state:
+            if q1 != actState:
                 continue
                 
-            p2 = delta2[(bijection[act_state], c)]
+            p2 = delta2[(bijection[actState], c)]
 
             p1Marked = p1 in bijection.keys()
             p2Marked = p2 in bijection.values()
@@ -54,18 +55,18 @@ def isomorphy_test_min_dfas(dfa1, dfa2):
             elif not p1Marked and not p2Marked:
             
                 bijection[p1] = p2
-                if p1 not in finished_states:
-                    observed_states.append(p1)
+                if p1 not in finished:
+                    observed.append(p1)
 
             else:
 
                 return False
     
-        if not observed_states:
+        if not observed:
             break
             
-        act_state = observed_states.pop()
-        finished_states.append(act_state)
+        actState = observed.pop()
+        finished.append(actState)
         
     for q in dfa1.accepting:
         if bijection[q] not in dfa2.accepting:
@@ -78,7 +79,7 @@ if __name__ == '__main__':
 
     print('Executing test cases.\n')
 
-    test_dfa1 = DFA(
+    testDFA1 = DFA(
         ['0', '1'],
         ['B', 'D', 'E', 'G'],
         [
@@ -95,7 +96,7 @@ if __name__ == '__main__':
         ['E']
     )
 
-    test_dfa1_isomorph = DFA(
+    testDFA1_1 = DFA(
         ['0', '1'],
         ['R', '1', 'e', 'q'],
         [
@@ -112,7 +113,7 @@ if __name__ == '__main__':
         ['e']
     )
 
-    test_dfa1_not_isomorph = DFA(
+    test_dfa1_2 = DFA(
         ['0', '1'],
         ['B', 'x', 'E', 'G'],
         [
@@ -129,10 +130,13 @@ if __name__ == '__main__':
         ['E']
     )
     
-    print('TestDFA1. Expected - True. Result: ' + str(isomorphy_test_min_dfas(test_dfa1, test_dfa1_isomorph)))
-    print('TestDFA1. Expected - False. Result: ' + str(isomorphy_test_min_dfas(test_dfa1, test_dfa1_not_isomorph)))
+    print('''TestDFA1. Expected - True. 
+           Result: ''' + str(isomorphy_test(testDFA1, testDFA1_1)))
+           
+    print('''TestDFA1. Expected - False. 
+           Result: ''' + str(isomorphy_test(testDFA1, testDFA1_2)))
     
-    test_dfa2 = DFA(
+    testDFA2 = DFA(
         ['a', 'b', 'c', 'd', 'e'],
         [2, 5],
         [
@@ -146,7 +150,7 @@ if __name__ == '__main__':
         [5]
     )
     
-    test_dfa2_isomorph = DFA(
+    testDFA2_1 = DFA(
         ['a', 'b', 'c', 'd', 'e'],
         [1, 2],
         [
@@ -160,7 +164,7 @@ if __name__ == '__main__':
         [2]
     )
     
-    test_dfa2_not_isomorph = DFA(
+    testDFA2_2 = DFA(
         ['a', 'B', 'c', 'd', 'e'],
         [2, 3],
         [
@@ -174,8 +178,11 @@ if __name__ == '__main__':
         [3]
     )
     
-    print('TestDFA2. Expected - True. Result: ' + str(isomorphy_test_min_dfas(test_dfa2, test_dfa2_isomorph)))
-    print('TestDFA2. Expected - False. Result: ' + str(isomorphy_test_min_dfas(test_dfa2, test_dfa2_not_isomorph)))
+    print('''TestDFA2. Expected - True. 
+           Result: ''' + str(isomorphy_test(testDFA2, testDFA2_1)))
+           
+    print('''TestDFA2. Expected - False. 
+           Result: ''' + str(isomorphy_test(testDFA2, testDFA2_2)))
     
     
    

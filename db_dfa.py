@@ -1,8 +1,24 @@
-"""
-module: db_dfa.py
-author: Gregor Soennichsen
+#!/usr/bin/env python
 
+"""Specifies methods to handle the DB containing all found minimal DFAs.
 
+- to methods concerned with the DB, a sqlite3 connection has to be passed
+- table 'MinimalDFAs' of the given DB is used to store the DFAs
+
+ensure_validity
+    Ensures existence of 'MinimalDFAs'.
+    
+fetch
+    Fetches all DFAs matching the search parameters.
+    
+save
+    Saves a DFA in the database.
+    
+_encode_dfa
+    Encodes a DFA into a string representation.
+    
+_decode_dfa
+    Decodes a DFA from the string representation defined by _encode_dfa.
 """
 
 import sqlite3
@@ -10,7 +26,11 @@ import sqlite3
 from dfa import DFA
 
 
+__all__ = ['ensure_validity', 'fetch', 'save']
+
+
 def ensure_validity(dbConn):
+    """Ensures that a table 'MinimalDFAs' with the correct columns exists."""
     
     with dbConn:
         dbConn.execute('''
@@ -28,19 +48,14 @@ def ensure_validity(dbConn):
                 planar INT
             )'''
         )
-    
-    
-def clear(dbConn):
-    
-    with dbConn:
-        dbConn.execute('''DROP TABLE IF EXISTS MinimalDFAs''')
-    
-    
-# -----------------------------------------------------------
 
 
-# sets dfa.depth and dfa.planar
 def fetch(dbConn, k, n, f, dmin, dmax):
+    """Fetches all DFAs matching the parameters.
+    
+    - assumes, that table MinimalDFAs with correct columns exists in dbConn
+    - resulting DFAs habe dfa.depth and dfa.planar set
+    """
     
     query = '''
         SELECT dfa, depth, planar FROM MinimalDFAs WHERE 
@@ -55,7 +70,7 @@ def fetch(dbConn, k, n, f, dmin, dmax):
             
     for encodedDFA, depth, planar in dbConn.execute(query, qTuple):
     
-        dfa = __decode_dfa(encodedDFA)
+        dfa = _decode_dfa(encodedDFA)
         dfa.depth  = depth
         dfa.planar = planar
         dfaList.append(dfa)
@@ -63,14 +78,17 @@ def fetch(dbConn, k, n, f, dmin, dmax):
     return dfaList
             
     
-    
-# requires dfa.depth and dfa.planar to be set
 def save(dbConn, dfa):
+    """Saves a DFA.
+    
+    - assumes, that table MinimalDFAs with correct columns exists in dbConn
+    - requires dfa.depth and dfa.planar to be set
+    """
 
     assert dfa.depth  != None, 'dfa.depth  is required to be set'
     assert dfa.planar != None, 'dfa.planar is required to be set'
     
-    dbTuple = (__encode_dfa(dfa), dfa.k, dfa.n, dfa.f, dfa.depth, dfa.planar)
+    dbTuple = (_encode_dfa(dfa), dfa.k, dfa.n, dfa.f, dfa.depth, dfa.planar)
 
     with dbConn:
         dbConn.execute('''INSERT INTO MinimalDFAs VALUES (NULL,?,?,?,?,?,?)''', dbTuple)
@@ -79,128 +97,49 @@ def save(dbConn, dfa):
 # -----------------------------------------------------------
 
 
-def __encode_dfa(dfa):
-
-    encodedDFA = ''
+def _encode_dfa(dfa):
+    """Encodes a DFA in a string representation.
     
-    for c in dfa.alphabet:
-        encodedDFA += str(c) + ','
-    if len(dfa.alphabet) != 0:
-        encodedDFA = encodedDFA[:-1] + ';'
+    - assumes that all alphabet symbols and states are characters
+    - counterpart to _decode_dfa
+    """
     
-    for q in dfa.states:
-        encodedDFA += str(q) + ','
-    if len(dfa.states) != 0:
-        encodedDFA = encodedDFA[:-1] + ';'
+    A = ','.join(dfa.alphabet)
+    Q = ','.join(dfa.states)
+    d = ','.join(('{}.{}.{}'.format(q1, c, q2)
+                              for ((q1, c),q2) in dfa.transitions))
+    F = ','.join(dfa.final)
     
-    for ((q1,c),q2) in dfa.transitions:
-        encodedDFA += str(q1) + '.' + str(c) + '.' + str(q2) + ','
-    if len(dfa.transitions) != 0:
-        encodedDFA = encodedDFA[:-1] + ';'
-    
-    encodedDFA += str(dfa.start) + ';'
-    
-    for q in dfa.accepting:
-        encodedDFA += str(q) + ','
-    if len(dfa.accepting) != 0:
-        encodedDFA = encodedDFA[:-1]
-    
-    return encodedDFA
+    return ';'.join((A, Q, d, dfa.start, F))
     
     
-def __decode_dfa(encodedDFA):
+def _decode_dfa(encodedDFA):
+    """Decodes a DFA from a string representation.
+    
+    - assumes that all alphabet symbols and states are characters
+    - counterpart to _encode_dfa
+    """
 
     encodedElements = encodedDFA.split(';')
     
-    alphabet = encodedElements[0].split(',')
-    if '' in alphabet:
-        alphabet.remove('')
+    A = encodedElements[0].split(',')
+    if '' in A:
+        A.remove('')
     
-    states = encodedElements[1].split(',')
-    if '' in states:
-        states.remove('')
+    Q = encodedElements[1].split(',')
+    if '' in Q:
+        Q.remove('')
     
-    transitions = encodedElements[2].split(',')
-    if '' in transitions:
-        transitions.remove('')
-    transitions = [t.split('.') for t in transitions]
-    transitions = [((q1, c), q2) for (q1,c,q2) in transitions]
+    d = encodedElements[2].split(',')
+    if '' in d:
+        d.remove('')
+    d = [t.split('.')  for t         in d]
+    d = [((q1, c), q2) for (q1,c,q2) in d]
     
-    start = encodedElements[3]
+    s = encodedElements[3]
     
-    accepting = encodedElements[4].split(',')
-    if '' in accepting:
-        accepting.remove('')
+    F = encodedElements[4].split(',')
+    if '' in F:
+        F.remove('')
     
-    return DFA(alphabet, states, transitions, start, accepting,
-               len(alphabet), len(states), len(accepting))
-
-
-
-if __name__ == '__main__':
-
-    test_dfa1 = DFA(
-        ['a','b','c','d','e'],
-        ['1','2','3','4','5'],
-        [
-            (('1','a'),'1'),
-            (('1','b'),'2'),
-            (('2','c'),'4'),
-            (('5','d'),'1'),
-            (('2','e'),'5')
-        ],
-        '1',
-        ['4','5']
-    )
-
-    test_dfa2 = DFA(
-        ['0', '1'],
-        ['AD', 'B', 'CE', 'G'],
-        [
-            (('AD','1'),'CE'),
-            (('AD','0'),'G' ),
-            
-            (('B' ,'0'),'CE'),
-            (('B' ,'1'),'CE'),
-            
-            (('CE','0'),'B' ),
-            (('CE','1'),'AD'),
-            
-            (('G' ,'0'),'B' ),
-            (('G' ,'1'),'CE'),
-        ],
-        'AD',
-        ['CE']
-    )
-    
-    #print('En-/Decode-Test 1. Expecting equal DFAs:\n')
-    
-    #print(str(test_dfa1))
-    #print(str(__decodeDFA(__encodeDFA(test_dfa1))) + '\n\n')
-    
-    #print('En-/Decode-Test 2. Expecting equal DFAs:\n')
-    
-    #print(str(test_dfa2))
-    #print(str(__decodeDFA(__encodeDFA(test_dfa2))))
-
-
-    #conn = sqlite3.connect('dfa.db')
-    
-    #clear(conn)
-    #ensureValidity(conn)
-    
-    #minDFA = minimize_dfa(test_dfa1)
-    #properties = (len(test_dfa1.states), minimization_mark_depth(test_dfa1), len(test_dfa1.accepting), len(test_dfa1.alphabet))
-    
-    #print(properties)
-    
-    #saveNewDFA(conn, minDFA, properties, False)
-    
-    #foundDFA1 = findMatchingUnusedMinimalDFA(conn, properties[0], properties[1], properties[1]+1, properties[2], properties[3])
-    #foundDFA2 = findMatchingUnusedMinimalDFA(conn, properties[0], properties[1], properties[1]+1, properties[2], properties[3])
-    
-    #print(foundDFA1, foundDFA2, hasIsomorphMatchingDFA(conn, minDFA, properties))
-    
-    #clear(conn)
-    
-    #conn.close()
+    return DFA(A, Q, d, s, F, len(A), len(Q), len(F))

@@ -11,8 +11,6 @@ import pathlib
 
 from dot2tex import dot2tex
 
-import clean
-
 from dfa          import DFA
 from minimization import tex_min_table
 
@@ -105,15 +103,15 @@ digraph {{
     statesAsStr = ''
 
     for q in dfa.states:
-        if q not in dfa.accepting:
+        if q not in dfa.final:
             statesAsStr += '''    {}\n'''.format(q)
 
-    acceptingAsStr = ''
+    finalAsStr = ''
 
-    for q in dfa.accepting:
-        acceptingAsStr += '''    {}\n'''.format(q)
+    for q in dfa.final:
+        finalAsStr += '''    {}\n'''.format(q)
 
-    return TEMPLATE_DFA.format(statesAsStr, acceptingAsStr, transitionsAsStr)
+    return TEMPLATE_DFA.format(statesAsStr, finalAsStr, transitionsAsStr)
 
 
 def tex_from_dfa(dfa):
@@ -206,37 +204,3 @@ def save_solution(solDFA, reachDFA, taskDFA, outDir):
         """pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory='{}' '{}'"""
         .format(__EXE_ENDING, outDir, path)
     ).read()
-
-
-
-if __name__ == '__main__':
-
-    testDFA = DFA(
-        ['a', 'b'],
-        ['0', '1', '2', '3', '4', '5', '6'],
-        [
-                (('0', 'b'), '1'),
-                (('2', 'a'), '0'),
-                (('2', 'b'), '3'),
-                (('3', 'a'), '0'),
-                (('3', 'b'), '2'),
-                (('1', 'b'), '4'),
-                (('4', 'a'), '0'),
-                (('4', 'b'), '3'),
-                (('0', 'a'), '5'),
-                (('1', 'a'), '5'),
-                (('5', 'b'), '1'),
-                (('5', 'a'), '5'),
-                (('6', 'a'), '0'),
-                (('6', 'b'), '1'),
-        ],
-        '0',
-        ['3', '6']
-    )
-
-    #os.popen('''{}'''.format('output_dfa2tex.tex')).read()
-    #os.popen('''{}'''.format('output_dfa2tex.pdf')).read()
-
-    # clean up directory
-
-    clean.basic()

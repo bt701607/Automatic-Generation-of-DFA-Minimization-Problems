@@ -11,7 +11,7 @@ import copy
 from planarity import planarity_test
 
 
-def __new_state(dfa, accepting):
+def __new_state(dfa, final):
     # Helper method for creating new states.
 
     newState = '0'
@@ -21,8 +21,8 @@ def __new_state(dfa, accepting):
 
     dfa.states.append(newState)
 
-    if accepting:
-        dfa.accepting.append(newState)
+    if final:
+        dfa.final.append(newState)
 
     return newState
 
@@ -60,7 +60,7 @@ def __add_unr_states(dfa, nUnr=1, complete=True):
     # update informations
 
     dfa.n = len(dfa.states)
-    dfa.f = len(dfa.accepting)
+    dfa.f = len(dfa.final)
 
     return dfa
 
@@ -82,7 +82,7 @@ def __add_dupl_states(dfa, nDupl=1):
         duplicatableStates = tuple(filter(isDuplicatable, dfa.states))
 
         state1 = random.choice(duplicatableStates) # -------------------------------- here we can enumerate
-        state2 = __new_state(dfa, state1 in dfa.accepting)
+        state2 = __new_state(dfa, state1 in dfa.final)
 
         for equivClass in dfa.eqClasses:
             if state1 in equivClass:
@@ -119,7 +119,7 @@ def __add_dupl_states(dfa, nDupl=1):
     # update informations
 
     dfa.n = len(dfa.states)
-    dfa.f = len(dfa.accepting)
+    dfa.f = len(dfa.final)
     
     return dfa
 
@@ -132,10 +132,10 @@ def extend_dfa(dfa, nDupl, nUnr, planar=False, complete=True):
 
         reachDFA = __add_dupl_states(dfa, nDupl)
         taskDFA  = __add_unr_states(reachDFA, nUnr, complete)
-
+        
         if not planar or planarity_test(taskDFA):
             return reachDFA, taskDFA
-    
-        
+            
 
-
+if __name__ == '__main__':
+    pass

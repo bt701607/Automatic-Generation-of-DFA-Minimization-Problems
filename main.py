@@ -1,15 +1,13 @@
-"""
-module: main.py
-author: Gregor Soennichsen
+#!/usr/bin/env python
 
-
-"""
+"""Command-line tool to generate DFA minimization problems."""
 
 import pathlib
 import argparse
 
+from planarity import PygraphIndexErrorBug
+
 import log
-import clean
 
 from dfa            import DFA
 from dfa_build_rand import rand_min_dfa
@@ -18,9 +16,12 @@ from dfa_extend     import extend_dfa
 from pdf_from_dfa   import save_task, save_solution
 
 
-__DEFAULT_OUTPUT = pathlib.Path.cwd() / 'output'
+__all__ = []
 
-__ARGUMENTS = (
+
+_DEFAULT_OUTPUT = pathlib.Path.cwd() / 'output'
+
+_ARGUMENTS = (
 
     ('-k',    int,  2,      'alphabet size of generated DFAs (default: 2)'),
     ('-n',    int,  4,      'number of states of solution DFA (default: 4)'),
@@ -30,27 +31,31 @@ __ARGUMENTS = (
     ('-ps',   bool, True,   'toggle whether solution DFA shall be planar (default: True)'),
     ('-pt',   bool, True,   'toggle whether task DFA shall be planar (default: True)'),
 
-    ('-b',    str,  'enum', '''toggle whether solution DFA shall be build by 
-            enumeration or randomization (default: enum)''', ('enum','random')),
+    ('-b',    str,  'enum', 'toggle whether solution DFA shall be build by numeration or randomization (default: enum)', ('enum','random')),
 
     ('-e',    int,   2,     'number of distinct equivalent reachable state pairs in task DFA (default: 2)'),
     ('-u',    int,   1,     'number of unreachable states in task DFA (default: 1)'),
     ('-c',    bool,  True,  'toggle whether all unreachable states shall be complete (default: True)'),
 
-    ('-p',    str,   __DEFAULT_OUTPUT, 'working directory; here results will be saved (default: {})'.format(__DEFAULT_OUTPUT))
+    ('-p',    str,   _DEFAULT_OUTPUT, 'working directory; here results will be saved (default: {})'.format(_DEFAULT_OUTPUT))
 
 )
 
 
 def main():
+    """Main procedure of DFA minimization problem generator.
+    
+    Parses command-line arguments and builds solution and task DFA accordingly.
+    Saves result and cleans up.
+    """
     
     # check parameters
 
     parser = argparse.ArgumentParser(
-        description='Generates a DFA minimization problem and its solution.',
+        description='Command-line tool to generate DFA minimization problems.',
         formatter_class=argparse.MetavarTypeHelpFormatter)
 
-    for a in __ARGUMENTS:
+    for a in _ARGUMENTS:
         if len(a) == 4:
             parser.add_argument(a[0], type=a[1], default=a[2], help=a[3])
         else:
@@ -60,18 +65,13 @@ def main():
     
     args.p = pathlib.Path(args.p)
     
-    if not args.p.exists():
+    if not args.p.exists() or not args.p.is_dir():
         log.creating_output_dir()
         args.p.mkdir()
         log.done()
     
-    if not args.p.exists() or not args.p.is_dir():
-        print("Error: '{}' does not specify a directory.".format(args.p))
-        return
-    
     if args.k < 2 and args.e > 0:
-        print('''Error: DFAs with less than two alphabet symbols cannot be 
-               extended with equivalent state pairs.''')
+        log.not_extendable()
         return
         
     log.start(args)
@@ -80,24 +80,25 @@ def main():
     # construct solution dfa
 
     log.building_solution(args)
+    
+    build = next_min_dfa if args.b == 'enum' else rand_min_dfa
 
-    if args.b == 'enum':
-        solDFA = next_min_dfa(args.k, args.n, args.f, args.dmin, args.dmax,
-                              args.ps, args.p)
+    try:
+    
+        solDFA = build(args.k, args.n, args.f, args.dmin, args.dmax, 
+                       args.ps, args.p)
+    
+    except PygraphIndexErrorBug:
+    
+        log.failed()
+        log.pygraph_bug('building')
+        return
+
+    if solDFA is None and args.b == 'enum':
         
-        if solDFA == None:
-            log.failed()
-            print('''Error: All DFAs with the specified parameters have been 
-                   enumerated. Generate respective random DFA instead (y/n)?''')
-            
-            if input() in ('y',''):
-                args.b = 'random'
-            else:
-                return
-        
-    if args.b == 'random':
-        solDFA = rand_min_dfa(args.k, args.n, args.f, args.dmin, args.dmax,
-                              args.ps, args.p)
+        log.done()
+        log.enum_finished()
+        return
     
     log.done()
 
@@ -105,11 +106,27 @@ def main():
     # extend dfa
     
     log.extending_solution(args)
+    
+    for i in range(10):
+    
+        try:
+        
+            reachDFA, taskDFA = extend_dfa(solDFA, args.e, args.u, args.pt, args.c)
+            
+        except PygraphIndexErrorBug:
+        
+            log.failed()
+            log.pygraph_bug('extending')
+            
+            if i == 9:
+                log.pygraph_bug_abort()
+                return
+                
+        else:
+        
+            log.done()
+            break
 
-    reachDFA, taskDFA = extend_dfa(solDFA, args.e, args.u, args.pt, args.c)
-    
-    log.done()
-    
 
     # generate graphical representation of solution and task dfa
 
@@ -121,11 +138,13 @@ def main():
     log.done()
     
 
-    # clean up directory
+    # clean up working directory
     
     log.cleaning()
-
-    clean.basic(args.p)
+    
+    for f in args.p.iterdir():
+        if f.suffix in ('.toc', '.aux', '.log', '.gz', '.bbl', '.blg', '.out'):
+            f.unlink()
     
     log.done()
     

@@ -5,13 +5,18 @@ author: Gregor Soennichsen
 
 """
 
-def start(args):
-
-    print("Working directory: '{}'.".format(args.p), flush=True)
-
 def creating_output_dir():
 
     print("Working directory does not exist, creating...", end='', flush=True)
+
+def not_extendable():
+
+    print('''DFAs with less than two alphabet symbols cannot be 
+            extended with equivalent state pairs.\nAbort.''', flush=True)
+
+def start(args):
+
+    print("Working directory: '{}'.".format(args.p), flush=True)
 
 def building_solution(args):
 
@@ -28,10 +33,15 @@ def building_solution(args):
         end='', flush=True
     )
     
+def enum_finished():
+
+    print('''All DFAs with the specified parameters have been enumerated but 
+             no matching DFA was found.''', end='', flush=True)
+    
 def extending_solution(args):
 
-    complete = 'complete ' if args.c else ''
-    planar = 'planar ' if args.ps else ''
+    complete = 'complete ' if args.c  else ''
+    planar   = 'planar '   if args.ps else ''
     
     print(
         'Extending DFA to {}{}task DFA with e={}, u={}..'.format(
@@ -40,6 +50,23 @@ def extending_solution(args):
         ),
         end='', flush=True
     )
+    
+def pygraph_bug(where):
+
+    print('Error: IndexError bug in lib pygraph.', end='', flush=True)
+
+    if where == 'building':
+    
+        print('\nAbort. Building solution DFA failed.', flush=True)
+        
+    else: # where == 'extending'
+    
+        print('''Retrying to extend...''', end='', flush=True)
+    
+def pygraph_bug_abort():
+
+    print('Abort. Generated solution DFA will remain unused.', 
+          end='', flush=True)
     
 def saving():
 

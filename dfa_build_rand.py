@@ -10,7 +10,7 @@ import sqlite3
 
 import db_dfa
 
-from dfa          import DFA, letters
+from dfa          import DFA, characters
 from minimization import has_unr_states, has_dupl_states
 from isomorphy    import contains_isomorph_dfa
 from planarity    import planarity_test
@@ -24,8 +24,8 @@ def rand_min_dfa(k, n, f, dmin, dmax, planar, outDir):
 
     matchingUsedDFAs = db_dfa.fetch(dbConn, k, n, f, dmin, dmax)
 
-    A = letters('a', k)
-    Q = letters('0', n)
+    A = characters('a', k)
+    Q = characters('0', n)
 
     while True:
 

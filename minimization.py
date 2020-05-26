@@ -85,8 +85,8 @@ def __del_unr_states(dfa):
     for q in undiscovered:
         dfa.states.remove(q)
 
-        if q in dfa.accepting:
-            dfa.accepting.remove(q)
+        if q in dfa.final:
+            dfa.final.remove(q)
 
         for i in reversed(range(len(dfa.transitions))):
             t = dfa.transitions[i]
@@ -97,7 +97,7 @@ def __del_unr_states(dfa):
 
     dfa.k = len(dfa.alphabet)
     dfa.n = len(dfa.states)
-    dfa.f = len(dfa.accepting)
+    dfa.f = len(dfa.final)
 
     return dfa
 
@@ -112,9 +112,9 @@ def has_dupl_states(dfa):
 
     M = set()
 
-    for q in dfa.accepting:
+    for q in dfa.final:
         for p in dfa.states:
-            if p not in dfa.accepting:
+            if p not in dfa.final:
                 M.add((p,q))
                 M.add((q,p))
 
@@ -163,9 +163,9 @@ def __del_dupl_states(dfa):
 
     M = set()
 
-    for q in dfa.accepting:
+    for q in dfa.final:
         for p in dfa.states:
-            if p not in dfa.accepting:
+            if p not in dfa.final:
                 M.add((p,q))
                 M.add((q,p))
 
@@ -215,8 +215,8 @@ def __del_dupl_states(dfa):
         if dfa.start == q:
             dfa.start = p
 
-        if q in dfa.accepting:
-            dfa.accepting.remove(q)
+        if q in dfa.final:
+            dfa.final.remove(q)
 
         for i in range(len(dfa.transitions)):
             t = (q1,s),q2 = dfa.transitions[i]
@@ -245,7 +245,7 @@ def __del_dupl_states(dfa):
 
     dfa.k = len(dfa.alphabet)
     dfa.n = len(dfa.states)
-    dfa.f = len(dfa.accepting)
+    dfa.f = len(dfa.final)
 
     return dfa
 
@@ -257,9 +257,9 @@ def tex_min_table(dfa):
     m = {}
 
     M = set()
-    for q in dfa.accepting:
+    for q in dfa.final:
         for p in dfa.states:
-            if p not in dfa.accepting:
+            if p not in dfa.final:
                 M.add((p,q))
                 M.add((q,p))
                 m[(p,q)] = 0

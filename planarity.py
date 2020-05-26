@@ -1,19 +1,30 @@
-"""
-module: planarity.py
-author: Gregor Soennichsen
+#!/usr/bin/env python
 
-
-"""
+"""DFA planarity tests."""
 
 import pygraph
-
-import log
 
 from dfa import DFA
 
 
-# sets dfa.planar
+__all__ = ['PygraphIndexErrorBug', 'planarity_test']
+
+
+class PygraphIndexErrorBug(Exception):
+    """Captures a bug in the pygraph library that raises an IndexError."""
+    
+    pass
+
+
 def planarity_test(dfa):
+    """Returns whether dfa can be embedded in a plane without crossing edges.
+    
+    - sets dfa.planar accordingly.
+    - uses the pygraph library
+    
+    Raises PygraphIndexErrorBug if IndexError bug in the implementation of
+    pygraph.is_planar occurs.
+    """
 
     graph = pygraph.UndirectedGraph()
     
@@ -28,28 +39,6 @@ def planarity_test(dfa):
     try:
         dfa.planar = pygraph.is_planar(graph)
     except IndexError:
-        log.failed()
-        print('Error: Planarity test failed on the following DFA:')
-        print(dfa, '\n')
-        raise
+        raise PygraphIndexErrorBug()
         
     return dfa.planar
-
-
-if __name__ == '__main__':
-
-    dfa = DFA(
-        ['a','b','c','d','e'],
-        ['1','2','3','4','5'],
-        [
-            (('1','a'),'1'),
-            (('1','b'),'2'),
-            (('2','c'),'4'),
-            (('5','d'),'1'),
-            (('2','e'),'5')
-        ],
-        '1',
-        ['4','5']
-    )
-    
-    print(planarity_test(dfa))

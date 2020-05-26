@@ -68,8 +68,8 @@ def isomorphy_test(dfa1, dfa2):
         actState = observed.pop()
         finished.append(actState)
         
-    for q in dfa1.accepting:
-        if bijection[q] not in dfa2.accepting:
+    for q in dfa1.final:
+        if bijection[q] not in dfa2.final:
             return False
         
     return True

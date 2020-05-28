@@ -15,30 +15,12 @@ from dfa          import DFA
 from minimization import tex_min_table
 
 
-__EXE_ENDING = ''
+_EXE_ENDING = ''
 
 if platform.system() == 'Windows':
-    EXE_ENDING = '.exe'
+    _EXE_ENDING = '.exe'
 
-
-__TEMPLATE_TASK = r'''
-\documentclass{{article}}
-\usepackage[x11names, svgnames, rgb]{{xcolor}}
-\usepackage[utf8]{{inputenc}}
-\usepackage{{tikz}}
-\usetikzlibrary{{snakes,arrows,shapes}}
-\usetikzlibrary{{automata}}
-\usepackage{{amsmath}}
-
-\begin{{document}}
-
-\subsection*{{Task DFA}}
-{}
-
-\end{{document}}
-'''
-
-__TEMPLATE_SOLUTION = r'''
+_TEX_HEADER = r'''
 \documentclass{{article}}
 \usepackage[x11names, svgnames, rgb]{{xcolor}}
 \usepackage[utf8]{{inputenc}}
@@ -49,31 +31,37 @@ __TEMPLATE_SOLUTION = r'''
 \usepackage{{MnSymbol}}
 
 \newcommand{{\x}}{{$\blacksquare$}}
+'''
 
+_TEMPLATE_TASK = _TEX_HEADER + r'''
+\begin{{document}}
+
+\subsection*{{Task DFA}}
+{}
+
+\end{{document}}
+'''
+
+_TEMPLATE_SOLUTION = _TEX_HEADER + r'''
 \begin{{document}}
 
 \subsection*{{Remove unreachable states}}
 
-Unreachable states: {}
-
+List of unreachable states: {}
 \noindent DFA after removing all unreachable states:
-
 {}
 
 \subsection*{{Merge equivalent state pairs}}
 
 States to merge:
 \begin{{itemize}}
-    {}
+{}
 \end{{itemize}}
 Minimization table:
 \vspace{{1cm}}
-
 {}
-
 \vspace{{1cm}}
 \noindent Minimal DFA after merging all equivalent states:
-
 {}
 
 \end{{document}}
@@ -82,125 +70,106 @@ Minimization table:
 
 def dot_from_dfa(dfa):
 
-    TEMPLATE_DFA = '''
-digraph {{
-    node [shape=circle]
-{}
-    node [shape=doublecircle]
-{}
-    node [color=white style=filled]
-{}
-}}'''
+    TEMPLATE_DOT_DFA = '''
+        digraph {{
+            node [shape=circle]
+            {}
+            node [shape=doublecircle]
+            {}
+            node [color=white style=filled]
+            {}
+        }}
+    '''
 
-    TEMpPLATE_TRANSITION = '''    {} -> {} [label={}]
-'''
+    stToStr = lambda q: '{}\n'.format(q)
+    trToStr = lambda t: '{} -> {} [label={}]\n'.format(t[0][0], t[1], t[0][1])
 
-    transitionsAsStr = ''
+    nonFinalStates = (q for q in dfa.states if q not in dfa.final)
 
-    for (q1,c),q2 in dfa.transitions:
-        transitionsAsStr += TEMpPLATE_TRANSITION.format(q1, q2, c)
+    nonFinalAsStr = ''.join(map(stToStr, nonFinalStates))
+    finalAsStr    = ''.join(map(stToStr, dfa.final))
+    deltaAsStr    = ''.join(map(trToStr, dfa.transitions))
 
-    statesAsStr = ''
+    return TEMPLATE_DOT_DFA.format(nonFinalAsStr, finalAsStr, deltaAsStr)
 
-    for q in dfa.states:
-        if q not in dfa.final:
-            statesAsStr += '''    {}\n'''.format(q)
 
-    finalAsStr = ''
+def _postprocess_tex(texCode):
+    """Returns code such that start states are marked and states/symbols are
+    set in math mode."""
 
-    for q in dfa.final:
-        finalAsStr += '''    {}\n'''.format(q)
+    lines = texCode.split('\n')
 
-    return TEMPLATE_DFA.format(statesAsStr, finalAsStr, transitionsAsStr)
+    for line in lines:
+
+        if '\\node (0)' in line:
+            line = line.replace('\\node', '\\node[initial]')
+            
+        if 'node' in line:
+            nPos = line.find('{') + 1
+            line = line[:nPos] + '$' + line[nPos] + '$' + line[nPos+1:]
+
+    return '\n'.join(lines)
 
 
 def tex_from_dfa(dfa):
 
-    return dot2tex(dot_from_dfa(dfa), format='tikz', crop=True, program='dot', figonly=True)
-
-
-def postprocess_tex(tex, minTable=None):
-    ''' adds tikz automata library to TeX-code,
-        to be able to display start states correctly'''
-
-    lines = tex.split('\n')
-
-    i = 0
-
-    while i != len(lines):
-
-        if '\\node (0)' in lines[i]:
-
-            lines[i] = lines[i].replace('\\node', '\\node[initial] (0)')
-
-        i += 1
-
-    return '\n'.join(lines)
+    return _postprocess_tex(dot2tex(
+        dot_from_dfa(dfa), 
+        format='tikz', crop=True, program='dot', figonly=True
+    ))
     
     
-def next_task_path(outDir):
+def next_path_number(outDir):
 
     counter = 0
     
     while True:
-        path = outDir / 'task_{:03d}.tex'.format(counter)
-        if not path.exists():
-            return path
+    
+        path1 = outDir / 'task_{:03d}.dfa'.format(counter)
+        path2 = outDir / 'task_{:03d}.tex'.format(counter)
+        path3 = outDir / 'task_{:03d}.pdf'.format(counter)
+        
+        if not (path1.exists() or path2.exists() or path3.exists()):
+            return counter
+            
         counter += 1
+        
+        
+def save_exercise(solDFA, reachDFA, taskDFA, outDir, saveDFA, buildTEX, buildPDF):
     
+    number = next_path_number(outDir)
     
-def next_solution_path(outDir):
-
-    counter = 0
+    pathSol  = outDir / 'solution_{:03d}.dfa'.format(number)
+    pathTask = outDir / 'task_{:03d}.dfa'.format(number)
     
-    while True:
-        path = outDir / 'solution_{:03d}.tex'.format(counter)
-        if not path.exists():
-            return path
-        counter += 1
-
-
-def save_task(taskDFA, outDir):
-
-    if platform.system() == 'Windows':
-        workingDir = pathlib.WindowsPath(outDir)
-    else:
-        workingDir = pathlib.PosixPath(outDir)
-
-    path = next_task_path(outDir)
-
-    path.write_text(
-        __TEMPLATE_TASK.format(
-            postprocess_tex(tex_from_dfa(taskDFA))
+    if saveDFA:
+        pathSol.with_suffix('.dfa').write_text(str(solDFA))
+        pathTask.with_suffix('.dfa').write_text(str(taskDFA))
+    
+    if buildPDF:
+    
+        pathSol.with_suffix('.tex').write_text(
+            _TEMPLATE_SOLUTION.format(
+                '$' + ', '.join(taskDFA.unrStates) + '$',
+                tex_from_dfa(reachDFA),
+                '\n'.join(['	\item $' + ', '.join(class_) + '$' for class_ in reachDFA.eqClasses if len(class_) > 1]),
+                tex_min_table(reachDFA),
+                tex_from_dfa(solDFA)
+            )
         )
-    )
-
-    os.popen(
-        """pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory='{}' '{}'"""
-        .format(__EXE_ENDING, outDir, path)
-    ).read()
-
-
-def save_solution(solDFA, reachDFA, taskDFA, outDir):
-
-    if platform.system() == 'Windows':
-        workingDir = pathlib.WindowsPath(outDir)
-    else:
-        workingDir = pathlib.PosixPath(outDir)
-
-    path = next_solution_path(outDir)
-
-    path.write_text(
-        __TEMPLATE_SOLUTION.format(
-            '$' + ', '.join(taskDFA.unrStates) + '$',
-            postprocess_tex(tex_from_dfa(reachDFA)),
-            '\n'.join(['\item $' + ', '.join(class_) + '$' for class_ in reachDFA.eqClasses if len(class_) > 1]),
-            tex_min_table(reachDFA),
-            postprocess_tex(tex_from_dfa(solDFA))
+        pathTask.with_suffix('.tex').write_text(
+            _TEMPLATE_TASK.format(tex_from_dfa(taskDFA))
         )
-    )
-
-    os.popen(
-        """pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory='{}' '{}'"""
-        .format(__EXE_ENDING, outDir, path)
-    ).read()
+    
+        os.popen(
+            """pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory='{}' '{}'"""
+            .format(_EXE_ENDING, outDir, pathSol.with_suffix('.tex'))
+        ).read()
+        os.popen(
+            """pdflatex{} -synctex=1 -interaction=nonstopmode -shell-escape -output-directory='{}' '{}'"""
+            .format(_EXE_ENDING, outDir, pathTask.with_suffix('.tex'))
+        ).read()
+        
+        if not buildTex:
+            pathSol.with_suffix('.tex').unlink()
+            pathTask.with_suffix('.tex').unlink()

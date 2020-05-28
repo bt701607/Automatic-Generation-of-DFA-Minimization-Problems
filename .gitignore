@@ -1,7 +1,6 @@
-clean.py
-
 **/*.pdf
 **/*.tex
+**/*.dfa
 
 !thesis/**/*.tex
 !thesis/**/*.bib

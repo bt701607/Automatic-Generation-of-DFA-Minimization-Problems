@@ -14,8 +14,8 @@ import db_enum
 
 from dfa          import DFA
 from minimization import has_unr_states, has_dupl_states
-from isomorphy    import contains_isomorph_dfa
-from planarity    import planarity_test
+from isomorphy    import isomorphy_test
+from planarity    import planarity_test, PygraphIndexErrorBug
 
 
 def next_min_dfa(k, n, f, dmin, dmax, planar, outDir):
@@ -52,10 +52,16 @@ def next_min_dfa(k, n, f, dmin, dmax, planar, outDir):
         if not (dmin <= testDFA.depth <= dmax):
             continue
 
-        if planar and not planarity_test(testDFA): # sets testDFA.planar
-            continue
+        if planar:
+            try:
+                if not planarity_test(testDFA): # sets testDFA.planar
+                    continue
+            except PygraphIndexErrorBug:
+                log.failed()
+                log.pygraph_bug('building')
+                continue
 
-        if contains_isomorph_dfa(testDFA, matchingUsedDFAs):
+        if any(isomorphy_test(testDFA, dfa) for dfa in matchingUsedDFAs):
             continue
 
         db_dfa.save(dbConn, testDFA) # needs testDFA.depth and testDFA.planar to be set

@@ -13,15 +13,13 @@ from dfa import DFA
 # returned dfa has minmarkDepth set
 def minimize_dfa(dfa):
 
-    return __del_dupl_states(__del_unr_states(copy.deepcopy(dfa)))
+    return _del_dupl_states(_del_unr_states(copy.deepcopy(dfa)))
 
 
 # -----------------------------------------------------------
 
 
-def has_unr_states(dfa):
-
-    # find unreachable states via breadth-first search
+def _comp_unr_states(dfa):
 
     undiscovered = set(dfa.states)
     undiscovered.remove(dfa.start)
@@ -48,41 +46,19 @@ def has_unr_states(dfa):
         discovered.update(observed)
         observed = newObserved
 
-    return len(undiscovered) > 0
+    return undiscovered
 
 
-def __del_unr_states(dfa):
+def has_unr_states(dfa):
 
-    # find unreachable states via breadth-first search
+    return bool(_comp_unr_states(dfa))
 
-    undiscovered = set(dfa.states)
-    undiscovered.remove(dfa.start)
 
-    observed = set([dfa.start])
+def _del_unr_states(dfa):
 
-    discovered = set()
+    unreachable = _comp_unr_states(dfa)
 
-    delta = dict(dfa.transitions)
-
-    while len(observed) != 0:
-
-        newObserved = set()
-
-        for q in observed:
-            for sigma in dfa.alphabet:
-                if (q,sigma) in delta:
-
-                    p = delta[(q,sigma)]
-                    if p not in observed.union(discovered):
-                        newObserved.add(p)
-
-        undiscovered.difference_update(newObserved)
-        discovered.update(observed)
-        observed = newObserved
-
-    # delete unreachable states
-
-    for q in undiscovered:
+    for q in unreachable:
         dfa.states.remove(q)
 
         if q in dfa.final:
@@ -105,22 +81,22 @@ def __del_unr_states(dfa):
 # -----------------------------------------------------------
 
 
-# sets depth of dfa
-def has_dupl_states(dfa):
+def _comp_dupl_states(dfa):
 
-    # find duplicate states via the minimization-mark algorithm
+    m = {}
 
     M = set()
-
     for q in dfa.final:
         for p in dfa.states:
             if p not in dfa.final:
                 M.add((p,q))
                 M.add((q,p))
+                m[(p,q)] = 0
+                m[(q,p)] = 0
 
     delta = dict(dfa.transitions)
 
-    depth = 0
+    i = 0
 
     while True:
 
@@ -135,6 +111,8 @@ def has_dupl_states(dfa):
                             if (delta[(p,sigma)], delta[(q,sigma)]) in M:
                                 N.add((p,q))
                                 N.add((q,p))
+                                m[(p,q)] = i
+                                m[(q,p)] = i
                                 break
 
         M = M.union(N)
@@ -142,7 +120,15 @@ def has_dupl_states(dfa):
         if len(N) == 0:
             break
         else:
-            depth += 1
+            i += 1
+            
+    return m, M, i
+
+
+# sets depth of dfa
+def has_dupl_states(dfa):
+
+    m, M, depth = _comp_dupl_states(dfa)
 
     for p in dfa.states:
         for q in dfa.states:
@@ -157,43 +143,9 @@ def has_dupl_states(dfa):
 
 
 # sets depth of dfa
-def __del_dupl_states(dfa):
+def _del_dupl_states(dfa):
 
-    # find duplicate states via the minimization-mark algorithm
-
-    M = set()
-
-    for q in dfa.final:
-        for p in dfa.states:
-            if p not in dfa.final:
-                M.add((p,q))
-                M.add((q,p))
-
-    delta = dict(dfa.transitions)
-
-    depth = 0
-
-    while True:
-
-        N = set()
-
-        for q in dfa.states:
-            for p in dfa.states:
-                if (p,q) not in M:
-                    for sigma in dfa.alphabet:
-
-                        if (p,sigma) in delta and (q,sigma) in delta:
-                            if (delta[(p,sigma)], delta[(q,sigma)]) in M:
-                                N.add((p,q))
-                                N.add((q,p))
-                                break
-
-        M = M.union(N)
-
-        if len(N) == 0:
-            break
-        else:
-            depth += 1
+    m, M, depth = _comp_dupl_states(dfa)
 
     # merge duplicate states
     duplStatePairs = [
@@ -203,7 +155,7 @@ def __del_dupl_states(dfa):
                if (p,q) not in M and p != q
     ]
 
-    while len(duplStatePairs) != 0:
+    while duplStatePairs:
 
         (p,q) = duplStatePairs.pop()
 
@@ -252,113 +204,33 @@ def __del_dupl_states(dfa):
 
 def tex_min_table(dfa):
 
-    # find duplicate states via the minimization-mark algorithm
+    m, M, depth = _comp_dupl_states(dfa)
 
-    m = {}
-
-    M = set()
-    for q in dfa.final:
-        for p in dfa.states:
-            if p not in dfa.final:
-                M.add((p,q))
-                M.add((q,p))
-                m[(p,q)] = 0
-                m[(q,p)] = 0
-
-    delta = dict(dfa.transitions)
-
-    i = 0
-
-    while True:
-
-        N = set()
-
-        for q in dfa.states:
-            for p in dfa.states:
-                if (p,q) not in M:
-                    for sigma in dfa.alphabet:
-
-                        if (p,sigma) in delta and (q,sigma) in delta:
-                            if (delta[(p,sigma)], delta[(q,sigma)]) in M:
-                                N.add((p,q))
-                                N.add((q,p))
-                                m[(p,q)] = i
-                                m[(q,p)] = i
-                                break
-
-        M = M.union(N)
-
-        if len(N) == 0:
-            break
-        else:
-            i += 1
-
-    # create tex code for minimization table
-
-    tex = ''
+    tex = '\n'
 
     columnSpec = '|'.join((dfa.n+1) * 'c' )
     tex += '\\begin{tabular}{' + columnSpec + '}\n'
 
-    innerTableHead = ''.join(['& {0}  '.format(p) for p in dfa.states])
-    tex += '	   ' + innerTableHead + '\\\\\\hline\n'
+    innerTableHead = ''.join(['& ${}$ '.format(p) for p in dfa.states])
+    tex += '	     ' + innerTableHead + '\\\\\\hline\n'
 
     for i in range(dfa.n):
 
         q = dfa.states[i]
 
-        rowStart = '	{0}  '.format(q)
+        rowStart = '	${}$  '.format(q)
 
         for j in range(dfa.n):
 
             p = dfa.states[j]
 
             if (j-i) < 1:
-                rowStart += '& \\x '
+                rowStart += '& \\x  '
             elif (q,p) in m:
-                rowStart += '& {0}  '.format(m[(q,p)])
+                rowStart += '& ${}$ '.format(m[(q,p)])
             else:
-                rowStart += '&    '
+                rowStart += '&     '
 
         tex += rowStart + '\\\\\\hline\n'
 
     return tex + '\\end{tabular}\n'
-
-
-
-if __name__ == '__main__':
-
-    testDFA = DFA(
-        ['0','1','2'],
-        ['A','B','C','D','E','F','G'],
-        [
-            (('A','1'),'C'),
-            (('A','0'),'G'),
-            (('B','1'),'E'),
-            (('B','0'),'C'),
-            (('C','1'),'D'),
-            (('C','0'),'B'),
-            (('D','1'),'E'),
-            (('D','0'),'G'),
-            (('E','1'),'A'),
-            (('E','0'),'B'),
-            (('F','1'),'E'),
-            (('F','0'),'B'),
-            (('G','1'),'C'),
-            (('G','0'),'B'),
-        ],
-        'A',
-        ['C','E']
-    )
-
-    print(str(testDFA) + '\n')
-
-    testDFA = __del_unr_states(testDFA)
-
-    print(tex_min_table(testDFA))
-
-    print('\n' + str(testDFA) + '\n')
-
-    testDFA = __del_dupl_states(testDFA)
-
-    print('\n' + str(testDFA) + '\ndepth = ' + str(testDFA.depth))

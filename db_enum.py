@@ -3,8 +3,23 @@
 """Definitions to handle enumeration states and their preservation in a DB.
 
 - to methods concerned with the DB, a sqlite3 connection has to be passed
-- table 'EnumState' of the given DB is used to store the enumeration states
+- table 'EnumStates' of the given DB is used to store the enumeration states
 
+ensure_validity
+    Ensures existence of 'EnumStates'.
+
+fetch
+    Fetches/Creates the enumeration state matching the search parameters k, n, f.
+
+update
+    Writes a previously loaded enumeration state back into the DB.
+
+_add_one
+    Increments b-ary numbers represented by lists.
+
+EnumState
+    Defines enumeration states. Contains methods to get a states successor 
+    and to gain the DFA represented by it.
 """
 
 import sqlite3
@@ -12,15 +27,15 @@ import sqlite3
 from dfa import DFA, characters
 
 
-__all__ = ['ensure_validity', 'fetch', 'update']
+__all__ = ['ensure_validity', 'fetch', 'update', 'EnumState']
 
 
 def ensure_validity(dbConn):
-    """Ensures that a table 'EnumState' with the correct columns exists."""
+    """Ensures that a table 'EnumStates' with the correct columns exists."""
     
     with dbConn:
         dbConn.execute('''
-            CREATE TABLE IF NOT EXISTS EnumState
+            CREATE TABLE IF NOT EXISTS EnumStates
             (
                 k INT, 
                 n INT, 
@@ -37,13 +52,13 @@ def ensure_validity(dbConn):
 def fetch(dbConn, k, n, f):
     """Fetches/Creates the enumeration state matching the parameters.
     
-    Assumes, that table EnumState with correct columns exists in dbConn.
+    Assumes, that table EnumStates with correct columns exists in dbConn.
     If no corresponding enumeration state is found, then a new one is created.
     """
 
     query = '''
         SELECT state_f, state_delta, finished 
-        FROM EnumState 
+        FROM EnumStates 
         WHERE k = ? AND n = ? AND f = ?
     '''
 
@@ -63,7 +78,7 @@ def fetch(dbConn, k, n, f):
         )
         
         with dbConn:
-            dbConn.execute('''INSERT INTO EnumState VALUES (?,?,?,?,?,?)''', dbTuple)
+            dbConn.execute('''INSERT INTO EnumStates VALUES (?,?,?,?,?,?)''', dbTuple)
     
         return enumState
         
@@ -82,12 +97,12 @@ def fetch(dbConn, k, n, f):
 def update(dbConn, enumState):
     """Updates the enumeration state in the DB belonging to enumState.
     
-    Assumes, that table EnumState with correct columns exists in dbConn.
+    Assumes, that table EnumStates with correct columns exists in dbConn.
     Assumes that enumState was created via 'fetch'.
     """
 
     query = '''
-        UPDATE EnumState 
+        UPDATE EnumStates 
         SET state_f = ?, state_delta = ?, finished = ? 
         WHERE k = ? AND n = ? AND f = ?
     '''
@@ -111,8 +126,9 @@ def update(dbConn, enumState):
 def _add_one(n, b):
     """Adds one to list n, which is interpreted as b-ary number.
     
-    Assumes that n is ordered such that the least significant digit 
-    is at index 0.
+    - assumes that n is ordered, such that the least significant digit 
+      is at index 0
+    - returns None, if n cannot be incremented (n == b-1 ... b-1)
     """
     i = 0
     while n[i] == b-1:
@@ -125,16 +141,36 @@ def _add_one(n, b):
     
     
 class EnumState(object):
-    """A state in a DFA enumeration. Provides method to get next state."""
+    """A state in a DFA enumeration. Provides method to get next state.
+    
+    A DFA enumeration in this project is characterized by k, n, f, denoting
+    what kind of DFAs are produced during the enumeration.
+    
+    A DFA enumeration state is characterized by two fields stateDelta, stateF, 
+    representing delta and F of the current DFA (see '_dfa'):
+        
+            If delta(i, j) = p then stateDelta[i * k + j] = q.
+        
+            If i in F, then stateF[i] = 1, else stateF[i] = 0.
+    
+    To get to the next DFA, these two fields are incremented as described in
+    'next'.
+    """
 
     def __init__(self, k, n, f):
+        """Initializes an initial enumeration state.
+        
+        The stateF-field states that the first f states are final.
+        The stateDelta-field states that all transition end in the first state.
+        """
     
-        if n < 1:
-            raise Exception('Number of states must be greater than zero for a DFA.')
+        assert n >= f, '''Number of states must be greater than number of 
+                          final states.'''
     
         self.k = k
         self.n = n
         self.f = f
+        
         self.deltaSize = n * k
         
         self.stateF     = [1 for i in range(f)] + [0 for i in range(n-f)]
@@ -145,6 +181,7 @@ class EnumState(object):
         
     @staticmethod
     def from_existing(k, n, f, stateF, stateDelta, finished):
+        """Initializes a non-initial enumeration state."""
             
         enumState = EnumState(k, n, f)
         
@@ -162,17 +199,25 @@ class EnumState(object):
         
         
     def next(self):
+        """Performs one enumeration step and returns the resulting DFA.
+        
+        Returns None and sets 'finished = True', if the enumeration is finished.
+        """
         
         if self.finished:
             return None
         
-        # further iterate through transitions, if possible
+        # get next transitions-configuration by incrementing stateDelta 
+        # and return new DFA
         
         if _add_one(self.stateDelta, self.n) is not None:
             return self._dfa()
         
-        # if transition's end reached, iterate accepting state permutations
-        # and reset transition progress if stateF could be incremented
+        # If all transitions given the current stateF were enumerated, 
+        # increment stateF until it marks f states as final again.
+        
+        # If all valid F-configurations have been enumerated as well,
+        # the enumeration is finished.
         
         while True:
         
@@ -186,17 +231,7 @@ class EnumState(object):
                 
         
     def _dfa(self):
-        """Extracts the DFA from the given enumeration state.
-        
-        Alphabet/states are given as string representation of 
-        the first k/n letters/numbers.
-        
-        Delta/F are gained essentially from stateDelta/stateF by:
-        
-            If delta(i, j) = p then stateDelta[i * k + j] = q.
-        
-            If i in F, then stateF[i] = 1, else stateF[i] = 0.
-        """
+        """Extracts the DFA from the given enumeration state."""
     
         A = characters('a', self.k)
         Q = characters('0', self.n)

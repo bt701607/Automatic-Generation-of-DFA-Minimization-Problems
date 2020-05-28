@@ -53,15 +53,15 @@ def extending_solution(args):
     
 def pygraph_bug(where):
 
-    print('Error: IndexError bug in lib pygraph.', end='', flush=True)
+    print('Error: IndexError bug in lib pygraph. ', end='', flush=True)
 
     if where == 'building':
     
-        print('\nAbort. Building solution DFA failed.', flush=True)
+        print('\nDiscarding current DFA, searching another...', end='', flush=True)
         
     else: # where == 'extending'
     
-        print('''Retrying to extend...''', end='', flush=True)
+        print('Retrying to extend...', end='', flush=True)
     
 def pygraph_bug_abort():
 
@@ -71,7 +71,11 @@ def pygraph_bug_abort():
 def saving():
 
     print('Saving task and solution..', end='', flush=True)
-    
+
+def no_saving():
+
+    print('Results are not saved.', flush=True)
+
 def cleaning():
 
     print('Cleaning working directory..', end='', flush=True)

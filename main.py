@@ -13,33 +13,39 @@ from dfa            import DFA
 from dfa_build_rand import rand_min_dfa
 from dfa_build_enum import next_min_dfa
 from dfa_extend     import extend_dfa
-from pdf_from_dfa   import save_task, save_solution
+from pdf_from_dfa   import save_exercise
 
 
 __all__ = []
 
 
-_DEFAULT_OUTPUT = pathlib.Path.cwd() / 'output'
+_DEFAULT_OUTPUT = pathlib.Path('./output')
 
-_ARGUMENTS = (
+_BOOL = lambda x: x == 'yes' or x == 'no'
+_BOOL_CHOICES = ('yes', 'no')
 
-    ('-k',    int,  2,      'alphabet size of generated DFAs (default: 2)'),
-    ('-n',    int,  4,      'number of states of solution DFA (default: 4)'),
-    ('-f',    int,  1,      'number of final states of solution DFA (default: 1)'),
-    ('-dmin', int,  2,      'lower bound for D-value (default: 2)'),
-    ('-dmax', int,  3,      'upper bound for D-value (default: 3)'),
-    ('-ps',   bool, True,   'toggle whether solution DFA shall be planar (default: True)'),
-    ('-pt',   bool, True,   'toggle whether task DFA shall be planar (default: True)'),
+_ARGUMENTS = {
+  'solution DFA' : (
+  ('-k',    int, 2,      'alphabet size of generated DFAs (default: 2)'),
+  ('-n',    int, 4,      'number of states of solution DFA (default: 4)'),
+  ('-f',    int, 1,      'number of final states of solution DFA (default: 1)'),
+  ('-dmin', int, 2,      'lower bound for D-value (default: 2)'),
+  ('-dmax', int, 3,      'upper bound for D-value (default: 3)'),
+  ('-ps',   _BOOL, 'yes',  'toggle whether solution DFA shall be planar (default: y)', _BOOL_CHOICES),
+  ('-b',    str, 'enum', 'toggle whether solution DFA shall be build by enumeration or randomization (default: enum)', ('enum','random'))),
 
-    ('-b',    str,  'enum', 'toggle whether solution DFA shall be build by numeration or randomization (default: enum)', ('enum','random')),
+  'task DFA' : (
+  ('-e',    int, 2,      'number of distinct equivalent reachable state pairs in task DFA (default: 2)'),
+  ('-u',    int, 1,      'number of unreachable states in task DFA (default: 1)'),
+  ('-c',    _BOOL, 'yes',  'toggle whether all unreachable states shall be complete (default: yes)', _BOOL_CHOICES),
+  ('-pt',   _BOOL, 'yes',  'toggle whether task DFA shall be planar (default: yes)', _BOOL_CHOICES)),
 
-    ('-e',    int,   2,     'number of distinct equivalent reachable state pairs in task DFA (default: 2)'),
-    ('-u',    int,   1,     'number of unreachable states in task DFA (default: 1)'),
-    ('-c',    bool,  True,  'toggle whether all unreachable states shall be complete (default: True)'),
-
-    ('-p',    str,   _DEFAULT_OUTPUT, 'working directory; here results will be saved (default: {})'.format(_DEFAULT_OUTPUT))
-
-)
+  'output' : (
+  ('-p',    str, _DEFAULT_OUTPUT, 'working directory; here results will be saved (default: ./output)'),
+  ('-dfa',  _BOOL, 'no', '  toggle whether DFAs shall be printed to .dfa-files (default: no)', _BOOL_CHOICES),
+  ('-tex',  _BOOL, 'yes',  'toggle whether LaTeX-code shall be created from DFAs (default: yes)', _BOOL_CHOICES),
+  ('-pdf',  _BOOL, 'yes',  'toggle whether PDFs shall be created from DFAs (default: yes)', _BOOL_CHOICES))
+}
 
 
 def main():
@@ -49,17 +55,22 @@ def main():
     Saves result and cleans up.
     """
     
-    # check parameters
+    # add and check parameters
 
     parser = argparse.ArgumentParser(
         description='Command-line tool to generate DFA minimization problems.',
         formatter_class=argparse.MetavarTypeHelpFormatter)
 
-    for a in _ARGUMENTS:
-        if len(a) == 4:
-            parser.add_argument(a[0], type=a[1], default=a[2], help=a[3])
-        else:
-            parser.add_argument(a[0], type=a[1], default=a[2], help=a[3], choices=a[4])
+    for groupName in _ARGUMENTS:
+        group = parser.add_argument_group(groupName)
+        
+        for option in _ARGUMENTS[groupName]:
+            if len(option) == 4:
+                group.add_argument(option[0], type=option[1], default=option[2], 
+                                   help=option[3])
+            else:
+                group.add_argument(option[0], type=option[1], default=option[2], 
+                                   help=option[3], choices=option[4])
     
     args = parser.parse_args()
     
@@ -83,16 +94,7 @@ def main():
     
     build = next_min_dfa if args.b == 'enum' else rand_min_dfa
 
-    try:
-    
-        solDFA = build(args.k, args.n, args.f, args.dmin, args.dmax, 
-                       args.ps, args.p)
-    
-    except PygraphIndexErrorBug:
-    
-        log.failed()
-        log.pygraph_bug('building')
-        return
+    solDFA = build(args.k, args.n, args.f, args.dmin, args.dmax, args.ps, args.p)
 
     if solDFA is None and args.b == 'enum':
         
@@ -130,12 +132,12 @@ def main():
 
     # generate graphical representation of solution and task dfa
 
-    log.saving()
-    
-    save_task(taskDFA, args.p)
-    save_solution(solDFA, reachDFA, taskDFA, args.p)
-    
-    log.done()
+    if args.dfa or args.tex or args.pdf:
+        log.saving()
+        save_exercise(solDFA, reachDFA, taskDFA, args.p, args.dfa, args.tex, args.pdf)
+        log.done()
+    else:
+        log.no_saving()
     
 
     # clean up working directory

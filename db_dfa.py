@@ -9,7 +9,7 @@ ensure_validity
     Ensures existence of 'MinimalDFAs'.
     
 fetch
-    Fetches all DFAs matching the search parameters.
+    Fetches all DFAs matching the search parameters k, n, f, dmin, dmax.
     
 save
     Saves a DFA in the database.

@@ -12,11 +12,11 @@ def contains_isomorph_dfa(testDFA, dfaList):
     
     for dfa in dfaList:
 
-        if isomorphy_test(testDFA, dfa) == True:
+        if isomorphy_test(testDFA, dfa):
     
             return True
             
-    return False
+    return any(isomorphy_test(testDFA, dfa) for dfa in dfaList)
 
 
 def isomorphy_test(dfa1, dfa2):

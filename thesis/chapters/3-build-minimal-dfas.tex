@@ -373,10 +373,10 @@ Consequently the algorithm can terminate in two ways. Either a next DFA could be
 
 \noindent Since it is not sensible to create initial enumeration states for all possible enumeration (there are infinite many, due to $\nSO\in\mathbb{N}$) we will create states by demand.
 
-Once the enumeration to the next DFA within a call of \textsc{GenNewMinimalDFA} has been finished, it is reasonable to save the enumeration state, such that during the next call enumeration can be resumed from that point on. Thus we introduce a second database DB$_{states}$ with the following table:
+Once the enumeration to the next DFA within a call of \textsc{GenNewMinimalDFA} has been finished, it is reasonable to save the enumeration state, such that during the next call enumeration can be resumed from that point on. We will run a different enumeration for every parameter combination. Thus we introduce a second database DB$_{states}$ with the following table:
 \begin{center}
-	\begin{tabular}{c c c c c c}
-		$|Q_A|$ & |$\Sigma_A$| & $F_F$ & $F_\delta$
+	\begin{tabular}{c c c c c c c}
+		$|Q_A|$ & |$\Sigma_A$| & $F_F$ & $F_\delta$ & $d_{min}$ & $d_{max}$ & $planar$
 	\end{tabular}
 \end{center}
 In the following variant of \textsc{GenNewMinimalDFA} it can be seen how the enumeration method is integrated:

@@ -1,18 +1,35 @@
-"""
-module: pdf_from_dfa.py
-author: Gregor Soennichsen
+#!/usr/bin/env python
 
+"""Handles this project's output.
 
+dot_from_dfa
+    Computes a representation of dfa in the DOT-format.
+
+_postprocess_tex
+    Improves TeX-code output by the dot2tex-library.
+
+tex_from_dfa
+    Computes a representation of dfa in the TEX-format.
+
+_next_path_number
+    Helps ensuring the correct numbering of output files.
+
+save_exercise
+    Saves a DFA minimization exercise.
 """
 
 import os
 import platform
 import pathlib
+import random
 
 from dot2tex import dot2tex
 
 from dfa          import DFA
 from minimization import tex_min_table
+
+
+__all__ = ['dot_from_dfa', 'tex_from_dfa', 'save_exercise']
 
 
 _EXE_ENDING = ''
@@ -47,7 +64,7 @@ _TEMPLATE_SOLUTION = _TEX_HEADER + r'''
 
 \subsection*{{Remove unreachable states}}
 
-List of unreachable states: {}
+List of unreachable states: {}\newline
 \noindent DFA after removing all unreachable states:
 {}
 
@@ -69,6 +86,7 @@ Minimization table:
 
 
 def dot_from_dfa(dfa):
+    """Computes a representation of dfa in the DOT-format."""
 
     TEMPLATE_DOT_DFA = '''
         digraph {{
@@ -99,19 +117,20 @@ def _postprocess_tex(texCode):
 
     lines = texCode.split('\n')
 
-    for line in lines:
+    for i in range(len(lines)):
 
-        if '\\node (0)' in line:
-            line = line.replace('\\node', '\\node[initial]')
+        if '\\node (0)' in lines[i]:
+            lines[i] = lines[i].replace('\\node', '\\node[initial]')
             
-        if 'node' in line:
-            nPos = line.find('{') + 1
-            line = line[:nPos] + '$' + line[nPos] + '$' + line[nPos+1:]
+        if 'node' in lines[i]:
+            nPos     = lines[i].find('{') + 1
+            lines[i] = lines[i][:nPos] + '$' + lines[i][nPos] + '$' + lines[i][nPos+1:]
 
     return '\n'.join(lines)
 
 
 def tex_from_dfa(dfa):
+    """Computes a representation of dfa in the TEX-format."""
 
     return _postprocess_tex(dot2tex(
         dot_from_dfa(dfa), 
@@ -119,15 +138,16 @@ def tex_from_dfa(dfa):
     ))
     
     
-def next_path_number(outDir):
+def _next_path_number(outDir):
+    """Computes next suffix to the file path where the results are saved."""
 
     counter = 0
     
     while True:
     
-        path1 = outDir / 'task_{:03d}.dfa'.format(counter)
-        path2 = outDir / 'task_{:03d}.tex'.format(counter)
-        path3 = outDir / 'task_{:03d}.pdf'.format(counter)
+        path1 = outDir / '{:03d}_task.dfa'.format(counter)
+        path2 = outDir / '{:03d}_task.tex'.format(counter)
+        path3 = outDir / '{:03d}_task.pdf'.format(counter)
         
         if not (path1.exists() or path2.exists() or path3.exists()):
             return counter
@@ -135,12 +155,58 @@ def next_path_number(outDir):
         counter += 1
         
         
+def _shuffle_state_labels(solDFA, reachDFA, taskDFA):
+    """Shuffles the state labels of solDFA, reachDFA, taskDFA."""
+
+    newQ = taskDFA.states[1:].copy()
+    random.shuffle(newQ)
+    newQ = ['0'] + newQ
+    
+    toNew = dict(zip(taskDFA.states, newQ)).get
+    
+    for dfa in (solDFA, reachDFA, taskDFA):
+    
+       dfa.states = list(map(toNew, dfa.states))
+       dfa.states.sort()
+    
+       dfa.final = list(map(toNew, dfa.final))
+       dfa.final.sort()
+    
+       for i in range(len(dfa.transitions)):
+       
+           ((q1,c),q2) = dfa.transitions[i]
+           
+           dfa.transitions[i] = (toNew(q1), c), toNew(q2)
+           
+       if dfa.unrStates is not None:
+        
+           dfa.unrStates = list(map(toNew, dfa.unrStates))
+           dfa.unrStates.sort()
+           
+       if dfa.eqClasses is not None:
+        
+           for i in range(len(dfa.eqClasses)):
+               
+               dfa.eqClasses[i] = list(map(toNew, dfa.eqClasses[i]))
+               dfa.eqClasses[i].sort()
+           
+        
 def save_exercise(solDFA, reachDFA, taskDFA, outDir, saveDFA, buildTEX, buildPDF):
+    """Saves a DFA minimization problem and its solution.
     
-    number = next_path_number(outDir)
+    saveDFA  - toggle whether solDFA,taskDFA shall be printed to .dfa-files
+    buildTEX - toggle whether task,solution shall be saved as .tex-files
+    buildPDF - toggle whether task,solution shall be saved as .pdf-files
     
-    pathSol  = outDir / 'solution_{:03d}.dfa'.format(number)
-    pathTask = outDir / 'task_{:03d}.dfa'.format(number)
+    Shuffles the state labels of solDFA, reachDFA, taskDFA.
+    """
+    
+    _shuffle_state_labels(solDFA, reachDFA, taskDFA)
+    
+    number = _next_path_number(outDir)
+    
+    pathSol  = outDir / '{:03d}_solution.dfa'.format(number)
+    pathTask = outDir / '{:03d}_task.dfa'.format(number)
     
     if saveDFA:
         pathSol.with_suffix('.dfa').write_text(str(solDFA))
@@ -170,6 +236,6 @@ def save_exercise(solDFA, reachDFA, taskDFA, outDir, saveDFA, buildTEX, buildPDF
             .format(_EXE_ENDING, outDir, pathTask.with_suffix('.tex'))
         ).read()
         
-        if not buildTex:
+        if not buildTEX:
             pathSol.with_suffix('.tex').unlink()
             pathTask.with_suffix('.tex').unlink()

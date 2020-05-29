@@ -9,11 +9,10 @@ from planarity import PygraphIndexErrorBug
 
 import log
 
-from dfa            import DFA
-from dfa_build_rand import rand_min_dfa
-from dfa_build_enum import next_min_dfa
-from dfa_extend     import extend_dfa
-from pdf_from_dfa   import save_exercise
+from dfa    import DFA
+from build  import rand_min_dfa, next_min_dfa
+from extend import extend_dfa
+from output import save_exercise
 
 
 __all__ = []
@@ -21,7 +20,6 @@ __all__ = []
 
 _DEFAULT_OUTPUT = pathlib.Path('./output')
 
-_BOOL = lambda x: x == 'yes' or x == 'no'
 _BOOL_CHOICES = ('yes', 'no')
 
 _ARGUMENTS = {
@@ -31,20 +29,20 @@ _ARGUMENTS = {
   ('-f',    int, 1,      'number of final states of solution DFA (default: 1)'),
   ('-dmin', int, 2,      'lower bound for D-value (default: 2)'),
   ('-dmax', int, 3,      'upper bound for D-value (default: 3)'),
-  ('-ps',   _BOOL, 'yes',  'toggle whether solution DFA shall be planar (default: y)', _BOOL_CHOICES),
+  ('-ps',   str, 'yes',  'toggle whether solution DFA shall be planar (default: y)', _BOOL_CHOICES),
   ('-b',    str, 'enum', 'toggle whether solution DFA shall be build by enumeration or randomization (default: enum)', ('enum','random'))),
 
   'task DFA' : (
   ('-e',    int, 2,      'number of distinct equivalent reachable state pairs in task DFA (default: 2)'),
   ('-u',    int, 1,      'number of unreachable states in task DFA (default: 1)'),
-  ('-c',    _BOOL, 'yes',  'toggle whether all unreachable states shall be complete (default: yes)', _BOOL_CHOICES),
-  ('-pt',   _BOOL, 'yes',  'toggle whether task DFA shall be planar (default: yes)', _BOOL_CHOICES)),
+  ('-c',    str, 'yes',  'toggle whether all unreachable states shall be complete (default: yes)', _BOOL_CHOICES),
+  ('-pt',   str, 'yes',  'toggle whether task DFA shall be planar (default: yes)', _BOOL_CHOICES)),
 
   'output' : (
-  ('-p',    str, _DEFAULT_OUTPUT, 'working directory; here results will be saved (default: ./output)'),
-  ('-dfa',  _BOOL, 'no', '  toggle whether DFAs shall be printed to .dfa-files (default: no)', _BOOL_CHOICES),
-  ('-tex',  _BOOL, 'yes',  'toggle whether LaTeX-code shall be created from DFAs (default: yes)', _BOOL_CHOICES),
-  ('-pdf',  _BOOL, 'yes',  'toggle whether PDFs shall be created from DFAs (default: yes)', _BOOL_CHOICES))
+  ('-out',  str, _DEFAULT_OUTPUT, 'working directory; here results will be saved (default: ./output)'),
+  ('-dfa',  str, 'no', '  toggle whether DFAs shall be printed to .dfa-files (default: no)', _BOOL_CHOICES),
+  ('-tex',  str, 'yes',  'toggle whether LaTeX-code shall be created from DFAs (default: yes)', _BOOL_CHOICES),
+  ('-pdf',  str, 'yes',  'toggle whether PDFs shall be created from DFAs (default: yes)', _BOOL_CHOICES))
 }
 
 
@@ -72,18 +70,45 @@ def main():
                 group.add_argument(option[0], type=option[1], default=option[2], 
                                    help=option[3], choices=option[4])
     
+    
     args = parser.parse_args()
     
-    args.p = pathlib.Path(args.p)
+    strToBool = lambda x: x == 'yes'
     
-    if not args.p.exists() or not args.p.is_dir():
-        log.creating_output_dir()
-        args.p.mkdir()
-        log.done()
+    args.ps  = strToBool(args.ps)
+    args.c   = strToBool(args.c)
+    args.pt  = strToBool(args.pt)
+    args.dfa = strToBool(args.dfa)
+    args.tex = strToBool(args.tex)
+    args.pdf = strToBool(args.pdf)
+    
+    args.out = pathlib.Path(args.out)
+    
+        
+    if args.k > args.n:
+        log.k_too_big()
+        return
+    
+    if args.n < args.f:
+        log.f_too_big()
+        return
+        
+    if args.pt and not args.ps:
+        log.invalid_p_options()
+        return
     
     if args.k < 2 and args.e > 0:
         log.not_extendable()
         return
+        
+    if any(map(lambda x: x<0, (args.k, args.n, args.f, args.dmin, args.dmax, args.e, args.u))):
+        log.neg_value()
+        return
+    
+    if not args.out.exists() or not args.out.is_dir():
+        log.creating_output_dir()
+        args.out.mkdir()
+        log.done()
         
     log.start(args)
     
@@ -94,7 +119,7 @@ def main():
     
     build = next_min_dfa if args.b == 'enum' else rand_min_dfa
 
-    solDFA = build(args.k, args.n, args.f, args.dmin, args.dmax, args.ps, args.p)
+    solDFA = build(args.k, args.n, args.f, args.dmin, args.dmax, args.ps, args.out)
 
     if solDFA is None and args.b == 'enum':
         
@@ -134,7 +159,7 @@ def main():
 
     if args.dfa or args.tex or args.pdf:
         log.saving()
-        save_exercise(solDFA, reachDFA, taskDFA, args.p, args.dfa, args.tex, args.pdf)
+        save_exercise(solDFA, reachDFA, taskDFA, args.out, args.dfa, args.tex, args.pdf)
         log.done()
     else:
         log.no_saving()
@@ -144,7 +169,7 @@ def main():
     
     log.cleaning()
     
-    for f in args.p.iterdir():
+    for f in args.out.iterdir():
         if f.suffix in ('.toc', '.aux', '.log', '.gz', '.bbl', '.blg', '.out'):
             f.unlink()
     

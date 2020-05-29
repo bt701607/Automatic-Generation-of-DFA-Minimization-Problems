@@ -1,22 +1,41 @@
-"""
-module: log.py
-author: Gregor Soennichsen
+#!/usr/bin/env python
 
+"""Bundles logging messages used throughout the program."""
 
-"""
+# ----------------------------------------
 
-def creating_output_dir():
+def k_too_big():
 
-    print("Working directory does not exist, creating...", end='', flush=True)
+    print('There are no complete DFAs with n < k.\nAbort.', flush=True)
+    
+def f_too_big():
+
+    print('Since F is a subset of Q, f > n is not possible.\nAbort.', flush=True)
+    
+def invalid_p_options():
+
+    print('Task DFA can not be planar if solution DFA is not planar.\nAbort.',
+          flush=True)
 
 def not_extendable():
 
     print('''DFAs with less than two alphabet symbols cannot be 
             extended with equivalent state pairs.\nAbort.''', flush=True)
+        
+def neg_value():
+    
+    print('Parameters k,n,f,dmin,dmax,e,u have to be zero or positive.\nAbort.',
+          flush=True)
+
+def creating_output_dir():
+
+    print('Working directory does not exist, creating...', end='', flush=True)
+
+# ----------------------------------------
 
 def start(args):
 
-    print("Working directory: '{}'.".format(args.p), flush=True)
+    print("Working directory: '{}'.".format(args.out), flush=True)
 
 def building_solution(args):
 
@@ -36,7 +55,7 @@ def building_solution(args):
 def enum_finished():
 
     print('''All DFAs with the specified parameters have been enumerated but 
-             no matching DFA was found.''', end='', flush=True)
+             no matching DFA was found.''', flush=True)
     
 def extending_solution(args):
 
@@ -44,7 +63,7 @@ def extending_solution(args):
     planar   = 'planar '   if args.ps else ''
     
     print(
-        'Extending DFA to {}{}task DFA with e={}, u={}..'.format(
+        'Extending to {}{}task DFA with e={}, u={}..'.format(
             complete, planar,
             args.e, args.u
         ),
@@ -79,6 +98,8 @@ def no_saving():
 def cleaning():
 
     print('Cleaning working directory..', end='', flush=True)
+
+# ----------------------------------------
     
 def failed():
 

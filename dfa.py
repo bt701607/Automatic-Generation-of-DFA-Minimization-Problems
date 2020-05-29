@@ -17,8 +17,8 @@ class DFA(object):
     def __init__(self, 
             alphabet, states, transitions, start, final,
             k=None, n=None, f=None, 
-            depth=None, planar=None,
-            eqClasses=None, unrStates=None):
+            depth=None, planar=None, 
+            unrStates=None, eqClasses=None):
         """Initializes a DFA object.
         
         The five mandatory parameters correspond to the mathematical definition
@@ -28,8 +28,6 @@ class DFA(object):
         
         States and alphabet symbols are preferably single characters.
         """
-
-        self.__stateCounter = 0
 
         self.alphabet    = alphabet
         self.states      = states
@@ -44,8 +42,8 @@ class DFA(object):
         self.depth  = depth
         self.planar = planar
         
-        self.eqClasses = eqClasses
         self.unrStates = unrStates
+        self.eqClasses = eqClasses
         
         if k is None:
             self.k = len(alphabet)

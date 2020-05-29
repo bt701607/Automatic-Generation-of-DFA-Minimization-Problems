@@ -41,6 +41,10 @@ def ensure_validity(dbConn):
                 n INT, 
                 f INT, 
                 
+                dmin   INT, 
+                dmax   INT, 
+                planar INT, 
+                
                 state_f     TEXT, 
                 state_delta TEXT, 
                     
@@ -49,7 +53,7 @@ def ensure_validity(dbConn):
         )
     
     
-def fetch(dbConn, k, n, f):
+def fetch(dbConn, k, n, f, dmin, dmax, planar):
     """Fetches/Creates the enumeration state matching the parameters.
     
     Assumes, that table EnumStates with correct columns exists in dbConn.
@@ -57,13 +61,16 @@ def fetch(dbConn, k, n, f):
     """
 
     query = '''
-        SELECT state_f, state_delta, finished 
-        FROM EnumStates 
-        WHERE k = ? AND n = ? AND f = ?
+        SELECT state_f, state_delta, finished FROM EnumStates WHERE 
+            k = ? AND 
+            n = ? AND 
+            f = ? AND 
+            dmin = ? AND dmax = ? AND 
+            planar = ?
     '''
 
     c = dbConn.cursor()
-    c.execute(query, (k, n, f))
+    c.execute(query, (k, n, f, dmin, dmax, planar))
     dbResult = c.fetchone()
     
     if dbResult is None:
@@ -74,11 +81,11 @@ def fetch(dbConn, k, n, f):
             k, n, f,
             ','.join(map(str, enumState.stateF)),
             ','.join(map(str, enumState.stateDelta)),
-            0
+            dmin, dmax, planar, 0
         )
         
         with dbConn:
-            dbConn.execute('''INSERT INTO EnumStates VALUES (?,?,?,?,?,?)''', dbTuple)
+            dbConn.execute('''INSERT INTO EnumStates VALUES (?,?,?,?,?,?,?,?,?)''', dbTuple)
     
         return enumState
         
@@ -94,26 +101,27 @@ def fetch(dbConn, k, n, f):
             
             
             
-def update(dbConn, enumState):
-    """Updates the enumeration state in the DB belonging to enumState.
+def update(dbConn, enumState, dmin, dmax, planar):
+    """Updates the enumeration state in the DB corresponding to enumState.
     
     Assumes, that table EnumStates with correct columns exists in dbConn.
-    Assumes that enumState was created via 'fetch'.
     """
 
     query = '''
         UPDATE EnumStates 
         SET state_f = ?, state_delta = ?, finished = ? 
-        WHERE k = ? AND n = ? AND f = ?
+        WHERE k = ? AND n = ? AND f = ? AND dmin = ? AND dmax = ? AND planar = ?
     '''
 
     dbTuple = (
         ','.join(map(str, enumState.stateF)),
         ','.join(map(str, enumState.stateDelta)),
         int(enumState.finished),
-        enumState.k,
-        enumState.n,
-        enumState.f
+        enumState.k, 
+        enumState.n, 
+        enumState.f, 
+        dmin, dmax, 
+        planar
     )
     
     with dbConn:
@@ -162,6 +170,9 @@ class EnumState(object):
         
         The stateF-field states that the first f states are final.
         The stateDelta-field states that all transition end in the first state.
+        
+        We set the 'initial'-flag to true, to indicate that the first DFA is
+        already given and must not be gained by incrementing.
         """
     
         assert n >= f, '''Number of states must be greater than number of 
@@ -176,6 +187,7 @@ class EnumState(object):
         self.stateF     = [1 for i in range(f)] + [0 for i in range(n-f)]
         self.stateDelta = [0 for i in range(self.deltaSize)]
         
+        self.initial  = True
         self.finished = False
         
         
@@ -187,15 +199,10 @@ class EnumState(object):
         
         enumState.stateF     = stateF
         enumState.stateDelta = stateDelta
+        enumState.initial    = False
         enumState.finished   = finished
         
         return enumState
-        
-        
-    def __str__(self):
-        """Returns the given enumeration state in string representation."""
-    
-        return str((self.k, self.n, self.f, self.stateF, self.stateDelta, self.finished))
         
         
     def next(self):
@@ -203,6 +210,10 @@ class EnumState(object):
         
         Returns None and sets 'finished = True', if the enumeration is finished.
         """
+        
+        if self.initial:
+            self.initial = False
+            return self._dfa()
         
         if self.finished:
             return None

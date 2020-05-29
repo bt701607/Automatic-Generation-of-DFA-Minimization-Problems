@@ -1,8 +1,31 @@
-"""
-module: minimization.py
-author: Gregor Soennichsen
+#!/usr/bin/env python
 
+"""Specifies methods concerned with minimization of DFAs.
+The algorithms in this module are based on Hopcroft's Minimization Algorithm.
 
+minimize_dfa
+    Returns a minimized copy of a complete DFA.
+
+_comp_unr_states
+    Returns the set of unreachable states to a given DFA.
+
+has_unr_states
+    Returns whether a given DFA has unreachable states.
+
+_del_unr_states
+    Deletes all unreachable states from a given DFA.
+
+_comp_inequiv_states
+    Computes all inequivalent states to a given DFA.
+
+has_equiv_states
+    Returns whether a given DFA has equivalent states.
+
+_del_equiv_states
+    Merges all equivalent state pairs of a DFA.
+
+tex_min_table
+    Computes TeX-code representing a _comp_inequiv_states-computation.
 """
 
 import copy
@@ -10,16 +33,25 @@ import copy
 from dfa import DFA
 
 
-# returned dfa has minmarkDepth set
-def minimize_dfa(dfa):
+__all__ = ['minimize_dfa', 'has_unr_states', 'has_equiv_states', 'tex_min_table']
 
-    return _del_dupl_states(_del_unr_states(copy.deepcopy(dfa)))
+
+def minimize_dfa(dfa):
+    """Returns a minimized copy of dfa.
+    
+    Implements Hopcroft's minimization algorithm.
+    Returned DFA has depth set.
+    """
+
+    return _del_equiv_states(_del_unr_states(copy.deepcopy(dfa)))
 
 
 # -----------------------------------------------------------
 
 
 def _comp_unr_states(dfa):
+    """Returns the set of all unreachable states in dfa.
+    Uses breadth first search to compute this set."""
 
     undiscovered = set(dfa.states)
     undiscovered.remove(dfa.start)
@@ -50,11 +82,13 @@ def _comp_unr_states(dfa):
 
 
 def has_unr_states(dfa):
+    """Returns whether dfa contains unreachable states."""
 
     return bool(_comp_unr_states(dfa))
 
 
 def _del_unr_states(dfa):
+    """Deletes all unreachable states from dfa."""
 
     unreachable = _comp_unr_states(dfa)
 
@@ -81,7 +115,19 @@ def _del_unr_states(dfa):
 # -----------------------------------------------------------
 
 
-def _comp_dupl_states(dfa):
+def _comp_inequiv_states(dfa):
+    """Computes all inequivalent state pairs in dfa.
+    
+    Returns a dictionary m, mapping inequivalent state pairs (p,q) to the
+    iteration i in which they were found.
+    
+    Returns a set M, containing all inequivalent state pairs.
+    
+    Returns depth, which is the number of iterations this algorithm needed
+    for this dfa.
+    
+    Sets dfa.depth.
+    """
 
     m = {}
 
@@ -117,47 +163,50 @@ def _comp_dupl_states(dfa):
 
         M = M.union(N)
 
-        if len(N) == 0:
+        if not N:
             break
         else:
             i += 1
+
+    # update informations
+
+    dfa.depth = i
             
     return m, M, i
 
 
-# sets depth of dfa
-def has_dupl_states(dfa):
+def has_equiv_states(dfa):
+    """Returns whether dfa contains equivalent states.
+    Sets dfa.depth."""
 
-    m, M, depth = _comp_dupl_states(dfa)
+    m, M, depth = _comp_inequiv_states(dfa)
 
     for p in dfa.states:
         for q in dfa.states:
             if p != q and (p,q) not in M:
-                return False
+                return True
 
-    # update informations
-
-    dfa.depth = depth
-
-    return True
+    return False
 
 
-# sets depth of dfa
-def _del_dupl_states(dfa):
+def _del_equiv_states(dfa):
+    """Merges all equivalent state pairs of dfa.
+    Sets dfa.depth. Sets dfa.planar to None."""
 
-    m, M, depth = _comp_dupl_states(dfa)
+    m, M, depth = _comp_inequiv_states(dfa)
 
-    # merge duplicate states
-    duplStatePairs = [
+    # merge equivalent states
+    
+    eqStatePairs = [
         (p,q) 
         for p in dfa.states 
             for q in dfa.states 
                if (p,q) not in M and p != q
     ]
 
-    while duplStatePairs:
+    while eqStatePairs:
 
-        (p,q) = duplStatePairs.pop()
+        (p,q) = eqStatePairs.pop()
 
         if p == q:
             continue
@@ -203,8 +252,10 @@ def _del_dupl_states(dfa):
 
 
 def tex_min_table(dfa):
+    """Returns TeX-representation of the computation _comp_inequiv_states(dfa).
+    Sets dfa.depth."""
 
-    m, M, depth = _comp_dupl_states(dfa)
+    m, M, depth = _comp_inequiv_states(dfa)
 
     tex = '\n'
 

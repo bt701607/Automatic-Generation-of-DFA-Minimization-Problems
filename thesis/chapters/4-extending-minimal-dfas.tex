@@ -96,7 +96,7 @@ Thus a fitting state $q$ has to have a transition to some state in $[r_i]_{\sim_
 
 We see here, that $p$ must have at least $2$ ingoing transitions, else it would become unreachable. Thus we summarize:
 \begin{description}
-	\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $d^-(p) \geq 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
+	\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $|d^-(p)| \geq 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
 \end{description}
 These findings lead us to a general requirement regarding the choice of a state $e$ for an $r_i$: The equivalence class of any $e$ has to contain at least one state with at least $2$ ingoing transitions. We establish the following notion to pin down this restriction:
 \[
@@ -311,22 +311,43 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 
 \section{Adding Unreachable States}
 
-From step 1 of the minimization algorithm we can deduce how to add unreachable states. These can easily be added to a DFA by adding non-start states with no ingoing transitions (see def.~\ref{ch:2:unreachable-states}). Number and nature of outgoing transitions may be arbitrary.
+Unreachable states are states, which are not reachable from the start state (see def.~\ref{ch:2:unreachable-states}). Consequently there are no restrictions on number and nature of their outgoing transitions. Let us say the added states is $q$.
 
+Concerning $q$'s ingoing transitions, we only have to ensure, that none of them allows reaching $q$ from the start state. This implicates, that only other unreachable states are qualified as start points of those ingoing transitions.
+
+Note that, given $q, \sigma$, we allow only one end point to $\delta(q, \sigma)$. Consequently if we want to add an ingoing transition $\delta(q_u, \sigma) = q$ where $q_u$ is unreachable, then we are stealing the transition from another state $\delta(q_u, \sigma) = q'$. But this is okay, since $q'$ must be an unreachable state too and will stay that way if we remove an ingoing transition.
+
+In this algorithm we assume, that $A$ has no unreachable states.
 \vspace{0.2cm}
 \begin{algorithmic}[1]
 	\Function{AddUnrStates\ }{$A, \nUN, c$}
+	\State $U \gets \emptyset$ \Comment{unreachable states in $A$}
+	\vspace{0.2cm}
+	
 	\For {$\nUN$ \textbf{times}}
+	\vspace{0.2cm}
+	
 		\State $q \gets$ unused state label
-		\State $Q \gets Q \cup \{ q \}$
-        \State $outSymbols \gets \textbf{if } c = 1 \textbf{ then } \Sigma \textbf{ else}$ random subset of $\Sigma$
-		\State $R \gets$ random chosen sample of $|outSymbols|$ states from $Q \setminus \{q\}$
-		\For {$\sigma$ \textbf{in} $outSymbols$}
-			\State $q' \in R$
-			\State $R \gets R \setminus \{q'\}$
-			\State $\delta \gets \delta \cup \{ ((q, \sigma), q') \}$
+		\State Add $q$ to $Q$
+		\vspace{0.2cm}
+		
+		\For {$q_u, \sigma$ \textbf{in} random subset of $U\times\Sigma$} \Comment{in. transitions}
+			\State $\delta(q_u, \sigma) = q$
 		\EndFor
+		\vspace{0.2cm}
+		
+        \State $\Sigma' \gets \textbf{if } c = 1 \textbf{ then } \Sigma \textbf{ else}$ random subset of $\Sigma$ \Comment{out. transitions}
+		\State $S \gets$ random chosen sample of $|\Sigma'|$ states from $Q$
+		\For {$\sigma$ \textbf{in} $\Sigma'$}
+			\State Remove a state $q'$ from $S$
+			\State $\delta(q, \sigma) = q'$
+		\EndFor
+		\vspace{0.2cm}
+		
+		\State Add $q$ to $U$
 	\EndFor
+	\vspace{0.2cm}
+	
 	\State \Return $A$
 	\EndFunction
 \end{algorithmic}

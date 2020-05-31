@@ -18,6 +18,8 @@ extend_dfa
 import random
 import copy
 
+from itertools import product
+
 from planarity import planarity_test
 
 
@@ -53,19 +55,31 @@ def _add_unr_states(dfa, nUnr=1, complete=True):
     """
 
     dfa.unrStates = []
+    
+    randSubset = lambda s: random.sample(s, random.randint(0, len(s)))
 
     for i in range(nUnr):
 
         newState = _new_state(dfa, random.randint(0,1)) # here we could enumerate
 
+        # ingoing transitions
+        
+        for q, c in randSubset(list(product(dfa.unrStates, dfa.alphabet))):
+    
+            delta = dict(dfa.transitions)
+        
+            if (q,c) in delta:
+                dfa.transitions.remove(((q, c), delta[(q,c)]))
+                
+            dfa.transitions.append(((q, c), newState))
+            
+        # outgoing transitions
+
         available = (q for q in dfa.states)
         
-        if complete:
-            symbols = dfa.alphabet
-        else:
-            symbols = random.sample(dfa.alphabet, random.randint(dfa.k))
+        symbols   = dfa.alphabet if complete else randSubset(dfa.alphabet)
 
-        for c in dfa.alphabet:
+        for c in symbols:
             dfa.transitions.append(((newState, c), next(available))) # here we could enumerate
 
         dfa.unrStates.append(newState)

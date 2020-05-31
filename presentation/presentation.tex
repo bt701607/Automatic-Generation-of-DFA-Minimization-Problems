@@ -87,7 +87,7 @@
 		\vspace{0.3cm}
 		Consequently, studying automatized generation of DFA minimization problems is interesting because it could\ldots
 		\begin{itemize}
-			\item \ldots free up precious time
+			\item \ldots free up precious time for exercise constructors
 			
 			(if a generator is implemented)
 			\item \ldots yield a deeper insight
@@ -185,7 +185,7 @@
 		\begin{enumerate}
 		\item Compute all unreachable states
 		\item Remove all unreachable states and their transitions
-		\item Compute all equivalent state pairs ($\sim_A$)
+		\item Compute all inequivalent state pairs ($\not\sim_A$)
 		\begin{algorithmic}[1]
 			\Function{\CompDist}{$A$}
 			\State $i \gets 0$
@@ -301,8 +301,14 @@
 
 	\begin{frame}
 		\frametitle{Approach}
+		``Reversing Hopcroft's Algorithm''
+		Modular Pipeline-Architecture
 		
-		
+	\end{frame}
+
+	\begin{frame}
+	\frametitle{Outline}
+	\tableofcontents % [pausesections]
 	\end{frame}
 	
 	
@@ -310,33 +316,102 @@
 	
 	\begin{frame}
 		\frametitle{Generating Minimal DFAs}
-		\framesubtitle{Approach}
+		\framesubtitle{Rejection Algorithm}
+		Approach: Generate test DFAs until they match the demanded properties.
+		
+		\vspace{0.2cm}
+		\begin{algorithmic}[1]
+			\Function{GenNewMinDFA\ }{$\nSO, \kAL, \nF, d, p$}
+			
+			\vspace{0.2cm}
+			
+			\State $l \gets$ all DFAs in DB$_{found}$ matching $\nSO, \kAL, \nF$
+			
+			\vspace{0.2cm}
+			
+			\While {True}
+			
+				\vspace{0.2cm}
+				
+				\State generate DFA $A_{test}$ with $|Q|, |\Sigma|, |F|$ matching $\nSO, \kAL, \nF$
 	
+				\vspace{0.2cm}
+				
+				\If {$A_{test}$ not minimal \textbf{or} $d \neq \mmD(A_{test})$}
+					\State \textbf{continue}
+				\EndIf
+				
+				\If {$p = 1$ \textbf{and} $A_{test}$ is not planar}
+					\State \textbf{continue}
+				\EndIf
+				
+				\If {$A_{test}$ is isomorph to any DFA in $l$}
+					\State \textbf{continue}
+				\EndIf
+				
+				\vspace{0.2cm}
+				
+				\State save $A_{test}$ and its respective properties in DB$_{found}$
+				\State\Return $A_{test}$
+			
+			\EndWhile
+			\EndFunction
+		\end{algorithmic}
 	
 	\end{frame}
 
 	\begin{frame}
 		\frametitle{Generating Minimal DFAs}
-		\framesubtitle{Test DFAs}
-	
-	
-	\end{frame}
-	
-	
-	\section{Extending Minimal DFAs}
-	
-	\begin{frame}
-		\frametitle{Extending Minimal DFAs}
-		\framesubtitle{Approach}
-	
+		\framesubtitle{Test DFA Generation}
+		We will restrict ourselves to the following DFAs:
+		\[
+			Q = \mathbb{N}_0^ {\nSO-1}, \Sigma = \mathbb{N}_0^{\kAL-1}, s = 0
+		\]
+		
+		Generation by Randomization:
+		\begin{align*}
+		F &= random\_subset(Q)\\
+			\forall q\in Q, \sigma\in\Sigma\colon \delta(q, \sigma) &= choose\_one(Q)
+		\end{align*}
+		Generation by Enumeration:\\$ $\\
+		An \emph{enumeration state} $s_{\nSO, \kAL, \nF} = (F_F,F_\delta)$ consists of two arrays of length $\nSO, \nSO*\kAL$, respectively.
+		\begin{align*}
+			F_F[i] = 1 &\Leftrightarrow_{def} i \in F\\
+			F_\delta[i * \kAL + j] = q &\Leftrightarrow_{def} \delta(i, j) = q
+		\end{align*}
 	
 	\end{frame}
 
 	\begin{frame}
+		\frametitle{Generating Minimal DFAs}
+		\framesubtitle{Incrementing Enumeration States}
+		Short demo how the associated DFA changes, when an enumeration state is incremented
+	
+	\end{frame}
+	
+	
+	\begin{frame}
+		\frametitle{Outline}
+		\tableofcontents % [pausesections]
+	\end{frame}
+	
+	\section{Extending Minimal DFAs}
+
+	\begin{frame}
 		\frametitle{Extending Minimal DFAs}
 		\framesubtitle{Adding Equivalent States (1)}
-	
-		Duplicating a State
+		%	
+		%		Reminder: Two states $q_1, q_2 \in Q$ are called \emph{equivalent} ($q_1 \sim_A q_2$), iff $\forall z\in\Sigma^* (\delta^ *(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)$.
+		%	
+		%		\vspace{0.2cm}
+		Let the added states be $r_1,\ldots,r_\nEQ$, such that $Q_{re} = Q_{sol} \cup \{r_1,\ldots,r_\nEQ\}$ and each of the added states is equivalent to a distinct state in $Q_{re}$.
+		
+		\vspace{0.2cm}
+		Observation: Each $r_i$ will be equivalent to a state $e$ of $A_{sol}$:
+		\[
+		\forall i \in [1,\nEQ] \colon\ \exists e \in Q_{sol}\colon\ r_i \sim_A e
+		\]
+		We will first choose an $e\in Q_{sol}$ for each state $r_i$ we create, then we add its transitions.
 	
 	\end{frame}
 
@@ -344,7 +419,28 @@
 		\frametitle{Extending Minimal DFAs}
 		\framesubtitle{Adding Equivalent States (2)}
 		
-		Addding outgoing transitions
+		Outgoing transitions. Observation:
+		\begin{itemize}
+			\item[] $r_i \sim_A e$
+			
+			\item[$\Rightarrow$] $\forall \sigma \in \Sigma \colon [\delta(r_i, \sigma)]_{\sim_A} = [\delta(e, \sigma)]_{\sim_A}$
+		\end{itemize}
+	
+		\vspace{0.2cm}
+		We see that $\delta(r_i, \sigma) = q$ must be in the same equivalency class as $\delta(e, \sigma) = p$.
+		
+		\vspace{0.2cm}
+		Consequently:
+		\begin{itemize}
+			\item[R1:] For each symbol $\sigma \in \Sigma$ choose exactly one state $q\in[\delta(e, \sigma)]_{\sim_A}$ and set $\delta(r_i, \sigma) = q$.
+		\end{itemize}
+	
+		\vspace{0.2cm}
+		The rule is always fulfillable:
+		\begin{itemize}
+			\item $A_{sol}$ is complete
+			\item every $r_i$ gets an out. transition for every alphabet symbol
+		\end{itemize}
 	
 	\end{frame}
 
@@ -352,7 +448,38 @@
 		\frametitle{Extending Minimal DFAs}
 		\framesubtitle{Adding Equivalent States (3)}
 		
-		Addding ingoing transitions
+		Ingoing transitions. Observations:
+		
+		\vspace{0.2cm}
+		\begin{itemize}
+			\item $r_i$ must be reachable $\Rightarrow in(r_i) >= 1$
+		\end{itemize}
+	
+		\vspace{0.2cm}
+		Let $q$ be a state that gets an in. transition to $r_i$.
+		
+		\vspace{0.2cm}
+		\begin{itemize}
+			\item[] $q$ must remain in its equivalence class
+			
+			\item[$\Rightarrow$] $q$ has to have a transition to some state in $[r_i]_{\sim_A} = [e]_{\sim_A}$
+			
+			\item[$\Rightarrow$] given $\delta(q, \sigma) = p$ and $p \in [e]_{\sim_A}$, we can set $\delta(q, \sigma) = r_i$
+		\end{itemize}
+		
+		\vspace{0.2cm}
+		We see that $p$ must have at least $2$ ingoing transitions.
+		
+		\vspace{0.2cm}
+		\begin{itemize}
+			\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $out(p) \geq 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
+		\end{itemize}
+	
+\vspace{0.2cm}
+		General requirement regarding the choice of a state $e$ for an $r_i$: 
+		\[
+			duplicatable(q) \Leftrightarrow_{def} (\exists p \in [q]_{\sim_A}\colon out(p) \geq 2)
+		\]
 	
 	\end{frame}
 
@@ -360,13 +487,63 @@
 		\frametitle{Extending Minimal DFAs}
 		\framesubtitle{Adding Equivalent States (4)}
 		
-		Algorithm
+		Showcase how a to add an equivalent state
 	
 	\end{frame}
 
 	\begin{frame}
 		\frametitle{Extending Minimal DFAs}
 		\framesubtitle{Adding Unreachable States}
+	
+		Reminder: We say a state $q$ is \emph{unreachable}, iff there is no word $w \in \Sigma^*$ such that $\delta^*(s, w) = q$.
+		\vspace{0.3cm}
+	
+		\begin{algorithmic}[1]
+			\Function{AddUnrStates\ }{$A, \nUN, c$}
+			\State $U \gets \emptyset$
+			\vspace{0.2cm}
+			
+			\For {$\nUN$ \textbf{times}}
+				\vspace{0.2cm}
+				
+				\State let $q$ be the new state
+				\vspace{0.2cm}
+				
+				\State add ingoing tr.\ from a random subset of $U\times\Sigma$
+				\vspace{0.2cm}
+				
+				\State $\Sigma' \gets \textbf{if } c = 1 \textbf{ then } \Sigma \textbf{ else}$ random subset of $\Sigma$
+				\State add outgoing tr.\ to $|\Sigma'|$ random states
+				\vspace{0.2cm}
+				
+				\State add $q$ to $U$
+			\EndFor
+			\vspace{0.2cm}
+			
+			\State \Return $A$
+			\EndFunction
+		\end{algorithmic}
+	
+	\end{frame}
+
+	\begin{frame}
+	\frametitle{Outline}
+	\tableofcontents % [pausesections]
+	\end{frame}
+
+	\section{Live Demonstration}
+	
+	\begin{frame}
+		\frametitle{Live Demonstration}
+		\framesubtitle{Program Architecture}
+	
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Live Demonstration}
+		\framesubtitle{Command-Line Options}
+	
+		
 	
 	\end{frame}
 	
@@ -375,9 +552,13 @@
 	\begin{frame}
 		\frametitle{Conclusion}
 		
-		This presentation has\ldots
+		This work has\ldots
 		\begin{itemize}
 			\item 
+		\end{itemize}
+		Lookout\ldots
+		\begin{itemize}
+		\item 
 		\end{itemize}
 	
 	\end{frame}

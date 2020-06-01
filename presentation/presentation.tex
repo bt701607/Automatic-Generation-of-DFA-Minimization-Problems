@@ -7,6 +7,7 @@
 
 \usepackage{bm}
 
+\usepackage{xcolor}
 \usepackage{tikz}
 \usetikzlibrary{arrows}
 \usetikzlibrary{positioning,automata}
@@ -42,7 +43,7 @@
 
 \newcommand{\x}{$\blacksquare$}
 
-
+\setbeamertemplate{footline}[frame number]
 
 % -----------
 
@@ -182,6 +183,11 @@
 	\begin{frame}
 		\frametitle{Problem definition}
 		\framesubtitle{Hopcroft's Minimization Algorithm}
+		
+		\begin{tikzpicture}[remember picture,overlay]
+		\node[xshift=-1.5cm,yshift=-3cm] at (current page.north east) {\includegraphics[height=2.5cm]{jehyoung.jpg}};
+		\end{tikzpicture}
+		
 		\begin{enumerate}
 		\item Compute all unreachable states
 		\item Remove all unreachable states and their transitions
@@ -300,9 +306,45 @@
 	\end{frame}
 
 	\begin{frame}
-		\frametitle{Approach}
-		``Reversing Hopcroft's Algorithm''
-		Modular Pipeline-Architecture
+		\frametitle{Problem Definition and Approach}
+		Problem: How to generate a \emph{DFa Minimization Problem} $(A_{sol}, A_{task})$?
+		
+		\vspace{0.2cm}
+		Idea: First generate $A_{sol}$, then add equivalent, then unreachable states.
+		
+		$\Rightarrow$ modular pipeline architecture
+		
+		\vspace{0.4cm}
+		\begin{tikzpicture}[initial text={}, every node/.style={transform shape}]
+		
+		\node[draw,style={rounded corners}] (p) at (0,0) {$\nSO, \kAL, \nF, d, p_{sol}, p_{task}, \nEQ,\nUN, c$};
+		
+		\node[draw] (1) at (0,-2) {
+			\begin{minipage}{\linewidth}
+			Generate DFA Minimization Problem
+			
+			\begin{itemize}
+				\item Generate Minimal DFA
+				
+				\qquad (using a rejection algorithm and randomization/enumeration)
+				
+				\item Extend Minimal DFA
+				\begin{itemize}
+					\item Add Equivalent States
+					\item Add Unreachable States
+				\end{itemize}
+			\end{itemize}
+			
+			\end{minipage}
+		};
+	
+		\node[draw,style={rounded corners}] (o) at (0,-4) {$A_{sol}, A_{task}$};
+		
+		\path[->]
+		(p) edge (1)
+		(1) edge (o)
+		;
+		\end{tikzpicture}
 		
 	\end{frame}
 
@@ -358,6 +400,10 @@
 			\EndFunction
 		\end{algorithmic}
 	
+		\begin{tikzpicture}[remember picture,overlay]
+		\node[xshift=-1.5cm,yshift=-6.25cm] at (current page.north east) {\includegraphics[height=1.75cm]{rejection.jpg}};
+		\end{tikzpicture}
+	
 	\end{frame}
 
 	\begin{frame}
@@ -368,17 +414,20 @@
 			Q = \mathbb{N}_0^ {\nSO-1}, \Sigma = \mathbb{N}_0^{\kAL-1}, s = 0
 		\]
 		
-		Generation by Randomization:
-		\begin{align*}
-		F &= random\_subset(Q)\\
-			\forall q\in Q, \sigma\in\Sigma\colon \delta(q, \sigma) &= choose\_one(Q)
-		\end{align*}
-		Generation by Enumeration:\\$ $\\
-		An \emph{enumeration state} $s_{\nSO, \kAL, \nF} = (F_F,F_\delta)$ consists of two arrays of length $\nSO, \nSO*\kAL$, respectively.
-		\begin{align*}
+		\begin{enumerate}
+			\item[(a)] Generation by Randomization:
+			\begin{align*}
+			F &= random\_subset(Q)\\
+			\delta(q, \sigma) &= choose\_one(Q) \qquad\qquad \forall q\in Q, \sigma\in\Sigma
+			\end{align*}
+			
+			\item[(b)] Generation by Enumeration:\\$ $\\
+			An \emph{enumeration state} $s_{\nSO, \kAL, \nF} = (F_F,F_\delta)$ consists of two arrays of length $\nSO, \nSO*\kAL$, respectively.
+			\begin{align*}
 			F_F[i] = 1 &\Leftrightarrow_{def} i \in F\\
 			F_\delta[i * \kAL + j] = q &\Leftrightarrow_{def} \delta(i, j) = q
-		\end{align*}
+			\end{align*}
+		\end{enumerate}
 	
 	\end{frame}
 
@@ -445,8 +494,16 @@
 	\end{frame}
 
 	\begin{frame}
+	\frametitle{Extending Minimal DFAs}
+	\framesubtitle{Adding Equivalent States (3)}
+	
+	Showcase how a to add outgoing transitions of an equivalent state
+	
+	\end{frame}
+
+	\begin{frame}
 		\frametitle{Extending Minimal DFAs}
-		\framesubtitle{Adding Equivalent States (3)}
+		\framesubtitle{Adding Equivalent States (4)}
 		
 		Ingoing transitions. Observations:
 		
@@ -475,7 +532,7 @@
 			\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $out(p) \geq 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
 		\end{itemize}
 	
-\vspace{0.2cm}
+		\vspace{0.2cm}
 		General requirement regarding the choice of a state $e$ for an $r_i$: 
 		\[
 			duplicatable(q) \Leftrightarrow_{def} (\exists p \in [q]_{\sim_A}\colon out(p) \geq 2)
@@ -485,9 +542,9 @@
 
 	\begin{frame}
 		\frametitle{Extending Minimal DFAs}
-		\framesubtitle{Adding Equivalent States (4)}
+		\framesubtitle{Adding Equivalent States (5)}
 		
-		Showcase how a to add an equivalent state
+		Showcase how a to add ingoing transitions of an equivalent state
 	
 	\end{frame}
 
@@ -523,6 +580,10 @@
 			\State \Return $A$
 			\EndFunction
 		\end{algorithmic}
+%	
+%		\begin{tikzpicture}[remember picture,overlay]
+%		\node[xshift=-1.5cm,yshift=-7.5cm] at (current page.north east) {\includegraphics[height=1.75cm]{Fix-err-address-unreachable.jpg}};
+%		\end{tikzpicture}
 	
 	\end{frame}
 
@@ -536,14 +597,16 @@
 	\begin{frame}
 		\frametitle{Live Demonstration}
 		\framesubtitle{Program Architecture}
+		\centering
+	    \includegraphics[width=0.9\linewidth]{prog_arch.jpg}
 	
 	\end{frame}
 
 	\begin{frame}
 		\frametitle{Live Demonstration}
 		\framesubtitle{Command-Line Options}
-	
 		
+		\includegraphics[width=\linewidth]{options.jpg}
 	
 	\end{frame}
 	
@@ -552,13 +615,22 @@
 	\begin{frame}
 		\frametitle{Conclusion}
 		
-		This work has\ldots
+		This presentation has\ldots
 		\begin{itemize}
-			\item 
+			\item introduced the problem of DFA Minimization Problem Generation
+			\item given an overview over a possible solution
+			\item shown that the theoretic results might be useful in praxis
 		\end{itemize}
-		Lookout\ldots
+		Lookout:
 		\begin{itemize}
-		\item 
+			\item more parameters, ranged parameters
+			
+			The \emph{degree} of a state $q$ is defined as $deg(q) = d^-(q) + d^+(q)$.
+			
+			$\Rightarrow$ capping the max.\ degree?
+			
+			\item investigate planarity and drawing algorithms deeper
+			\item complexity analysis
 		\end{itemize}
 	
 	\end{frame}

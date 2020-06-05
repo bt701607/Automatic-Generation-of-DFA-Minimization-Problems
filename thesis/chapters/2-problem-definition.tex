@@ -44,8 +44,8 @@ A DFA is called \emph{complete} iff for all states, every symbol of the alphabet
 		(1) edge [loop above] node [above=-0.07cm]		 {$a$}   (1)
 		(1) edge 			  node [left=-0.07cm]        {$b$}   (2)
 		(0) edge 			  node [below left=-0.15cm]  {$b$}   (2)
-		(2) edge [loop below] node [below=-0.07cm]       {$a,b$} (2)
-		(3) edge 			  node [above right=-0.15cm] {$a$}   (1)
+		(2) edge [loop below] node [below=-0.07cm]       {$a$}   (2)
+		(3) edge 			  node [above right=-0.15cm] {$a,b$} (1)
 		(4) edge [loop below] node [below=-0.07cm]	     {$a$}   (4)
 		;
 		\end{tikzpicture}
@@ -57,12 +57,12 @@ A DFA is called \emph{complete} iff for all states, every symbol of the alphabet
 			&\\
 			&Q = [[5]] = \{\ 0,1,2,3,4\ \} \\
 			&\Sigma = \{\ a,b\ \} \\
-			&\delta = \{\ ((0,a),1), ((0,b),1), \ldots\ \} \\
+			&\delta = \{\ ((0,a),1), ((0,b),2), \ldots\ \} \\
 			&s = 0 \\
 			&F = \{\ 1\ \}
 		\end{align*}
 	\end{subfigure}
-	\caption{An example DFA. The states $3$ and $4$ are unreachable. This DFA is not complete since the transitions $\delta(2,b)$ and $\delta(3,b)$ are not defined.}
+	\caption{An example DFA. The states $3$ and $4$ are unreachable. This DFA is not complete since the transitions $\delta(2,b)$ and $\delta(4,b)$ are not defined.}
 	\label{fig:dfa}
 \end{figure}
 
@@ -81,7 +81,7 @@ A DFA is called \emph{complete} iff for all states, every symbol of the alphabet
 
 \subsection{Isomorphy of DFAs}\label{ch:2:sec:isom}
 
-Given two DFAs $A_1 = (Q_1, \Sigma_1, \delta_1, s_1, F_1)$ and $A_2 = (Q_2, \Sigma_2, \delta_2, s_2, F_2)$. We say $A_1$ and $A_2$ are \emph{isomorph}, iff:
+Given two DFAs $A_1 = (Q_1, \Sigma_1, \delta_1, s_1, F_1)$ and $A_2 = (Q_2, \Sigma_2, \delta_2, s_2, F_2)$. We say $A_1$ and $A_2$ are \emph{isomorphic}, iff:
 \begin{itemize}
 	\item $|Q_1| = |Q_2|$, $\Sigma_1 = \Sigma_2$ and
 	\item there exists a bijection $\pi\colon Q_1 \to Q_2$ such that:
@@ -194,7 +194,7 @@ The following theorem states the most important property of \MinAlg.
 \vspace{0.2cm}
 Using this redefinition, we can easier refer to the state pairs marked in a certain iteration. We will use both variants of \CompDist\ in exchange.
 \begin{definition}\label{ch:2:def:D(A)}
-	We denote the number of iterations done by \CompDist\ on an DFA $A$ as $\mmD(A)$.
+	We denote the number of iterations done by \CompDist\ on a DFA $A$ as $\mmD(A)$.
 \end{definition}
 \noindent This number will prove to be a major characteristic of difficulty for a minimization task.
 
@@ -361,13 +361,13 @@ A graph $G$ is \emph{planar} if it can be represented by a drawing in the plane 
 
 \paragraph*{Maximum degree of any state in task DFA.}
 
-The \emph{degree} $deg(q)$ of a state $q \in Q$ in a DFA $A$ is defined as $deg(q) = d^-(q) + d^+(q)$, so the total number of transitions in which $q$ participates. By capping the maximum degree for all states, the graphical representation of the DFA would be more clear. In this work the inclusion of a maximum degree parameter is omitted.
+The \emph{degree} $deg(q)$ of a state $q \in Q$ in a DFA $A$ is defined as $deg(q) = d^-(q) + d^+(q)$, so the total number of transitions in which $q$ participates. By capping the maximum degree for all states, the graphical representation of the DFA would be more clear. Here the inclusion of a maximum degree parameter is omitted.
 
 %Note that $deg(q) \geq |\Sigma|$ for any complete DFA, since states of complete DFAs have to use all alphabet symbols on outgoing transitions.
 
 \section{Approach and General Algorithm}
 
-In this work we will first build the solution DFA (step 1), and - based on that - the task DFA by creating equivalent states and adding unreachable states (step 2). Both steps together will fulfill all criteria chosen above and are covered each in depth in chapter~\ref{ch:3} respectively chapter~\ref{ch:4}.
+We will first build the solution DFA (step 1), and - based on that - the task DFA by creating equivalent states and adding unreachable states (step 2). Both steps together will fulfill all criteria chosen above and are covered each in depth in chapter~\ref{ch:3} respectively chapter~\ref{ch:4}.
 
 At the beginning of chapter~\ref{ch:3} and~\ref{ch:4}, we will provide formal problem definitions for both steps, that specify precisely all requirements. Here we shall content ourselves with the definition of the main algorithm:
 \vspace{0.2cm}

@@ -102,15 +102,15 @@
 	{\footnotetext{\url{https://www.rindlerwahn.de/zeitdiebe-besiegen-und-mehr-lebenszeit-gewinnen}}}
 	
 	\end{frame}
-
-	\begin{frame}
-	\frametitle{Outline}
-	\tableofcontents % [pausesections]
-	\end{frame}
 	
 	% Thesis Content
 	
 	\section{Problem definition and approach}
+	
+	\begin{frame}
+		\frametitle{Outline}
+		\tableofcontents[currentsection] % [pausesections]
+	\end{frame}
 	
 	\begin{frame}
 		\frametitle{Problem definition}
@@ -145,7 +145,6 @@
 		\begin{displaymath}
 		q_1 \sim_A q_2\ \Leftrightarrow_{def}\ \forall z \in \Sigma^* \colon\ (\delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)
 		\end{displaymath}
-		
 		\begin{example}
 			\centering
 			\begin{tikzpicture}[initial text={}]
@@ -307,7 +306,7 @@
 
 	\begin{frame}
 		\frametitle{Problem Definition and Approach}
-		Problem: How to generate a \emph{DFA Minimization Problem} $(A_{sol}, A_{task})$?
+		Problem: How to generate a \emph{DFA Minimization Problem} $A_{task}$?
 		
 		\vspace{0.2cm}
 		Idea: First generate $A_{sol}$, then add equivalent, then unreachable states.
@@ -338,7 +337,7 @@
 			\end{minipage}
 		};
 	
-		\node[draw,style={rounded corners}] (o) at (0,-4) {$A_{sol}, A_{task}$};
+		\node[draw,style={rounded corners}] (o) at (0,-4) {$A_{task}$};
 		
 		\path[->]
 		(p) edge (1)
@@ -347,14 +346,14 @@
 		\end{tikzpicture}
 		
 	\end{frame}
-
-	\begin{frame}
-	\frametitle{Outline}
-	\tableofcontents[currentsection] % [pausesections]
-	\end{frame}
 	
 	
 	\section{Generating Minimal DFAs}
+	
+	\begin{frame}
+		\frametitle{Outline}
+		\tableofcontents[currentsection] % [pausesections]
+	\end{frame}
 	
 	\begin{frame}
 		\frametitle{Generating Minimal DFAs}
@@ -488,12 +487,12 @@
 	
 	\end{frame}
 
-	\begin{frame}
-	\frametitle{Outline}
-	\tableofcontents[currentsection] % [pausesections]
-	\end{frame}
-
 	\section{Live Demonstration}
+	
+	\begin{frame}
+		\frametitle{Outline}
+		\tableofcontents[currentsection] % [pausesections]
+	\end{frame}
 	
 	\begin{frame}
 		\frametitle{Live Demonstration}
@@ -514,6 +513,11 @@
 	\end{frame}
 	
 	\section{Conclusion}
+	
+	\begin{frame}
+		\frametitle{Outline}
+		\tableofcontents[currentsection] % [pausesections]
+	\end{frame}
 
 	\begin{frame}
 		\frametitle{Conclusion}
@@ -532,7 +536,7 @@
 			
 			$\Rightarrow$ capping the max.\ degree?
 			
-			\item investigate planarity and drawing algorithms deeper
+			\item investigate planarity and drawing algorithms
 			\item complexity analysis
 		\end{itemize}
 	

@@ -3,7 +3,7 @@
 Dependencies:
 
 * python >=3.4
-* PGF/TikZ 2.0 or later (e.g. https://www.tug.org/texlive/)
+* pdflatex, as provided by PGF/TikZ 2.0 or later (e.g. https://www.tug.org/texlive/)
 * Graphviz (https://graphviz.org/download/)
 Note for the "Stable 2.38 Windows install packages": The installer does not automatically add "C:\Program Files (x86)\Graphviz2.38\bin" (or similar) to the PATH environment variable, this must thus be done manually.
 

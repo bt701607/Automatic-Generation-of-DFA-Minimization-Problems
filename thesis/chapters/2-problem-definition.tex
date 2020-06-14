@@ -299,7 +299,15 @@ As a consequence (following alg.~\ref{ch:2:minalg}) firstly, unreachable states 
 
 Notice that step 2 and in particular the computation of $\sim_A$ can be seen as central: Step 1 is relatively easy, unreachable states can normally be detected visually without running a search algorithm. Moreover algorithms like breadth-first search are often introduced earlier in computer science education. In step 2 computing $\sim_A$ is conceptually harder to grasp than collapsing $A_{re}$ towards the solution DFA.
 
-We will call a pair $A_{sol}, A_{task}$ with $A_{sol} = \MinAlg(A_{task})$ a \emph{DFA minimization problem}. Our goal in this thesis is to automatically generate such problems. Before starting to think about concrete generation algorithms, we will devise some parameters and requirements.
+Let us now formally define DFA minimization problems.
+\begin{definition}[DFAMinimization] $ $ \\
+	$ $ \vspace{-0.4cm} \\
+	\noindent $\underline{\emph{Given:}}$ \emph{A DFA $A_{task}$.}
+	
+	\vspace{0.2cm}
+	\noindent $\underline{\emph{Task:}}$ \emph{Compute $A_{sol} = \MinAlg(A_{task})$.}
+\end{definition}
+\noindent Our goal in this thesis is to automatically generate instances of this problem. Before starting to think about concrete generation algorithms, we will devise some parameters and requirements to influence the properties of the generated problem.
 
 \section{Requirements and Parameters for a Generation Algorithm}\label{ch:2:requirements-analysis}
 
@@ -341,7 +349,7 @@ The more symbols the alphabet of $A_{task}, A_{re}$ and $A_{sol}$ has (note that
 
 Most DFAs in teaching have about 1 to 3 final states (see e.g.~\cite[pp. 48-78]{HMU01} or~\cite[pp. 28-48]{Sch01}), so being able to set a number of final states allows concentrating on or deviating from familiar DFAs.
 
-In this work $\nF$ shall determine the number of final states in $A_{sol}$. As a consequence, $A_{task}$ might have minimum $\nF$ and maximum $\nF + \nEQ + \nUN$ final states. The latter is the case, if all equivalent states are created from final states and if every unreachable state is created as final state.
+In this work $\nF$ shall determine the number of final states in $A_{sol}$. Consequently, $A_{task}$ may have minimum $\nF$ and maximum $\nF + \nEQ + \nUN$ final states. The latter is the case, if all equivalent states are created from final states and if every unreachable state is created as final state.
 
 \paragraph*{Uniqueness of solution DFA language.}
 
@@ -357,7 +365,7 @@ Nonetheless we shall introduce a boolean parameter $c$, that determines if there
 
 \paragraph*{Planar drawing of task DFA \texorpdfstring{($p_{sol}, p_{task}$)}{}.}
 
-A graph $G$ is \emph{planar} if it can be represented by a drawing in the plane such that its edges do not cross. Such a drawing is then called \emph{planar drawing} of $G$. A visual aid for students would be given, if the task DFA were planar and presented as a planar drawing. In this work libraries and parameters $p_{sol}, p_{task} \in \{0,1\}$ (toggling planarity of $A_{sol}, A_{task}$) will be used to allow the option of planarity, but neither ensuring planarity nor planar drawing will be investigated further theoretically.
+A graph $G$ is \emph{planar} if it can be represented by a drawing in the plane such that its edges do not cross. Such a drawing is then called \emph{planar drawing} of $G$. A visual aid for students would be given, if the task DFA were planar and presented as a planar drawing. In this work and its associated implementation libraries and parameters $p_{sol}, p_{task} \in \{0,1\}$ (toggling planarity of $A_{sol}, A_{task}$) will be used to allow the option of planarity, but neither ensuring planarity nor planar drawing will be investigated further theoretically.
 
 \paragraph*{Maximum degree of any state in task DFA.}
 
@@ -375,7 +383,7 @@ At the beginning of chapter~\ref{ch:3} and~\ref{ch:4}, we will provide formal pr
 	\Function{GenDFAMinProblem}{$\nSO, \kAL, \nF, d, p_{sol}, p_{task}, \nEQ,\nUN, c$}
 	\State $A_{sol} \gets \textsc{GenNewMinDFA}(\nSO, \kAL, \nF, d, p_{sol})$
 	\State $A_{task} \gets \textsc{ExtendMinDFA}(A_{sol}, p_{task}, \nEQ, \nUN, c)$
-	\State \Return $A_{sol}, A_{task}$
+	\State \Return $A_{task}$
 	\EndFunction
 \end{algorithmic}
 \vspace{0.2cm}

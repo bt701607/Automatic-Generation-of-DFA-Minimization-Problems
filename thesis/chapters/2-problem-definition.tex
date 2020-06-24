@@ -121,7 +121,7 @@ There are three major algorithms for DFA minimization found by Moore, Brzozowski
 			\State $O \gets \{s\}$				\Comment{observed states}
 			\State $D \gets \{\}$				\Comment{discovered states}
 			\While {$|O| > 0$}
-				\State $N \gets \{\ p\ | \ \exists q \in O\ \sigma \in \Sigma \colon\ \delta(q, \sigma) = p\ \land\ p \notin O \cup D\ \}$
+				\State $N \gets \{\ p\ | \ \exists q \in O\colon\ \sigma \in \Sigma \colon\ \delta(q, \sigma) = p\ \land\ p \notin O \cup D\ \}$
 				\State $U \gets U \setminus N$
 				\State $D \gets D \cup O$
 				\State $O \gets N$
@@ -369,13 +369,13 @@ A graph $G$ is \emph{planar} if it can be represented by a drawing in the plane 
 
 \paragraph*{Maximum degree of any state in task DFA.}
 
-The \emph{degree} $deg(q)$ of a state $q \in Q$ in a DFA $A$ is defined as $deg(q) = d^-(q) + d^+(q)$, so the total number of transitions in which $q$ participates. By capping the maximum degree for all states, the graphical representation of the DFA would be more clear. Here the inclusion of a maximum degree parameter is omitted.
+The \emph{degree} $deg(q)$ of a state $q \in Q$ in a DFA $A$ is defined as $deg(q) = |d^-(q)| + |d^+(q)|$, so the total number of transitions in which $q$ participates. By capping the maximum degree for all states, the graphical representation of the DFA would be more clear. Here the inclusion of a maximum degree parameter is omitted.
 
 %Note that $deg(q) \geq |\Sigma|$ for any complete DFA, since states of complete DFAs have to use all alphabet symbols on outgoing transitions.
 
 \section{Approach and General Algorithm}
 
-We will first build the solution DFA (step 1), and - based on that - the task DFA by creating equivalent states and adding unreachable states (step 2). Both steps together will fulfill all criteria chosen above and are covered each in depth in chapter~\ref{ch:3} respectively chapter~\ref{ch:4}.
+We will first build the solution DFA (step 1), and --- based on that --- the task DFA by creating equivalent states and adding unreachable states (step 2). Both steps together will fulfill all criteria chosen above and are covered each in depth in chapter~\ref{ch:3} respectively chapter~\ref{ch:4}.
 
 At the beginning of chapter~\ref{ch:3} and~\ref{ch:4}, we will provide formal problem definitions for both steps, that specify precisely all requirements. Here we shall content ourselves with the definition of the main algorithm:
 \vspace{0.2cm}

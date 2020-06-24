@@ -49,7 +49,7 @@ We will be guided by the separation of creating equivalent and unreachable state
 	\end{algorithmic}
 \end{spacing}
 \vspace{0.2cm}
-\noindent We will show for the action of adding equivalent states, that this does not influence a DFAs $\mmD$-value - thus we do not have to care whether we are possibly changing it.
+\noindent We will show for the action of adding equivalent states, that this does not influence a DFAs $\mmD$-value --- thus we do not have to care whether we are possibly changing it.
 
 \section{Creating Equivalent State Pairs}
 
@@ -174,7 +174,9 @@ In this section we want to prove that our method of creating state pairs does no
 
 To do this proof, we will first introduce two auxiliary definitions and then prove two minor lemmas. As a side effect, Lemma~\ref{ch:4:semantics-of-m(n)} will describe a central property of \CompDist\ and Lemma~\ref{ch:4:semantics-of-D(A)} will show an extended characterization of $\mmD(A)$ compared to its definition (def.~\ref{ch:2:def:D(A)}).
 
-A word $w$ shall be called \emph{finishing word of $q$}, iff $\delta^*(q, w) \in F$. With $f(q) = \{\ w\ |\ \delta^*(q, w) \in F\ \}$ we denote the set of all finishing words to a state.
+A word $w$ shall be called \emph{finishing word of $q$}, iff $\delta^*(q, w) \in F$.
+
+With $f(q) = \{\ w\ |\ \delta^*(q, w) \in F\ \}$ we denote the set of all finishing words to a state.
 \begin{definition} \label{ch:4:def-dist-word}
 	We will call a word $w$ \emph{distinguishing word of $p,q$}, iff $d_A(w, p, q)$ is true where
 	\begin{align*}
@@ -185,7 +187,7 @@ A word $w$ shall be called \emph{finishing word of $q$}, iff $\delta^*(q, w) \in
 \noindent This definition and its terminology are in close relation to definition~\ref{ch:2:def:eq-dist-pairs}. The following lemma and its proof are in parts inspired by Martens and Schwentick \cite[ch.\ 4 p.\ 18]{MS18}.
 
 \begin{lemma}\label{ch:4:semantics-of-m(n)}
-    In the context of \CompDist\ the following is true: If and only if $(p,q)\in m(n)$, the shortest distinguishing word of $p,q$ has length $n$. Formally:
+    In the context of \CompDist\ the following is true: Iff $(p,q)\in m(n)$, the shortest distinguishing word of $p,q$ has length $n$. Formally:
     \begin{align*}
         (p,q) \in m(n) \Longleftrightarrow\ &\exists w\in\Sigma^*\colon (|w| = n\ \land d_A(w, p, q))\\
         \land\ &\nexists v\in\Sigma^*\colon (|v| < n\ \land d_A(v, p, q))

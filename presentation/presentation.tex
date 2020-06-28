@@ -9,7 +9,7 @@
 
 \usepackage{xcolor}
 \usepackage{tikz}
-\usetikzlibrary{arrows}
+\usetikzlibrary{arrows, matrix, shapes.geometric}
 \usetikzlibrary{calc,fit,positioning,automata}
 
 \usepackage{algorithm}
@@ -81,26 +81,27 @@
 		
 		Minimization of DFAs is a typical task for students:
 		\begin{itemize}
-			\item sufficiently easy to understand
-			\item practical applications
-			\item understanding can be tested easily
+			\item<2-> sufficiently easy to understand
+			\item<2-> practical applications
+			\item<2-> understanding can be tested easily
 		\end{itemize}
 		\vspace{0.3cm}
-		Consequently, studying automatized generation of DFA minimization problems is interesting because it could\ldots
+		\uncover<3->{Consequently, studying automatized generation of DFA minimization problems is interesting because it could\ldots}
 		\begin{itemize}
-			\item \ldots free up precious time for exercise constructors
+			\item<4-> \ldots free up precious time for exercise constructors
 			
 			(if a generator is implemented)
-			\item \ldots yield a deeper insight
+			\item<4-> \ldots yield a deeper insight
 			
 			in the nature of such problems
 		\end{itemize}
-	{\vspace{-2cm}\hfill\includegraphics[width=0.2\linewidth]{zeitdiebe-besiegen-lebenszeit-gewinnen.jpg}\hspace{0.1cm}\tiny\footnotemark}
-	
-	\renewcommand{\footnotesize}{\tiny}
-	
-	{\footnotetext{\url{https://www.rindlerwahn.de/zeitdiebe-besiegen-und-mehr-lebenszeit-gewinnen}}}
-	
+	\uncover<4->{
+		{\vspace{-2cm}\hfill\includegraphics[width=0.2\linewidth]{zeitdiebe-besiegen-lebenszeit-gewinnen.jpg}\hspace{0.1cm}\tiny\footnotemark}
+		
+		\renewcommand{\footnotesize}{\tiny}
+		
+		{\footnotetext{\url{https://www.rindlerwahn.de/zeitdiebe-besiegen-und-mehr-lebenszeit-gewinnen}}}
+	}
 	\end{frame}
 	
 	% Thesis Content
@@ -144,7 +145,7 @@
 		A state pair $q_1, q_2 \in Q$ is called \emph{equivalent}, iff $\sim_A(q_1, q_2)$ is true, where
 		\begin{displaymath}
 		q_1 \sim_A q_2\ \Leftrightarrow_{def}\ \forall z \in \Sigma^* \colon\ (\delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)
-		\end{displaymath}
+		\end{displaymath}\pause
 		\begin{example}
 			\centering
 			\begin{tikzpicture}[initial text={}]
@@ -171,7 +172,7 @@
 			(4) edge node [above] {$a,b$} (3)
 			;
 			\end{tikzpicture}
-		\end{example}
+		\end{example}\pause
 	
 		\begin{theorem}
 			A DFA is minimal, iff it has neither unreachable nor equivalent states.
@@ -411,14 +412,14 @@
 		We will restrict ourselves to the following DFAs:
 		\[
 			Q = \mathbb{N}_0^ {\nSO-1}, \Sigma = \mathbb{N}_0^{\kAL-1}, s = 0
-		\]
+		\]\pause
 		
 		\begin{enumerate}
 			\item[(a)] Generation by Randomization:
 			\begin{align*}
 			F &= random\_subset(Q)\\
 			\delta(q, \sigma) &= choose\_one(Q) \qquad\qquad \forall q\in Q, \sigma\in\Sigma
-			\end{align*}
+			\end{align*}\pause
 			
 			\item[(b)] Generation by Enumeration:\\$ $\\
 			An \emph{enumeration state} $s_{\nSO, \kAL, \nF} = (F_F,F_\delta)$ consists of two arrays of length $\nSO, \nSO*\kAL$, respectively.
@@ -487,7 +488,7 @@
 	
 	\end{frame}
 
-	\section{Live Demonstration}
+	\section{Live Demonstration and Conclusion}
 	
 	\begin{frame}
 		\frametitle{Outline}
@@ -497,27 +498,53 @@
 	\begin{frame}
 		\frametitle{Live Demonstration}
 		\framesubtitle{Program Architecture}
-		\centering
-	    \includegraphics[width=0.8\linewidth]{prog_arch.jpg}
-		\gregor{Replace}
-	
+		\begin{tikzpicture}[initial text={}, every node/.style={transform shape}]
+		
+		\node[draw] (main) at (0,0) {main.py};
+		
+		\node[draw,style={rounded corners}] (log) at (3,0) {log.py};
+		
+		\node[draw] (build) at (-3,-1.5) {build.py};
+		\node[draw] (extend) at (0,-1.5) {extend.py};
+		\node[draw] (output) at (3,-1.5) {output.py};
+		
+		\node[draw] (dbdfa) at (-4,-3) {db\_dfa.py};
+		\node[draw] (dbenum) at (-2,-3) {db\_enum.py};
+		
+		\node[draw] (iso) at (-3, -4.5) {isomorphy.py};
+		\node[draw] (min) at (0, -4.5) {minimization.py};
+		\node[draw] (plan) at (3, -4.5) {planarity.py};
+		
+		\node[draw, fit=(iso)(plan)] (iso) at (0, -5.3) {dfa.py};
+		
+		\path[->]
+			(main) edge (log)
+			
+			(main) edge (build)
+			(main) edge (extend)
+			(main) edge (output)
+			
+			(build) edge (dbdfa)
+			(build) edge (dbenum)
+		;
+		\end{tikzpicture}
 	\end{frame}
 
-	\begin{frame}
-		\frametitle{Live Demonstration}
-		\framesubtitle{Command-Line Options}
-		
-		\includegraphics[width=\linewidth]{options.jpg}
-		\gregor{Replace}
+%	\begin{frame}
+%		\frametitle{Live Demonstration}
+%		\framesubtitle{Command-Line Options}
+%		
+%		\includegraphics[width=\linewidth]{options.jpg}
+%		\gregor{Replace}
+%	
+%	\end{frame}
 	
-	\end{frame}
+%	\section{Conclusion}
 	
-	\section{Conclusion}
-	
-	\begin{frame}
-		\frametitle{Outline}
-		\tableofcontents[currentsection] % [pausesections]
-	\end{frame}
+%	\begin{frame}
+%		\frametitle{Outline}
+%		\tableofcontents[currentsection] % [pausesections]
+%	\end{frame}
 
 	\begin{frame}
 		\frametitle{Conclusion}
@@ -527,12 +554,12 @@
 			\item introduced the problem of DFA Minimization Problem Generation
 			\item given an overview over a possible solution
 			\item shown that the theoretic results might be useful in praxis
-		\end{itemize}
+		\end{itemize}\pause
 		Lookout:
 		\begin{itemize}
 			\item more parameters, ranged parameters
 			
-			The \emph{degree} of a state $q$ is defined as $deg(q) = d^-(q) + d^+(q)$.
+			The \emph{degree} of a state $q$ is defined as $deg(q) = |in(q)| + |out(q)|$.
 			
 			$\Rightarrow$ capping the max.\ degree?
 			
@@ -542,13 +569,13 @@
 	
 	\end{frame}
 
-	\begin{frame}
-		\frametitle{References}
-		
-		\tiny
-		\bibliography{presentation}
-		
-	\end{frame}
+%	\begin{frame}
+%		\frametitle{References}
+%		
+%		\tiny
+%		\bibliography{presentation}
+%		
+%	\end{frame}
 
 \end{document}
 

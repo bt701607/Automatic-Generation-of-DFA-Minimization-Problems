@@ -6,7 +6,7 @@
 	\[
 	\forall i \in [1,\nEQ] \colon\ \exists e \in Q_{sol}\colon\ r_i \sim_A e
 	\]
-	We will first choose an $e\in Q_{sol}$ for each state $r_i$ we create, then we add its transitions.
+	We will first choose an $e\in Q_{sol}$ for each state $r_i$ we create, then we add its transitions.\pause
 	\begin{example}\centering
 	\begin{tikzpicture}[initial text={}]
 	\tikzstyle{every state}=[minimum size=5mm, inner sep=0pt]
@@ -16,15 +16,14 @@
 	\node [fit=(0),draw,rounded corners, dashed] {};
 	
 	\node[state]  (1) at (2, 0)   {$1$};
-	\uncover<1>{\node[state] (2) at (2, -1.5) {$2$};}
-	\uncover<2>{\node[state] (2) at (2, -1.5) {$e$};}
+	\uncover<2>{\node[state] (2) at (2, -1.5) {$2$};}
+	\uncover<3-4>{\node[state,fill=SeaGreen] (2) at (2, -1.5) {$e$};}
 	\node         (2p) at (2, -2.4) {};
-	\uncover<2>{\node[state] (ri) at (2, -3) {$r_i$};}
+	\uncover<4>{\node[state,fill=SeaGreen] (ri) at (2, -3) {$r_i$};}
 	
-	\uncover<1>{
-		\node[fit=(1)(2)(2p),draw,rounded corners,dashed] {};}
-	\uncover<2>{
-		\node[fit=(1)(2)(2p)(ri),draw,rounded corners,dashed] {};}
+	
+	\uncover<2-3>{\node[fit=(1)(2)(2p),draw,rounded corners,dashed] {};}
+	\uncover<4>{\node[fit=(1)(2)(2p)(ri),draw,rounded corners,dashed] {};}
 	
 	\node[state,accepting]  (3) at (4, 0)   {$3$};
 	\node[state,accepting]  (4) at (4, -1.5)   {$4$};
@@ -32,7 +31,8 @@
 	\node [fit=(3)(4),draw,rounded corners, dashed] {};
 	
 	\path[->]
-	(0) edge node [above] {$a,b$} (1)
+	([yshift=0.05cm]0.east) edge node [above] {$a$} ([yshift=0.05cm]1.west)
+	([yshift=-0.05cm]0.east) edge node [below] {$b$} ([yshift=-0.05cm]1.west)
 	
 	(1) edge node [above] {$a$} (3)
 	(1) edge node [left] {$b$} (2)
@@ -55,7 +55,7 @@
 	\vspace{0.3cm}
 	\begin{itemize}
 		\item[R1:] For each symbol $\sigma \in \Sigma$ choose exactly one state $q\in[\delta(e, \sigma)]_{\sim_A}$ and set $\delta(r_i, \sigma) = q$.
-	\end{itemize}
+	\end{itemize}\pause
 	\vspace{0.3cm}
 
 	\begin{columns}[T]
@@ -69,8 +69,8 @@
 	\node [fit=(0),draw,rounded corners, dashed] {};
 	
 	\node[state]  (1) at (2, 0)   {$1$};
-	\node[state] (2) at (2, -1.5) {$e$};
 	\node         (2p) at (2, -2.4) {};
+	\node[state] (2) at (2, -1.5) {$e$};
 	\node[state] (ri) at (2, -3) {$r_i$};
 	
 	\node[fit=(1)(2)(2p)(ri),draw,rounded corners,dashed] {};
@@ -81,31 +81,57 @@
 	\node [fit=(3)(4),draw,rounded corners, dashed] {};
 	
 	\path[->]
-	(0) edge node [above] {$a,b$} (1)
+	([yshift=0.05cm]0.east) edge node [above] {$a$} ([yshift=0.05cm]1.west)
+	([yshift=-0.05cm]0.east) edge node [below] {$b$} ([yshift=-0.05cm]1.west)
 	
 	(1) edge node [above] {$a$} (3)
 	(1) edge node [left] {$b$} (2)
-	
-	(2) edge node [above] {$a$} (4)
-	(2) edge [loop below] node [below] {$b$} (2)
 	;
 	
 	\uncover<2>{
 		\path[->]
+		(2) edge node [above] {$a$} (4)
+		(2) edge [loop below] node [below] {$b$} (2)
+		;
+	}
+	
+	\uncover<3>{
+		\path[->]
+		(2) edge[color=ForestGreen] node [above] {$a$} (4)
+		(2) edge[color=ForestGreen] [loop below] node [below] {$b$} (2)
+		;
+	}
+	
+	\uncover<4>{
+		\path[->]
+		(2) edge node [above] {$a$} (4)
+		(2) edge [loop below] node [below] {$b$} (2)
+		
+		(ri) edge[bend left=1.5cm, color=ForestGreen] node[left] {$b$} (1)
+		(ri) edge[color=ForestGreen] node[below right] {$a$} (4)
+		;
+	}
+
+	\uncover<5>{
+		\path[->]
+		(2) edge node [above] {$a$} (4)
+		(2) edge [loop below] node [below] {$b$} (2)
+		
 		(ri) edge[bend left=1.5cm] node[left] {$b$} (1)
-		(ri) edgenode[below right] {$a$} (4)
+		(ri) edge node[below right] {$a$} (4)
 		;
 	}
 	\end{tikzpicture}
 	\end{example}
 	\end{column}
 	\begin{column}{0.5\linewidth}
-	The rule is always fulfillable:
-	\begin{itemize}
-	\item $A_{sol}$ is complete
-	\item every $r_i$ gets an out. transition for every alphabet symbol
-	\item[$\Rightarrow$] $\delta(e, \sigma)$ is always defined, so $[\delta(e, \sigma)]_{\sim_A}$ is never empty
-	\end{itemize}
+		\pause\pause\pause
+		The rule is always fulfillable:
+		\begin{itemize}
+			\item $A_{sol}$ is complete
+			\item every $r_i$ gets an out. transition for every alphabet symbol
+			\item[$\Rightarrow$] $\delta(e, \sigma)$ is always defined, so $[\delta(e, \sigma)]_{\sim_A}$ is never empty
+		\end{itemize}
 	\end{column}
 	\end{columns}
 
@@ -118,29 +144,81 @@
 	First observation: Since $r_i$ must be reachable, $in(r_i) >= 1$.
 
 	\vspace{0.2cm}
-	Let $q$ be a state s.t.\ $\delta(q,\sigma)=p$ and we want $\delta(q,\sigma)=r_i$.
+	Let $q$ be a state s.t.\ $\delta(q,\sigma)=p$ and we want $\delta(q,\sigma)=r_i$.\pause
 	
 	\vspace{0.2cm}
 	\begin{itemize}
-		\item[] $q$ must remain in its equivalence class
+		\item[] $q$ must remain in its equivalence class\pause
 		
-		\item[$\Rightarrow$] $p$ must be in $[r_i]_{\sim_A} = [e]_{\sim_A}$
+		\item[$\Rightarrow$] $p$ must be in $[r_i]_{\sim_A} = [e]_{\sim_A}$\pause
 		
-		\item[$\Rightarrow$] $q$ has to have a transition to some state in $[r_i]_{\sim_A} = [e]_{\sim_A}$
+		\item[$\Rightarrow$] $q$ has to have a transition to some state in $[r_i]_{\sim_A} = [e]_{\sim_A}$\pause
 	\end{itemize}
 	
 	\vspace{0.2cm}
-	We see that $p$ must have at least $2$ ingoing transitions.
+	We see that $p$ must have at least $2$ ingoing transitions.\pause
 	
 	\vspace{0.2cm}
 	\begin{itemize}
 		\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $in(p) \geq 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
 	\end{itemize}
 
-	\vspace{0.2cm}
-	General requirement regarding the choice of a state $e$ for an $r_i$: 
-	\[
-		duplicatable(q) \Leftrightarrow_{def} (\exists p \in [q]_{\sim_A}\colon in(p) \geq 2)
-	\]
+\end{frame}
+
+\begin{frame}
+\frametitle{Extending Minimal DFAs}
+\framesubtitle{Adding Equivalent States (3) - Ingoing Transitions}
+
+\begin{itemize}
+\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $in(p) \geq 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
+\end{itemize}
+
+	\begin{example}\centering
+	\begin{tikzpicture}[initial text={}]
+	\tikzstyle{every state}=[minimum size=5mm, inner sep=0pt]
+	
+	\node[state, initial]  (0) at (0, 0)   {$0$};
+	
+	\node [fit=(0),draw,rounded corners, dashed] {};
+	
+	\node[state]  (1) at (2, 0)   {$1$};
+	\node         (2p) at (2, -2.4) {};
+	\node[state] (2) at (2, -1.5) {$e$};
+	\node[state] (ri) at (2, -3) {$r_i$};
+	
+	\node[fit=(1)(2)(2p)(ri),draw,rounded corners,dashed] {};
+	
+	\node[state,accepting]  (3) at (4, 0)   {$3$};
+	\node[state,accepting]  (4) at (4, -1.5)   {$4$};
+	
+	\node [fit=(3)(4),draw,rounded corners, dashed] {};
+	
+	\path[->]
+	([yshift=0.05cm]0.east) edge node [above] {$a$} ([yshift=0.05cm]1.west)
+	
+	(1) edge node [above] {$a$} (3)
+	(1) edge node [left] {$b$} (2)
+	
+	(2) edge node [above] {$a$} (4)
+	
+	(ri) edge[bend left=1.5cm] node[left] {$b$} (1)
+	(ri) edge node[below right] {$a$} (4)
+	;
+	
+	\uncover<1>{
+		\path[->]
+		([yshift=-0.05cm]0.east) edge[color=ForestGreen] node [below] {$b$} ([yshift=-0.05cm]1.west)
+		(2) edge [loop below, color=ForestGreen] node [below] {$b$} (2)
+		;
+	}
+	
+	\uncover<2>{
+		\path[->]
+		(0) edge[bend right=1.5cm, color=ForestGreen] node[left] {$b$} (ri)
+		(2) edge[color=ForestGreen] node[left] {$b$} (ri)
+		;
+	}
+	\end{tikzpicture}
+\end{example}
 
 \end{frame}

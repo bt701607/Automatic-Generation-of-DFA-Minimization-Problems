@@ -2,6 +2,9 @@
 
 """Specifies methods to add equivalent and unreachable states to a DFA.
 
+DFANotExtendable
+    Specifies an exception that arises, if a given DFA cannot be extended.
+
 _new_state
     Creates a new state in a given DFA.
 
@@ -23,7 +26,13 @@ from itertools import product
 from planarity import planarity_test
 
 
-__all__ = ['extend_dfa']
+__all__ = ['DFANotExtendable', 'extend_dfa']
+
+
+class DFANotExtendable(Exception):
+    """Is raised, if a DFA cannot be extended."""
+    
+    pass
 
 
 def _new_state(dfa, final):
@@ -100,32 +109,38 @@ def _add_equiv_states(dfa, nEquiv=1):
     - assumes that dfa is complete
     - assumes dfa.eqClasses to be a list of equivalence classes of dfa,
       where each class is a list of states
+    
+    Raises DFANotExtendable, if it is not possible to add nEquiv equivalent 
+    states cannot be added.
     """
+    
+    def _in(q):
+        
+        cnt = len(tuple( t for t in dfa.transitions if t[1] == q ))
+        
+        return cnt + (1 if q == dfa.start else 0)
+
+    
+    if dfa.k == 0 or (dfa.k == 1 and (_in(dfa.start) - nEquiv) >= 0):
+        raise DFANotExtendable()
+
 
     for i in range(nEquiv):
 
         # find a fitting state1 that shall be duplicated, create a new state
         # state2 and add it to state1's equivalence class
 
-        isDuplicatable     = lambda q: len(tuple( t for t in dfa.transitions if t[1] == q )) >= 2
-        duplicatableStates = tuple(filter(isDuplicatable, dfa.states))
+        duplicatableStates = tuple(filter(lambda q: _in(q) >= 2, dfa.states))
 
         state1 = random.choice(duplicatableStates) # here we could enumerate
         state2 = _new_state(dfa, state1 in dfa.final)
 
-        for equivClass in dfa.eqClasses:
-            if state1 in equivClass:
-                equivClass.append(state2)
+        state1eqClass = None
 
-        # take half the ingoing transitions from state1 and give them state2
-
-        inTransitions = tuple(t for t in dfa.transitions if t[1] == state1)
-
-        for i in range(len(inTransitions) // 2): # here we could enumerate
-
-            (q1,c),q2 = t = inTransitions[i]
-            dfa.transitions.append(((q1,c),state2))
-            dfa.transitions.remove(t)
+        for eqClass in dfa.eqClasses:
+            if state1 in eqClass:
+                eqClass.append(state2)
+                state1eqClass = eqClass
 
         # for every outgoing transition ((state1,c),q2) of  state1
         # add an    outgoing transition ((state2,c),p)  for state2
@@ -136,16 +151,29 @@ def _add_equiv_states(dfa, nEquiv=1):
 
                 # compute equiv.class to delta(state1, c)
 
-                q2EquivClass = None
+                q2EqClass = None
 
-                for equivClass in dfa.eqClasses:
-                    if q2 in equivClass:
-                        q2EquivClass = equivClass
+                for eqClass in dfa.eqClasses:
+                    if q2 in eqClass:
+                        q2EqClass = eqClass
                         break
 
-                # choose p of [delta(state1,c)] as end point for delta(state2,c)
+                # choose a p in [delta(state1,c)] as end point for delta(state2,c)
 
-                dfa.transitions.append(((state2,c), random.choice(q2EquivClass))) # here we could enumerate
+                dfa.transitions.append(((state2,c), random.choice(q2EqClass))) # here we could enumerate
+
+        # take half the ingoing transitions from state1 and give them state2
+
+        possible = tuple(t for t in dfa.transitions 
+                                if t[1] in state1eqClass and _in(t[1]) >= 2)
+    
+        nonEmptySubset = lambda s: random.sample(s, random.randint(1, len(s))) # here we could enumerate
+
+        for t in nonEmptySubset(possible):
+
+            (q1,c),q2 = t
+            dfa.transitions.append(((q1,c),state2))
+            dfa.transitions.remove(t)
                 
     # update informations
 
@@ -162,6 +190,8 @@ def extend_dfa(dfa, nEquiv, nUnr, planar=False, complete=True):
     - adds nUnr unreachable states to reachDFA, yielding taskDFA
     
     Returns (reachDFA, taskDFA).
+    Raises DFANotExtendable, if dfa cannot be extended.
+    Raises PygraphIndexErrorBug, if the specified bug occurs.
     
     - tries to find a planar taskDFA dfa if planar=True
     - unreachable states have outgoing transitions for all symbols if

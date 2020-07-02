@@ -11,7 +11,7 @@ import log
 
 from dfa    import DFA
 from build  import rand_min_dfa, next_min_dfa
-from extend import extend_dfa
+from extend import DFANotExtendable, extend_dfa
 from output import save_exercise
 
 
@@ -97,7 +97,7 @@ def main():
         log.invalid_p_options()
         return
     
-    if args.k < 2 and args.e > 0:
+    if args.k == 0 and args.e > 0:
         log.not_extendable()
         return
         
@@ -140,13 +140,19 @@ def main():
         
             reachDFA, taskDFA = extend_dfa(solDFA, args.e, args.u, args.pt, args.c)
             
+        except DFANotExtendable:
+        
+            log.failed()
+            log.dfa_not_extendable(args)
+            return
+            
         except PygraphIndexErrorBug:
         
             log.failed()
             log.pygraph_bug('extending')
             
             if i == 9:
-                log.pygraph_bug_abort()
+                log.pygraph_bug_abort(args)
                 return
                 
         else:

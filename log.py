@@ -19,7 +19,7 @@ def invalid_p_options():
 
 def not_extendable():
 
-    print('''DFAs with less than two alphabet symbols cannot be 
+    print('''DFAs without any alphabet symbols cannot be 
             extended with equivalent state pairs.\nAbort.''', flush=True)
         
 def neg_value():
@@ -70,6 +70,18 @@ def extending_solution(args):
         end='', flush=True
     )
     
+def dfa_not_extendable(args):
+
+    print('Error: DFA could not be extended - no state with enough ingoing elements.')
+
+    print(
+        'Abort. Generated Asol remains unused for k={}, n={}, f={}, D in [{},{}].'.format(
+            args.k, args.n, args.f,
+            args.dmin, args.dmax,
+        ), 
+        flush=True
+    )
+    
 def pygraph_bug(where):
 
     print('Error: IndexError bug in lib pygraph. ', end='', flush=True)
@@ -82,10 +94,15 @@ def pygraph_bug(where):
     
         print('Retrying to extend...', end='', flush=True)
     
-def pygraph_bug_abort():
+def pygraph_bug_abort(args):
 
-    print('Abort. Generated solution DFA will remain unused.', 
-          end='', flush=True)
+    print(
+        'Abort. Generated Asol remains unused for k={}, n={}, f={}, D in [{},{}].'.format(
+            args.k, args.n, args.f,
+            args.dmin, args.dmax,
+        ), 
+        end='', flush=True
+    )
     
 def saving():
 

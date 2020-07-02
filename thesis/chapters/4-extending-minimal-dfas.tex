@@ -94,35 +94,35 @@ First of all, we know, that $r$ must be reachable, since we decided that all unr
 
 Thus a fitting state $q$ has to have a transition to some state in $[r]_{\sim_A} = [e]_{\sim_A}$ already. So, given a state $q$ with $\delta(q, \sigma) = p$ and $p \in [e]_{\sim_A}$, we can set $\delta(q, \sigma) = r$ and thereby ``steal'' $p$ its ingoing transition.
 
-We see here, that $p$ must have at least one ``free'' transition, else it would become unreachable. A state has a free transition, if it has at least two ingoing transitions or if it is start state and has at least one ingoing transition. With $in_e(q)$ we denote the \emph{ingoing elements of $q$}:
+We see here, that $p$ must have at least one ``free'' transition, else it would become unreachable. A state has a free transition, if it has at least two ingoing transitions or if it is start state and has at least one ingoing transition. With $in(q)$ we denote the \emph{ingoing elements of $q$}:
 \[
-	in_e(q) = |d^-(q)| + \begin{cases}
+	in(q) = |d^-(q)| + \begin{cases}
 							1 & \text{if } s = q1\\
 							0 & \text{else}
 						 \end{cases}
 \]
 Now we can define our rule for adding ingoing transitions:
 \begin{description}
-	\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $in_e(p) \ge 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r)$.
+	\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $in(p) \ge 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r)$.
 \end{description}
 
 \subsection{Requirements for choosing origin states}
 
 From rule \textbf{R2} we know that the equivalence class of any origin state $e$ has to contain at least one state with at least two ingoing elements. We establish the following notion to pin down the requirement which all origin states have to fulfill when they are chosen:
 \[
-duplicatable(q) \Leftrightarrow_{def} (\exists p \in [q]_{\sim_A}\colon in_e(p)\ge 2)
+duplicatable(q) \Leftrightarrow_{def} (\exists p \in [q]_{\sim_A}\colon in(p)\ge 2)
 \]
 \begin{observation}
 	The number of duplicatable states in any accessible DFA $A$ is
 	\begin{description}
 		\item$= 0$, if $|\Sigma| \leq 1$ and $|d^-(s)| = 0$: The start state has no free ingoing transition and neither have all other states.
 		
-		\item$= 1$, if $|\Sigma| \leq 1$ and $|d^-(s)| > 0$: The start state has guaranteed a free ingoing transition, but other states still do not have enough.
+		\item$= 1$, if $|\Sigma| \leq 1$ and $|d^-(s)| > 0$: The start state has $|d^-(s)| - 1$ free ingoing transitions, but other states still do not have enough.
 		
 		\item$> 1$, if $|\Sigma| > 1$, due to the pigeonhole principle: An accessible complete DFA has $|Q||\Sigma|$ transitions which have to be spread across $|Q|$ states.
 	\end{description}
 \end{observation}
-\noindent This observation guarantees, that there exists a duplicatable state, if $k > 1$ or $k = 1$ and $|d^-(s)| > 0$.
+\noindent This observation guarantees, that there exists a duplicatable state, if $k > 1$ or $k = 1$ and $|d^-(s)| > 0$. Note that we do not guarantee, that $\nEQ$ equivalent states can be added.
 \begin{lemma}
 	Adding the outgoing transitions of $r$ does not change whether its associated state $e$ is duplicatable.
 \end{lemma}
@@ -150,7 +150,7 @@ We integrate our strategy of creating equivalent state pairs in the following al
 \begin{spacing}{1}
 \begin{algorithmic}[1]
 	\Function{CreateEquivPairs}{$A, \nEQ$}
-	\If {$k \leq 1$}
+	\If {$k = 0$ \textbf{or} ($k = 1$ \textbf{and} $|d^-(s)| = 0$)}
 		\State \Return $\bot$
 	\EndIf
     \State $Q \gets Q_{sol}$
@@ -167,11 +167,12 @@ We integrate our strategy of creating equivalent state pairs in the following al
     	\vspace{0.2cm}
     
 		\For {$q$ \textbf{in} $Q$} \Comment{find a duplicatable state $e$}
-			\If {$|d^-(q)| \geq 2$}
+			\If {$in(q) \ge 2$}
 				\State $e \gets$ random chosen state from $[q]_{\sim_A}$
 				\State \textbf{break}
 			\EndIf
 		\EndFor
+		\If {$e = \bot$} \Return $\bot$ \EndIf
 		
 		\vspace{0.2cm}
 		
@@ -187,7 +188,7 @@ We integrate our strategy of creating equivalent state pairs in the following al
 		
 		\vspace{0.2cm}
 		
-		\State $P \gets \{\ ((s, \sigma), t) \in \delta\ |\ t \in [e]_{\sim_A},\ |d^-(t)| \geq 2\ \}$ \Comment{\textbf{R2:} add $d^-(r)$}
+		\State $P \gets \{\ ((s, \sigma), t) \in \delta\ |\ t \in [e]_{\sim_A},\ in(t) \geq 2\ \}$ \Comment{\textbf{R2:} add $d^-(r)$}
 		\State $C \gets$ random nonempty subset of $P$
 		\For {$((s, \sigma), t)$ \textbf{in} $C$}
             \State $\delta(s, \sigma) = r$
@@ -202,6 +203,8 @@ We integrate our strategy of creating equivalent state pairs in the following al
 \end{spacing}
 \vspace{0.2cm}
 \noindent Note that computing an unused state label can be easily done by e.g.\ taking the maximum of all solution DFA states (which are nothing else but numbers) and adding one.
+
+
 
 \subsection{Creating Equivalent State Pairs does not change $\mmD$} \label{ch:4:sec-D-proof}
 

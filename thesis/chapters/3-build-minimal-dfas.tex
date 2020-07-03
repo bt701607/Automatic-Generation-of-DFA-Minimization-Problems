@@ -70,7 +70,7 @@ Here follows a description of our general algorithm for generating minimal DFAs.
 \vspace{0.2cm}
 We will complete \textsc{GenNewMinDFA} by resolving how the tests in lines $4, 6$ and $8$ work and by showing two methods for generation of DFAs with given restrictions of $|Q|, |\Sigma|$ and $|F|$.
 
-\subsection{Ensuring $\mmD$-value lies in range and Minimality}
+\subsection{Ensuring \texorpdfstring{$\mmD$}{D}-value lies in range and Minimality}
 
 In order to test, whether $A_{test}$ is minimal, it is sufficient to ensure, that $A_{test}$ has no equivalent state pairs and no unreachable states.
 
@@ -272,7 +272,7 @@ An enumeration is represented by an \emph{enumeration state} $s_{\nSO, k, \nF} =
 \end{example}
 % how to compute next DFA
 
-\noindent Given an enumeration state $s_{\nSO, \kAL, \nF} = (F_F, F_\delta)$ we will then compute the next DFA based on this state as described in the following algorithm. We assume, that adding $1$ to a $n$-ary number $n-1\ n-1\ \ldots n-1$ yields $00\ldots0$.
+\noindent Given an enumeration state $s_{\nSO, \kAL, \nF} = (F_F, F_\delta)$ we will then compute the next state representing a DFA using the following algorithm. We assume, that adding $1$ to a $n$-ary number $n-1\ n-1\ \ldots n-1$ yields $00\ldots0$.
 \vspace{0.2cm}
 \begin{algorithmic}[1]
 	\Function{IncrementEnumProgress\ }{$F_F, F_\delta, \nSO, \kAL, \nF$}
@@ -315,9 +315,9 @@ Consequently the algorithm can terminate in two ways. Either a next DFA could be
 	We showcase a sample enumeration at points, that demonstrate the semantics of different increments. We will use $\nSO=4$, $\kAL=2$ and $\nF=2$. Note that we will use $a,b,\ldots$ instead of $0,1,\ldots$ as symbols. Valid enumeration progresses are depicted green.\par
 	\vspace{0.4cm}\noindent
 	\begin{minipage}{0.56\textwidth}
-		We will start with the initial enumeration progress (1). In this case, a simple addition of $1$ to $F_\delta$ does not cause an overflow of $F_\delta$ (2), meaning the enumeration increment is already finished.\newline
+		We will start with the initial enumeration progress (1). In this case, a simple addition of $1$ to $F_\delta$ does not cause an overflow of $F_\delta$ (2), meaning the enumeration increment is already finished.\bigskip
 		
-		(3). In this state however $F_\delta$ becomes $0\ldots0$ (4) after adding $1$. Thus we add $1$ to $F_F$, until it contains the required number of ones again (so we always have $f$ final states). The next $4$-ary number with $2$ ones after $0011$ is $0101$ (5).\newline
+		(3). In this state however $F_\delta$ becomes $0\ldots0$ (4) after adding $1$. Thus we add $1$ to $F_F$, until it contains the required number of ones again (so we always have $f$ final states). The next $4$-ary number with $2$ ones after $0011$ is $0101$ (5).\bigskip
 		
 		(6). Here $F_\delta$ is at its maximum and there is no higher $4$-ary number with $2$ ones. Thus the next enumeration step yields the state (7), that marks the enumeration end.
 	\end{minipage}
@@ -371,7 +371,7 @@ Consequently the algorithm can terminate in two ways. Either a next DFA could be
 
 % saving enumProgress for later progression
 
-\noindent Since it is not sensible to create initial enumeration states for all possible enumeration (there are infinitely many, due to $\nSO\in\mathbb{N}$) we will create states by demand.
+\noindent Since it is not sensible to create initial enumeration states for all possible enumeration (there are infinitely many, due to $\nSO\in\mathbb{N}$) we will create enumeration states by demand.
 
 Once the enumeration to the next DFA within a call of \textsc{GenNewMinimalDFA} has been finished, it is reasonable to save the enumeration state, such that during the next call enumeration can be resumed from that point on. We will run a different enumeration for every parameter combination. Thus we introduce a second database DB$_{states}$ with the following table:
 \begin{center}
@@ -440,7 +440,7 @@ Nicaud's summary indicates, that research has focused on randomized generation o
 
 \paragraph*{Using the Recursive Method.}
 
-Champarnaud and Paranthoën~\cite{CP05} continue ideas started by Nicaud in his thesis~\cite{Nic00}. Let $\mathfrak{F_{n,m}}$ be the set of extended $m$-ary trees of order $n$. These trees are characterized by a partitioning $V = N \uplus L$ with $|N| = n$ and the properties $v \in N \Rightarrow d^+(v) = m$ and $v \in L \Rightarrow d^+(v) = 0$. We define the following set of tuples using $s=n(m-1)$:
+Champarnaud and Paranthoën~\cite{CP05} continue ideas started by Nicaud in his thesis~\cite{Nic00}. Let $\mathfrak{F_{n,m}}$ be the set of extended $m$-ary trees of order $n$. These trees are characterized by a partitioning $V = N \uplus L$ with $|N| = n$ and the properties $v \in N \Rightarrow d^+(v) = m$ and $v \in L \Rightarrow d^+(v) = 0$ (essentially nodes and leaves). We define the following set of tuples using $s=n(m-1)$:
 \[
     \mathfrak{R_{m,n}} = \{\ (k_1,\ldots,k_s) \in \mathbb{N}^s\ |\ \forall i\in [2,s]\colon k_i \geq \left\lceil\frac{i}{m-1}\right\rceil\ and\ k_i \geq k_{i-1}\ \}
 \]
@@ -453,7 +453,7 @@ Almeida et al.~\cite{AAA09, AMR09, RMA05} present and implement methods using a 
 
 \paragraph*{Using Boltzmann Sampler.}
 
-Bassino, David and Nicaud present and implement a more efficient random generator of accessible complete DFAs in~\cite{BDN07, BN07}. Their idea is based on so called Boltzmann samplers. This framework of samplers is characterized in particular by the fact that the size of its generated objects are not fixed but in an interval around a given input size - this stands in opposition to most random generators in literature~\cite[p. 2]{DFL04}.
+Bassino, David and Nicaud present and implement a more efficient random generator of accessible complete DFAs in~\cite{BDN07, BN07}. Their idea is based on so called Boltzmann samplers. This framework of samplers is characterized in particular by the fact that the sizes of its generated objects are not fixed but in an $\varepsilon$-interval around a given input size - this stands in opposition to most random generators in literature~\cite[p. 2]{DFL04}.
 
 In~\cite{BN07} the authors use a Boltzmann sampler to generate set partitions that are shown to be in bijection with so called box diagrams~\cite[p. 8]{BN07} which are in turn in bijection to accessible complete DFAs~\cite[p. 4]{BN07}. They thus acquire an average runtime complexity of $\mathcal{O}(n^{1.5})$ for a single random generation.
 
@@ -465,7 +465,7 @@ Carayol and Nicaud~\cite{CN12} give a simple algorithm with the same runtime com
 
 In his survey Nicaud mentions a paper by Bassino and Sportiello~\cite{BS13} that yields random generation of accessible DFAs in expected linear time. This work will not be discussed further here.
 
-In this work we use a rejection algorithm that generates test DFAs either by randomization or by enumeration. Both methods implement a naive approach. The generated test DFAs are not necessary minimal and in particular not necessary accessible as in~\cite{CN12}. The enumeration method uses encodings of DFAs similar to those used by Almeida et.\ al.~\cite{RMA05}.
+In this work we use a rejection algorithm that generates test DFAs either by randomization or by enumeration. Both methods implement a naive approach. The generated test DFAs are not necessary minimal and in particular not necessary accessible as in~\cite{CN12}. The enumeration method uses encodings of DFAs similar to those used by Almeida et al.~\cite{RMA05}.
 
 
 \section{Empirical and Combinatorial Results}
@@ -476,11 +476,11 @@ More recent implementations (e.g.~\cite{AAA09, BDN07}) of various random and enu
 
 Domaratzki, Kisman, and Shallit~\cite{DKS02} give some asymptotic estimates and explicit computations for the number of several types of distinct languages and automata. The here relevant results have been subsumed and extended in~\cite[p. 8]{AMR09} and were empirically confirmed in~\cite{BDN07}.
 
-In Figure~\ref{fig:dfa_minimal_ratios} we use these results to determine the ratios of minimal complete DFAs among all complete DFAs for given $|Q|$ and $|\Sigma|$. The number of all DFAs is computed as follows:
+In Figure~\ref{fig:dfa_minimal_ratios} we use these results to determine the ratios of minimal complete DFAs among all complete DFAs for given $|Q|$ and $|\Sigma|$. The number of all DFAs (assuming $s=0$, $Q=[[n]], \Sigma=[[k]]$) is computed as follows:
 \[
 |\mathcal{A}_{n,k}| = \underbrace{n^{n*k}}_{\#\text{possible }\delta\text{'s}} * \underbrace{2^n}_{\#\text{possible sets }F}
 \]
-Thus we gain an insight into how probable the random generation of a distinct minimal test DFA is without applying further constraints. For our proposed default parameters $n\in[4-5]$ and $k\in[2-3]$ the probabilities of successful generation range from $1\%$ to $5\%$. Practical tests have shown that this leads to sufficient short run times for our implementation.
+Thus we gain an insight into how probable the random generation of a distinct minimal test DFA is without applying further constraints. For our proposed default parameters $n\in[4-5]$ and $k\in[2-3]$ the probabilities of successful generation range from $1\%$ to $5\%$. Practical tests have shown that this leads to sufficient short run times for our implementation. The numbers furthermore show that for a ``sensible'' choice of parameters (e.g.\ $n \ge 3$, $k\ge 2$) there are more than enough distinct minimal DFAs that can be generated. 
 
 Further interesting results in this area include the determination of the fraction of all minimal automata among all accessible complete DFAs~\cite{BDS11} and asymptotic estimates for the number of states that a random minimized DFA has~\cite{BK13}.
 
@@ -509,6 +509,6 @@ Further interesting results in this area include the determination of the fracti
 		$k = 5$ & $2$ & \textbf{1984} & 4096 & 0.48 \\
 		& $3$ & \textbf{36818904} & 114791256 & 0.32\\\hline
 	\end{tabular}
-	\caption{Table depicting the exact amount of minimal complete DFAs among all complete DFAs for various sizes of $Q, \Sigma$. The numbers of minimal DFAs (bold numbers) are taken from~\cite[p. 8]{AMR09}.}
+	\caption{Table depicting the exact amount of distinct minimal complete DFAs among all complete DFAs for various sizes of $Q, \Sigma$. The numbers of minimal DFAs (bold numbers) are taken from~\cite[p. 8]{AMR09}.}
 	\label{fig:dfa_minimal_ratios}
 \end{figure}

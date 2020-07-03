@@ -387,7 +387,7 @@ At the beginning of chapter~\ref{ch:3} and~\ref{ch:4}, we will provide formal pr
 	\EndFunction
 \end{algorithmic}
 \vspace{0.2cm}
-\noindent One might notice, that we pass $d$ only to $\textsc{GenNewMinDFA}$, even though we want to ensure $d = A_{task}$ too. This is a valid approach due to the fact, that creating equivalent states and adding unreachable states does not change the $\mmD$-value, which we are going to prove. 
+\noindent One might notice, that we pass $d$ only to $\textsc{GenNewMinDFA}$, even though we want to ensure $d = \mmD(A_{task})$ too. This is a valid approach due to the fact, that creating equivalent states and adding unreachable states does not change the $\mmD$-value, which we are going to prove. 
 
 However since unreachable states are eliminated before \CompDist\ is applied, we need only to prove, that creating equivalent states does not change the $\mmD$-value, which will be done during the discussion of step 2, more specifically in section~\ref{ch:4:sec-D-proof}.
 

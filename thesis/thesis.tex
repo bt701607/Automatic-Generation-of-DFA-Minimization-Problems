@@ -2,8 +2,6 @@
 
 \documentclass[a4paper, oneside, 11pt]{book}
 
-%\documentclass[12pt,a4paper,oneside,titlepage,bibliography=totoc,listof=totoc]{scrartcl}
-
 % ----------- packages -------------
 
 \usepackage[a4paper,width=150mm,top=25mm,bottom=25mm]{geometry}
@@ -54,14 +52,13 @@
 \newtheorem{proposition}{Proposition}
 \newtheorem{example}{Example}
 
+\newtheorem*{observation}{Observation}
+
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
 
 \theoremstyle{remark}
 \newtheorem*{remark}{Remark}
-
-\theoremstyle{observation}
-\newtheorem*{observation}{Observation}
 
 \algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
 

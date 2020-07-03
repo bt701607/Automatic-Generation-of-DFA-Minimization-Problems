@@ -2,11 +2,11 @@
 
 \chapter{Conclusion}
 
-Our intention was to investigate approaches, how DFA minimization tasks could be generated automatically. Therefore we discussed requirements to such a program and used some of them to formalize the underlying problems. Our approach to solve those problems was to first generate the minimal solution DFA and afterwards the task DFA by adding equivalent states and unreachable DFAs. This structure was derived from Hopcrofts minimization algorithm.
+Our intention was to investigate approaches, how DFA minimization tasks could be generated automatically. Therefore we discussed prerequisites and requirements to such a program and used them to formalize the underlying problems. Our approach to solve those problems was to first generate the minimal solution DFA and afterwards the task DFA by adding equivalent states and unreachable DFAs. This structure was derived from Hopcrofts minimization algorithm.
 
 We did the generation of minimal DFAs via a rejection algorithm using either randomization and enumeration; we rejected in particular DFAs with a language which was found already in a previous run. A short overview over research on this topic confirmed our method but gave outlook to more efficient variants.
 
-On making minimal DFAs non-minimal no results in research was found. The properties of equivalent state pairs and unreachable states however gave precise and easy applicable rules to add such elements.
+On making minimal DFAs non-minimal no results in research were found. The properties of equivalent state pairs and unreachable states however yielded precise and easy applicable rules to add such elements.
 
 When building the task DFA, a question arised concerning the number of iterations by the \CompDist-algorithm ($\mmD$), which we wanted to be adjustable via parameter. By proving that the $\mmD$-value does not change if we extend minimal DFAs, we could ensure that this value is already set when building the solution DFA, so DFAs could be rejected already in this stage, if $\mmD$ did not match. We close this work with a short lookout.
 

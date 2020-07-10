@@ -62,14 +62,14 @@ Here follows a simple isomorphy test that tries essentially to build a bijection
 \end{algorithmic}
 \vspace{0.2cm}
 \newpage
-\noindent This algorithm \emph{visits} one by one all states of $A_1$ and tries to build $\pi$ on the way. The currently visited state is denoted $q_c$. In $V \subseteq Q_1$ we save all already visited states. The set $O \subseteq Q_1$ shall contain all \emph{observed} states, meaning those, that we encountered while following a transition, but have not visited yet.
+\noindent This algorithm \emph{visits} all states of $A_1$ one by one and tries to build $\pi$ on the way. The currently visited state is denoted $q_c$. In $V \subseteq Q_1$ we save all already visited states. The set $O \subseteq Q_1$ shall contain all \emph{observed} states, meaning those, that we encountered while following a transition, but have not visited yet.
 
-We call states of $A_1$, $A_2$ \emph{marked}, if they have been assigned to another state by $\pi$. So if $\pi(q_1)=q_2$, then $q_1$, $q_2$ are marked. States in $O$ will have the property, that they are marked.
+We call states of $A_1$, $A_2$ \emph{marked}, if they have been assigned to another state by $\pi$. So if $\pi(q_1)=q_2$, then $q_1$, $q_2$ are marked. States in $O$ will have the property that they are marked.
 
 Starting with $q_c = s_1$, in every while-iteration all outgoing transitions $\delta_1(q_c, \sigma) = p_1$ of the current state are followed. We then compute $\delta_2(\pi(q_c), \sigma) = p_2$, which is the state in $A_2$ that should correspond to $p_1$ of $A_1$. At this point (line 17) we do a case differentiation:
 \begin{itemize}
-	\item $p_1$, $p_2$ both marked: Then we only need to ensure they are assigned to each other.
-	\item $p_1$, $p_2$ both not marked: Then we can assign them to each other and may now add $q_1$ to $O$, since we observed it on an outgoing transition and know it has been marked. We will not add it, if we have visited as $q_c$.
+	\item $p_1$, $p_2$ both marked: We only need to ensure they are assigned to each other.
+	\item $p_1$, $p_2$ both not marked: We can assign them to each other and may now add $q_1$ to $O$, since we observed it on an outgoing transition and know it has been marked. We will not add it, if we have visited as $q_c$.
 	\item one of $p_1$, $p_2$ marked, one not: In that case one of both states has already been assigned to another state. Thus the construction of a bijection has failed here, since $p_1$, $p_2$ should belong together.
 \end{itemize}
 When finished with visiting all outgoing transitions of a state $q_c$, we can pick the next state which is added to the visited states.

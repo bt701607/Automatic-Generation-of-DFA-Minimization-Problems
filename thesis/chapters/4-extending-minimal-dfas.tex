@@ -25,7 +25,7 @@ We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a ta
 		\item $A_{sol}$ \emph{being isomorphic to} $\MinAlg(A_{task})$
 	\end{itemize}
 \end{definition}
-\footnotetext{The states $r_1, \ldots, r_\nEQ$ can be seen as being \emph{redundant}.}
+\footnotetext[4]{The states $r_1, \ldots, r_\nEQ$ can be seen as being \emph{redundant}.}
 \noindent In order to fulfill these requirements we will deduce for equivalent and unreachable states how they may be added by examining their desired properties. If we get to have the choice between several equally good options, we will randomly select one.
 
 We will be guided by the separation of creating equivalent and unreachable states as in Hopcrofts algorithm, thus distinct algorithms will be devised to create each kind of states. Concerning the planarity option, we again use a rejection algorithm with the same test as before (see sec.~\ref{ch:3:sec:planarity}). These decisions lead to the following formulation of \textsc{ExtendMinDFA}:
@@ -84,15 +84,15 @@ So we see, that the state $\delta(r, \sigma) = q$ must be in the same equivalenc
 \begin{description}
 	\item[R1:] For each symbol $\sigma \in \Sigma$ choose exactly one state ($A$ shall be complete) $q\in[\delta(e, \sigma)]_{\sim_A}$ and set $\delta(r, \sigma) = q$.
 \end{description}
-Since the solution DFA is complete and since every here added state gets a transition for every alphabet symbol, we know that every $[\delta(e, \sigma)]_{\sim_A} \neq \emptyset$, so the rule is guaranteed to be fulfillable.
+Since the solution DFA is complete and since every added state gets a transition for every alphabet symbol, we know that every $[\delta(e, \sigma)]_{\sim_A} \neq \emptyset$, so the rule is guaranteed to be fulfillable.
 
-Note that this substep does not change the equivalence class of any other now existing state, since $r$ cannot be reached yet (and thus it can not lie on a path from any other state to a final state) - it has no ingoing transitions.
+Note that this substep does not change the equivalence class of any other now existing state, since $r$ cannot be reached yet (and thus it can not lie on a path from any other state to a final state) --- it has no ingoing transitions.
 
 \subsection{Adding Ingoing Transitions}
 
-First of all, we know, that $r$ must be reachable, since we decided that all unreachable states will be added later. So we need to give $r$ at least one ingoing transition. Doing this, we have to ensure, that any state $q$, that gets an outgoing transition to $r$ remains in its equivalence class.
+First of all, we know that $r$ must be reachable, since we decided that all unreachable states will be added later. So we need to give $r$ at least one ingoing transition. Doing this, we have to ensure that any state $q$, that gets an outgoing transition to $r$, remains in its equivalence class.
 
-Thus a fitting state $q$ has to have a transition to some state in $[r]_{\sim_A} = [e]_{\sim_A}$ already. So, given a state $q$ with $\delta(q, \sigma) = p$ and $p \in [e]_{\sim_A}$, we can set $\delta(q, \sigma) = r$ and thereby ``steal'' $p$ its ingoing transition.
+Thus, a fitting state $q$ has to have a transition to some state in $[r]_{\sim_A} = [e]_{\sim_A}$ already. So, given a state $q$ with $\delta(q, \sigma) = p$ and $p \in [e]_{\sim_A}$, we can set $\delta(q, \sigma) = r$ and thereby ``steal'' $p$ its ingoing transition.
 
 We see here, that $p$ must have at least one ``free'' transition, else it would become unreachable. A state has a free transition, if it has at least two ingoing transitions or if it is start state and has at least one ingoing transition. With $in(q)$ we denote the \emph{ingoing elements of $q$}:
 \[
@@ -122,7 +122,7 @@ duplicatable(q) \Leftrightarrow_{def} (\exists p \in [q]_{\sim_A}\colon in(p)\ge
 		\item$> 1$, if $|\Sigma| > 1$, due to the pigeonhole principle: An accessible complete DFA has $|Q||\Sigma|$ transitions which have to be spread across $|Q|$ states.
 	\end{description}
 \end{observation}
-\noindent This observation guarantees, that there exists a duplicatable state, if $k > 1$ or $k = 1$ and $|d^-(s)| > 0$. Note that we do not guarantee, that $\nEQ$ equivalent states can be added.
+\noindent This observation guarantees that there exists a duplicatable state, if $k > 1$ or $k = 1$ and $|d^-(s)| > 0$. Note that we do not guarantee that $\nEQ$ equivalent states can be added.
 \begin{lemma}
 	Adding the outgoing transitions of $r$ does not change whether its associated state $e$ is duplicatable.
 \end{lemma}
@@ -250,11 +250,11 @@ Then the following holds for some states $p,q$ (see alg.~\ref{ch:2:m-minmark}, l
 \begin{equation}\label{ch:4:eq:m(n)}
 (p,q) \in \{ (p,q), (q,p)\ |\ (p,q) \notin \bigcup{m(\cdot)} \land \exists \sigma \in \Sigma \colon (\delta(p,\sigma), \delta(q,\sigma)) \in m(n-1) \}
 \end{equation}
-We will prove: There exists a distinguishing word of length $n-1$ for $p,q$, and there is no shorter distinguishing word for $p,q$.
+We will prove: There is a distinguishing word of length $n-1$ for $p,q$, and there is no shorter distinguishing word for $p,q$.
 
-Looking at eq.~\ref{ch:4:eq:m(n)} we observe, there exists a symbol $\sigma$ such that $(\delta(p,\sigma),\delta(q,\sigma)) \in m(n-1)$. Let $p',q'=\delta(p,\sigma),\delta(q,\sigma)$, so $(p',q')\in m(n-1)$.
+Looking at eq.~\ref{ch:4:eq:m(n)} we observe, there is a symbol $\sigma$ such that $(\delta(p,\sigma),\delta(q,\sigma)) \in m(n-1)$. Let $p',q'=\delta(p,\sigma),\delta(q,\sigma)$, so $(p',q')\in m(n-1)$.
 
-Per induction there exists a (shortest) distinguishing word $w'$, $|w'|=n-1$ to $p',q'$. Thus one of $\delta^*(p', w'),\delta^*(q', w')$ is in $F$, one not.
+Per induction there is a (shortest) distinguishing word $w'$, $|w'|=n-1$ to $p',q'$. Thus one of $\delta^*(p', w'),\delta^*(q', w')$ is in $F$, one not.
 
 Thus one of $\delta^*(p, \sigma w'),\delta^*(q, \sigma w')$ is in $F$, one not, which makes $\sigma w'$ a distinguishing word of length $n$ for $p,q$.
 
@@ -266,11 +266,11 @@ Then the following holds for some states $p,q$:
 &\exists w\in\Sigma^*\colon (|w| = n\ \land d_A(w, p, q))\\
 \land\ &\nexists v\in\Sigma^*\colon (|v| < |w|\ \land d_A(v, p, q))
 \end{align*}
-Since $w$ is non-empty there exists a symbol $\sigma$ such that $w = \sigma w'$. Let $\delta(p,\sigma),\delta(q,\sigma) = p',q'$.
+Since $w$ is non-empty there is a symbol $\sigma$ such that $w = \sigma w'$. Let $\delta(p,\sigma),\delta(q,\sigma) = p',q'$.
 
 Thus, if one of $\delta^*(p, \sigma w'),\delta^*(q, \sigma w')$ is in $F$ and one not, then the same must hold for $\delta^*(p', w'),\delta^*(q', w')$, so $w'$ is a distinguishing word for $p',q'$.
 
-It is also the shortest one, because, if there existed a shorter word $v'$, $|v'| < |w'|$, then $\sigma v'$ would be a distinguishing word shorter than $w$ for $p,q$ which is contradictory.
+It is also the shortest one, because, if there were a shorter word $v'$, $|v'| < |w'|$, then $\sigma v'$ would be a distinguishing word shorter than $w$ for $p,q$ which is contradictory.
 
 Since $w'$ is a shortest distinguishing word for $p',q'$, we may deduce now per induction, that $(p',q')\in m(n-1)$.
 
@@ -288,7 +288,7 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 		\item $m(n)= \emptyset$
 		\item $\forall i > n\colon m(i)= \bot$\ .
 	\end{enumerate}
-	This follows directly from while loop and its terminating condition of \CompDist\ (alg.~\ref{ch:2:m-minmark}, line 4--7). Given this, we will prove: There exists a shortest distinguishing word of length $n-1$ for some state pair, but a longer such word cannot exist.
+	This follows directly from while loop and its terminating condition of \CompDist\ (alg.~\ref{ch:2:m-minmark}, line 4--7). Given this, we will prove: There exists a shortest distinguishing word of length $n-1$ for some state pair, but there can be no longer such a word.
 
 	% a possible word per definition of D(A), m(i) and lemma
 	
@@ -334,9 +334,9 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 		
 		\item[$\Rightarrow$] $\{\ f(q)\ |\ q \in Q\ \} = \{\ f(q')\ |\ q' \in Q'\ \}$
 	\end{itemize}
-	Since a distinguishing word is defined as being finishing word for one state and for one not (see def.~\ref{ch:4:def-dist-word}), there cannot be a distinguishing word in one of $A$/$A'$, that is not distinguishing word in the other DFA.
+	Since a distinguishing word is defined as being finishing word for one state and for one not (see def.~\ref{ch:4:def-dist-word}), there cannot be a distinguishing word in one of $A$/$A'$ that is not distinguishing word in the other DFA.
 	
-	As a consequence both DFAs have the same shortest distinguishing words and thus too the same longest shortest distinguishing word.
+	As a consequence, both DFAs have the same shortest distinguishing words and thus too the same longest shortest distinguishing word.
 	
 	If $\mmD(A) \neq \mmD(A')$ then by Lemma~\ref{ch:4:semantics-of-D(A)} one DFA would have a longer longest shortest distinguishing word, which is not true as proven, thus $\mmD(A) = \mmD(A')$ must be true. 
 \end{proof}
@@ -351,13 +351,13 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 
 \section{Adding Unreachable States}
 
-Unreachable states are states, which are not reachable from the start state (see def.~\ref{ch:2:unreachable-states}). Consequently there are no restrictions on number and nature of their outgoing transitions. Let us say the added states is $q$.
+Unreachable states are states, which are not reachable from the start state (see def.~\ref{ch:2:unreachable-states}). Consequently, there are no restrictions on number and nature of their outgoing transitions. Let us say the added states is $q$.
 
-Concerning $q$'s ingoing transitions, we only have to ensure, that none of them allows reaching $q$ from the start state. This implicates, that only other unreachable states are qualified as start points of those ingoing transitions.
+Concerning $q$'s ingoing transitions, we only have to ensure that none of them allows reaching $q$ from the start state. This implicates that only other unreachable states are qualified as start points of those ingoing transitions.
 
-Note that, given $q, \sigma$, we allow only one end point to $\delta(q, \sigma)$. Consequently if we want to add an ingoing transition $\delta(q_u, \sigma) = q$ where $q_u$ is unreachable, then we are stealing the transition from another state $\delta(q_u, \sigma) = q'$. But this is okay, since $q'$ must be an unreachable state too and will stay that way if we remove an ingoing transition.
+Note that, given $q, \sigma$, we allow only one end point to $\delta(q, \sigma)$. Consequently, if we want to add an ingoing transition $\delta(q_u, \sigma) = q$ where $q_u$ is unreachable, then we are stealing the transition from another state $\delta(q_u, \sigma) = q'$. But that is fine, since $q'$ must be an unreachable state too and will stay that way if we remove an ingoing transition.
 
-In this algorithm we assume, that $A$ has no unreachable states.
+In this algorithm we assume that $A$ has no unreachable states.
 \vspace{0.2cm}
 \begin{algorithmic}[1]
 	\Function{AddUnrStates\ }{$A, \nUN, c$}
@@ -392,4 +392,4 @@ In this algorithm we assume, that $A$ has no unreachable states.
 	\EndFunction
 \end{algorithmic}
 \vspace{0.2cm}
-If completeness is demanded ($c=1$), then we set $\Sigma$ as set of all symbols, for which a state shall gain outgoing transitions. Else we choose a random subset for each state, such that some unreachable states may miss some outgoing transitions.
+If completeness is demanded ($c=1$), then we set $\Sigma$ as set of all symbols, for which a state shall gain outgoing transitions. Otherwise we choose a random subset for each state, such that some unreachable states may miss some outgoing transitions.

@@ -142,7 +142,7 @@ def _comp_inequiv_states(dfa):
 
     delta = dict(dfa.transitions)
 
-    i = 0
+    i = 1
 
     while True:
 

@@ -24,26 +24,35 @@ _BOOL_CHOICES = ('yes', 'no')
 
 _ARGUMENTS = {
   'solution DFA' : (
-  ('-k',    int, 2,      'alphabet size of generated DFAs (default: 2)'),
-  ('-n',    int, 4,      'number of states of solution DFA (default: 4)'),
-  ('-f',    int, 1,      'number of final states of solution DFA (default: 1)'),
-  ('-dmin', int, 2,      'lower bound for D-value (default: 2)'),
-  ('-dmax', int, 3,      'upper bound for D-value (default: 3)'),
-  ('-ps',   str, 'yes',  'toggle whether solution DFA shall be planar (default: y)', _BOOL_CHOICES),
-  ('-b',    str, 'enum', 'toggle whether solution DFA shall be build by enumeration or randomization (default: enum)', ('enum','random'))),
+  ('-k',    int, 2,      'alphabet size of generated DFAs'),
+  ('-n',    int, 4,      'number of states of solution DFA'),
+  ('-f',    int, 1,      'number of final states of solution DFA'),
+  ('-dmin', int, 2,      'lower bound for D-value'),
+  ('-dmax', int, 3,      'upper bound for D-value'),
+  ('-ps',   str, 'yes',  'toggle whether solution DFA shall be planar', _BOOL_CHOICES),
+  ('-b',    str, 'enum', 'toggle whether solution DFA shall be build by enumeration or randomization', ('enum','random'))),
 
   'task DFA' : (
-  ('-e',    int, 2,      'number of distinct equivalent reachable state pairs in task DFA (default: 2)'),
-  ('-u',    int, 1,      'number of unreachable states in task DFA (default: 1)'),
-  ('-c',    str, 'yes',  'toggle whether all unreachable states shall be complete (default: yes)', _BOOL_CHOICES),
-  ('-pt',   str, 'yes',  'toggle whether task DFA shall be planar (default: yes)', _BOOL_CHOICES)),
+  ('-e',    int, 2,      'number of distinct equivalent reachable state pairs in task DFA'),
+  ('-u',    int, 1,      'number of unreachable states in task DFA'),
+  ('-c',    str, 'yes',  'toggle whether all unreachable states shall be complete', _BOOL_CHOICES),
+  ('-pt',   str, 'yes',  'toggle whether task DFA shall be planar', _BOOL_CHOICES)),
 
   'output' : (
-  ('-out',  str, _DEFAULT_OUTPUT, 'working directory; here results will be saved (default: ./output)'),
-  ('-dfa',  str, 'no', '  toggle whether DFAs shall be printed to .dfa-files (default: no)', _BOOL_CHOICES),
-  ('-tex',  str, 'yes',  'toggle whether LaTeX-code shall be created from DFAs (default: yes)', _BOOL_CHOICES),
-  ('-pdf',  str, 'yes',  'toggle whether PDFs shall be created from DFAs (default: yes)', _BOOL_CHOICES))
+  ('-out',  str, _DEFAULT_OUTPUT, 'working directory; here results will be saved'),
+  ('-dfa',  str, 'no',   'toggle whether DFAs shall be printed to .dfa-files', _BOOL_CHOICES),
+  ('-tex',  str, 'yes',  'toggle whether LaTeX-code shall be created from DFAs', _BOOL_CHOICES),
+  ('-pdf',  str, 'yes',  'toggle whether PDFs shall be created from DFAs', _BOOL_CHOICES))
 }
+
+_EPILOG = '''
+General Informations:
+- for k <= 1 it is not guaranteed that creating e equivalent reachable state pairs works
+- enumerated/randomized generation share their history of generated languages
+- even if ps = pt = 1, it is not guaranteed that the DFA is drawn planar
+- if the program is used and then used with a different -out parameter,
+  the previously found DFAs and enumeration states are not transferred
+'''
 
 
 def main():
@@ -55,9 +64,12 @@ def main():
     
     # add and check parameters
 
+    class MyFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.MetavarTypeHelpFormatter, argparse.RawTextHelpFormatter):
+        pass
+
     parser = argparse.ArgumentParser(
         description='Command-line tool to generate DFA minimization problems.',
-        formatter_class=argparse.MetavarTypeHelpFormatter)
+        formatter_class=MyFormatter, epilog=_EPILOG)
 
     for groupName in _ARGUMENTS:
         group = parser.add_argument_group(groupName)

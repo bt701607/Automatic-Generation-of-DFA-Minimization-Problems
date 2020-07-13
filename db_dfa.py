@@ -50,7 +50,7 @@ def ensure_validity(dbConn):
         )
 
 
-def fetch(dbConn, k, n, f, dmin, dmax):
+def fetch(dbConn, k, n, f):
     """Fetches all DFAs matching the parameters.
     
     - assumes, that table MinimalDFAs with correct columns exists in dbConn
@@ -61,10 +61,9 @@ def fetch(dbConn, k, n, f, dmin, dmax):
         SELECT dfa, depth, planar FROM MinimalDFAs WHERE 
             k = ? AND
             n = ? AND
-            f = ? AND
-            depth >= ? AND depth <= ?
+            f = ?
     '''
-    qTuple = (k, n, f, dmin, dmax)
+    qTuple = (k, n, f)
             
     dfaList = []
             

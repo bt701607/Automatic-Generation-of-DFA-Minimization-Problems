@@ -87,7 +87,7 @@ def rand_min_dfa(k, n, f, dmin, dmax, planar, outDir):
 
     db_dfa.ensure_validity(dbConn)
 
-    matchingUsedDFAs = db_dfa.fetch(dbConn, k, n, f, dmin, dmax)
+    matchingUsedDFAs = db_dfa.fetch(dbConn, k, n, f)
 
     A = characters('a', k)
     Q = characters('0', n)
@@ -136,7 +136,7 @@ def next_min_dfa(k, n, f, dmin, dmax, planar, outDir):
     db_dfa.ensure_validity(dbConn)
     db_enum.ensure_validity(dbConn)
 
-    matchingUsedDFAs = db_dfa.fetch(dbConn, k, n, f, dmin, dmax)
+    matchingUsedDFAs = db_dfa.fetch(dbConn, k, n, f)
 
     enumState = db_enum.fetch(dbConn, k, n, f, dmin, dmax, planar)
 

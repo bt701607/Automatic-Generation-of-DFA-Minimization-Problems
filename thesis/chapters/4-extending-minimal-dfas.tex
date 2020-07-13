@@ -20,15 +20,17 @@ We firstly define a formal problem for extending a minimal DFA $A_{sol}$ to a ta
 		\item $r_1, \ldots, r_\nEQ$ \emph{each creating an equivalent state pair\footnotemark}
 		\item $u_1, \ldots, u_\nUN$ \emph{unreachable}
 		\item $\Sigma_{task} = \Sigma_{sol}$, $s_{task} = s_{sol}$, $F_{task} \subseteq F_{sol}$
-		\item $A_{task}$ \emph{being planar iff} $p = 1$
-		\item $A_{task}$ \emph{being complete iff} $c = 1$
+		\item $A_{task}$ \emph{being guaranteed planar iff} $p = 1$
+		\item $A_{task}$ \emph{being guaranteed complete iff} $c = 1$
 		\item $A_{sol}$ \emph{being isomorphic to} $\MinAlg(A_{task})$
 	\end{itemize}
 \end{definition}
 \footnotetext[4]{The states $r_1, \ldots, r_\nEQ$ can be seen as being \emph{redundant}.}
 \noindent In order to fulfill these requirements we will deduce for equivalent and unreachable states how they may be added by examining their desired properties. If we get to have the choice between several equally good options, we will randomly select one.
 
-We will be guided by the separation of creating equivalent and unreachable states as in Hopcrofts algorithm, thus distinct algorithms will be devised to create each kind of states. Concerning the planarity option, we again use a rejection algorithm with the same test as before (see sec.~\ref{ch:3:sec:planarity}). These decisions lead to the following formulation of \textsc{ExtendMinDFA}:
+We will be guided by the separation of creating equivalent and unreachable states as in Hopcrofts algorithm, thus distinct algorithms will be devised to create each kind of states. Concerning the planarity option, we again use a rejection algorithm with the same test as before (see sec.~\ref{ch:3:sec:planarity}).
+
+These decisions lead to the following formulation of \textsc{ExtendMinDFA}:
 \newpage
 \vspace{0.2cm}
 \begin{spacing}{1}
@@ -49,19 +51,19 @@ We will be guided by the separation of creating equivalent and unreachable state
 	\end{algorithmic}
 \end{spacing}
 \vspace{0.2cm}
-\noindent We will show for the action of adding equivalent states, that this does not influence a DFAs $\mmD$-value --- thus we do not have to care whether we are possibly changing it.
+\noindent We will show for the action of adding equivalent states, that this does not influence a DFAs $\mmD$-value --- thus $\mmD(A_{sol}) = \mmD(A_{task})$ will be given and we do not have to care about setting $\mmD(A_{task})$ correctly.
 
 \section{Creating Equivalent State Pairs}
 
-Step 3 and 4 of the minimization algorithm are concerned with detection and elimination of equivalent state pairs. We now want to add states $r_1,\ldots,r_\nEQ$ to a DFA $A_{sol}$, gaining $A_{re}$ with $Q_{re} = Q_{sol} \cup \{r_1,\ldots,r_\nEQ\}$, such that each of the added states is equivalent to a state in $Q_{re}$. Note that, for reasons of clarity, we are going to abbreviate from now on $A_{re} = A$, $Q_{re} = Q$, $\sim_{A_{re}} = \sim_A$ etc.
+Step 3 and 4 of the minimization algorithm are concerned with detection and elimination of equivalent state pairs, so we will start with adding those pairs. We want to add states $r_1,\ldots,r_\nEQ$ to a DFA $A_{sol}$, gaining $A_{re}$ with $Q_{re} = Q_{sol} \cup \{r_1,\ldots,r_\nEQ\}$, such that each of the added states is equivalent to a state in $Q_{re}$. Note that, for reasons of clarity, we are going to abbreviate from now on $A_{re} = A$, $Q_{re} = Q$, $\sim_{A_{re}} = \sim_A$ etc.
 
-In our algorithm we will add each $r = r_i,\ i\in[1,\nEQ]$ separately to $A_{sol}$. Consider the properties $r_1,\ldots,r_\nEQ$ must have. Since we start from $A_{sol}$, and add in each step a state, that will be equivalent to a state in the so-far constructed DFA, it follows by transitivity, that each $r$ will be equivalent to an \emph{origin} state $e$ of $A_{sol}$.
+In our algorithm we will add each $r = r_i,\ i\in[1,\nEQ]$ separately to $A_{sol}$. Consider the properties $r_1,\ldots,r_\nEQ$ must have. Since we start from $A_{sol}$ and add in each step a state that will be equivalent to a state in the so-far constructed DFA, it follows by transitivity that each $r$ will be equivalent to an \emph{origin} state $e$ of $A_{sol}$.
 \[
 	\forall r \in \{r_1,\ldots,r_{\nEQ}\} \colon\ \exists e \in Q_{sol}\colon\ r \sim_A e
 \]
-In our algorithm, we will first choose a to-be-equivalent-state $e\in Q_{sol}$ for each state $r$ we create, then we add its transitions.
+In our algorithm, we will first choose an origin state $e\in Q_{sol}$ for each state $r$ we create, then we add its transitions.
 
-\subsection{Adding Outgoing Transitions}
+\subsection{Adding Outgoing Transitions} \label{ch:4:add-out-tr}
 
 Regarding the outgoing transitions of any $r$ equivalent to a state $e$, we are directly restricted by their equivalence relation:
 \begin{itemize}
@@ -86,11 +88,11 @@ So we see, that the state $\delta(r, \sigma) = q$ must be in the same equivalenc
 \end{description}
 Since the solution DFA is complete and since every added state gets a transition for every alphabet symbol, we know that every $[\delta(e, \sigma)]_{\sim_A} \neq \emptyset$, so the rule is guaranteed to be fulfillable.
 
-Note that this substep does not change the equivalence class of any other now existing state, since $r$ cannot be reached yet (and thus it can not lie on a path from any other state to a final state) --- it has no ingoing transitions.
+Note that this substep does not change the equivalence class of any other now existing state, since $r$ has no ingoing transitions and therefore can not be reached yet (and thus it can not lie on a path from any other state to a final state).
 
 \subsection{Adding Ingoing Transitions}
 
-First of all, we know that $r$ must be reachable, since we decided that all unreachable states will be added later. So we need to give $r$ at least one ingoing transition. Doing this, we have to ensure that any state $q$, that gets an outgoing transition to $r$, remains in its equivalence class.
+First of all, we know that $r$ must be reachable, since we decided that all unreachable states will be added in a separate step. So we need to give $r$ at least one ingoing transition. Doing this, we have to ensure that any state $q$ that gets an outgoing transition to $r$ remains in its equivalence class.
 
 Thus, a fitting state $q$ has to have a transition to some state in $[r]_{\sim_A} = [e]_{\sim_A}$ already. So, given a state $q$ with $\delta(q, \sigma) = p$ and $p \in [e]_{\sim_A}$, we can set $\delta(q, \sigma) = r$ and thereby ``steal'' $p$ its ingoing transition.
 
@@ -109,9 +111,9 @@ Now we can define our rule for adding ingoing transitions:
 \subsection{Requirements for choosing origin states}
 
 From rule \textbf{R2} we know that the equivalence class of any origin state $e$ has to contain at least one state with at least two ingoing elements. We establish the following notion to pin down the requirement which all origin states have to fulfill when they are chosen:
-\[
+\begin{equation}\label{eq:dupl}
 duplicatable(q) \Leftrightarrow_{def} (\exists p \in [q]_{\sim_A}\colon in(p)\ge 2)
-\]
+\end{equation}
 \begin{observation}
 	The number of duplicatable states in any accessible DFA $A$ is
 	\begin{description}
@@ -122,24 +124,29 @@ duplicatable(q) \Leftrightarrow_{def} (\exists p \in [q]_{\sim_A}\colon in(p)\ge
 		\item$> 1$, if $|\Sigma| > 1$, due to the pigeonhole principle: An accessible complete DFA has $|Q||\Sigma|$ transitions which have to be spread across $|Q|$ states.
 	\end{description}
 \end{observation}
-\noindent This observation guarantees that there exists a duplicatable state, if $k > 1$ or $k = 1$ and $|d^-(s)| > 0$. Note that we do not guarantee that $\nEQ$ equivalent states can be added.
+\noindent This observation guarantees that there exists \emph{at least one} duplicatable state, if $k > 1$ or $k = 1$ and $|d^-(s)| > 0$. Note that we can guarantee that $\nEQ$ equivalent states can be added only if $k > 1$, since then with every added state at least two new transitions are added, which will yield new free transitions somewhere.
+
+In the following Lemma and its proof we guarantee, that a chosen origin state does never become non-duplicatable by adding the outgoing transitions as in sec.~\ref{ch:4:add-out-tr}.
 \begin{lemma}
-	Adding the outgoing transitions of $r$ does not change whether its associated state $e$ is duplicatable.
+	Adding the outgoing transitions of $r$ does not change whether its associated origin state $e$ is duplicatable.
 \end{lemma}
 \begin{proof}
-Case $1$: $e$ is duplicatable. Adding transitions to the DFA will never change that, since $|d^-(e)|$ will stay the same or increase, but never decrease.\par
+In the following we will argue with respect to equation~\ref{eq:dupl}.
+\vspace{0.1cm}
 	
-Case $2$: $e$ is not duplicatable. Towards a contradiction: The only outgoing transition from $r$, that could make $e$ duplicatable, would be $\delta(r, \sigma) = e$.
+\noindent Case $1$: $e$ is duplicatable. Adding transitions to the DFA will never change that, since $|d^-(p)|$ of any $p\in[e]$ will stay the same or increase, but never decrease.\par
+\vspace{0.1cm}
 	
-Adding this transition by rule \textbf{R1} would require, that there exists a transition $\delta(e, \sigma) \in [e]$ (see \textbf{R1}).
+\noindent Case $2$: $e$ is not duplicatable. Towards a contradiction: An outgoing transition from $r$, that could make $e$ duplicatable, must be $\delta(r, \sigma) = p$ with $p\in[e]$ and $\sigma\in\Sigma$.
+	
+Adding this transition by rule \textbf{R1} would require, that there exists a transition $\delta(e, \sigma) \in [p] = [e]$ (see \textbf{R1}).
 	
 By the definition of $\sim_A$, every state in $[e]$ then has to have an outgoing transition to a state in $[e]$.
 	
-Since $e$ is not duplicatable, all states in $[e]$ have at maximum one ingoing elements. If $s \in [e]$, then there are not enough ingoing transitions to match all these outgoing transitions.
+Since $e$ is not duplicatable, all states in $[e]$ have at maximum one ingoing element.
+\vspace{0.1cm}
 
-Else the required $|[e]|$ outgoing transitions would form all ingoing transitions of the $|[e]|$ states in $[e]$.
-	
-But then there would be no ingoing element left that ensures the reachability of $[e]$.
+\noindent If $s \in [e]$, then there are not enough ingoing transitions to match all these outgoing transitions. Else the required $|[e]|$ outgoing transitions would form all ingoing transitions of the $|[e]|$ states in $[e]$. But then there would be no ingoing element left that ensures the reachability of states in $[e]$.
 \end{proof}
 
 \subsection{The Algorithm}
@@ -204,11 +211,11 @@ We integrate our strategy of creating equivalent state pairs in the following al
 \vspace{0.2cm}
 \noindent Note that computing an unused state label can be easily done by e.g.\ taking the maximum of all solution DFA states (which are nothing else but numbers) and adding one.
 
-
+Note furthermore that the algorithm is guaranteed to add $\nEQ$ equivalent state pairs if $k > 1$. For $k \le 1$ this is possible in special cases only.
 
 \subsection{Creating Equivalent State Pairs does not change \texorpdfstring{$\mmD$}{D}} \label{ch:4:sec-D-proof}
 
-In this section we want to prove that our method of creating state pairs does not affect the number of \CompDist-iterations. Using this information we can be sure that $\mmD(A_{sol}) = \mmD(A_{task})$ and our just explained algorithm does not have to care about possibly changing this value.
+In this section we want to prove that our method of creating equivalent state pairs does not affect the number of \CompDist-iterations. Using this information we can be sure that $\mmD(A_{sol}) = \mmD(A_{task})$ and our just explained algorithm does not have to care about possibly changing this value.
 
 To do this proof, we will first introduce two auxiliary definitions and then prove two minor lemmas. As a side effect, Lemma~\ref{ch:4:semantics-of-m(n)} will describe a central property of \CompDist\ and Lemma~\ref{ch:4:semantics-of-D(A)} will show an extended characterization of $\mmD(A)$ compared to its definition (def.~\ref{ch:2:def:D(A)}).
 
@@ -252,7 +259,7 @@ Then the following holds for some states $p,q$ (see alg.~\ref{ch:2:m-minmark}, l
 \end{equation}
 We will prove: There is a distinguishing word of length $n-1$ for $p,q$, and there is no shorter distinguishing word for $p,q$.
 
-Looking at eq.~\ref{ch:4:eq:m(n)} we observe, there is a symbol $\sigma$ such that $(\delta(p,\sigma),\delta(q,\sigma)) \in m(n-1)$. Let $p',q'=\delta(p,\sigma),\delta(q,\sigma)$, so $(p',q')\in m(n-1)$.
+Looking at eq.~\ref{ch:4:eq:m(n)} we observe that there is a symbol $\sigma$ such that $(\delta(p,\sigma),\delta(q,\sigma)) \in m(n-1)$. Let $p',q'=\delta(p,\sigma),\delta(q,\sigma)$, so $(p',q')\in m(n-1)$.
 
 Per induction there is a (shortest) distinguishing word $w'$, $|w'|=n-1$ to $p',q'$. Thus one of $\delta^*(p', w'),\delta^*(q', w')$ is in $F$, one not.
 
@@ -288,7 +295,7 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 		\item $m(n)= \emptyset$
 		\item $\forall i > n\colon m(i)= \bot$\ .
 	\end{enumerate}
-	This follows directly from while loop and its terminating condition of \CompDist\ (alg.~\ref{ch:2:m-minmark}, line 4--7). Given this, we will prove: There exists a shortest distinguishing word of length $n-1$ for some state pair, but there can be no longer such a word.
+	This follows directly from the while loop and its terminating condition in \CompDist\ (alg.~\ref{ch:2:m-minmark}, line 4--7). Given this, we will prove: There exists a shortest distinguishing word of length $n-1$ for some state pair, but there can be no longer such a word.
 
 	% a possible word per definition of D(A), m(i) and lemma
 	
@@ -296,7 +303,7 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 	
 	% There is no word longer than that
 	
-	There cannot be any shortest distinguishing word $w'$ with $|w'| = k > n-1$ for any two states $p',q'\in Q$. Following Lemma~\ref{ch:4:semantics-of-m(n)} again, $m(k)$ for some $k > n-1$ would be defined and non-empty, which is contradictory to observations 2 and 3.
+	There cannot be any shortest distinguishing word $w'$ with $|w'| = k > n-1$ for any two states $p',q'\in Q$. Following Lemma~\ref{ch:4:semantics-of-m(n)} again, $m(k)$ for some $k > n-1$ would be defined and non-empty, which is contradictory to observations 2.\ and 3..
 \end{proof}
 
 \begin{theorem}\label{ch:4:th-D}
@@ -304,7 +311,7 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 \end{theorem}
 
 \begin{proof}
-	Starting with the language-equivalence of $A$ and $A'$ we observe, that the start states of both DFAs have the same finishing words.
+	Starting with the language-equivalence of $A$ and $A'$ we observe, that the start states of both DFAs have the same finishing words.\newpage
 	\begin{itemize}
 		\item[] $L(A) = L(A')$
 		
@@ -338,7 +345,7 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 	
 	As a consequence, both DFAs have the same shortest distinguishing words and thus too the same longest shortest distinguishing word.
 	
-	If $\mmD(A) \neq \mmD(A')$ then by Lemma~\ref{ch:4:semantics-of-D(A)} one DFA would have a longer longest shortest distinguishing word, which is not true as proven, thus $\mmD(A) = \mmD(A')$ must be true. 
+	If $\mmD(A) \neq \mmD(A')$, then by Lemma~\ref{ch:4:semantics-of-D(A)} one DFA would have a longer longest shortest distinguishing word, which is not true as proven, thus $\mmD(A) = \mmD(A')$ must be true. 
 \end{proof}
 
 \begin{corollary}
@@ -351,11 +358,11 @@ The pair $(p,q)$ is not in any $m(i)$, $i<n$, since otherwise per induction the 
 
 \section{Adding Unreachable States}
 
-Unreachable states are states, which are not reachable from the start state (see def.~\ref{ch:2:unreachable-states}). Consequently, there are no restrictions on number and nature of their outgoing transitions. Let us say the added states is $q$.
+Unreachable states are states, which are not reachable from the start state (see def.~\ref{ch:2:unreachable-states}). Consequently, there are no restrictions on number and nature of their outgoing transitions. Let us say the added state is $q$.
 
 Concerning $q$'s ingoing transitions, we only have to ensure that none of them allows reaching $q$ from the start state. This implicates that only other unreachable states are qualified as start points of those ingoing transitions.
 
-Note that, given $q, \sigma$, we allow only one end point to $\delta(q, \sigma)$. Consequently, if we want to add an ingoing transition $\delta(q_u, \sigma) = q$ where $q_u$ is unreachable, then we are stealing the transition from another state $\delta(q_u, \sigma) = q'$. But that is fine, since $q'$ must be an unreachable state too and will stay that way if we remove an ingoing transition.
+Note that, given $q, \sigma$, we allow only one end point to $\delta(q, \sigma)$,. Consequently, if we want to add an ingoing transition $\delta(q_u, \sigma) = q$ where $q_u$ is unreachable, then we are stealing the transition from another state $\delta(q_u, \sigma) = q'$. But that is fine, since $q'$ must be an unreachable state too and will stay that way if we remove an ingoing transition.
 
 In this algorithm we assume that $A$ has no unreachable states.
 \vspace{0.2cm}

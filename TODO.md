@@ -1,15 +1,13 @@
 * proper tests
 
-So far: isomorphy
-
-Work in progress: minimization, pdf_from_dfa, planarity, DB_Enumeration, DB_Minimal, main
-
 * proper rendering (http://www.graphdrawing.org/books.html, http://gdea.informatik.uni-koeln.de/view/subjects/)
 
-* pygraph integration (pip3 install git+https://github.com/jciskey/pygraph)
+* replace pygraph or fix bug in the library
 
 
 # Optimization ideas
+
+* use a building algorithm from research
 
 * Enumerate all combinations of k elements from n
 
@@ -23,4 +21,4 @@ https://www.geeksforgeeks.org/find-combinations-k-bit-numbers-n-bits-set-1-n-k-s
 
 * Use integer instead of integer-lists for enumeration.
 
-* Profile the Code and optimize thus.
+* profile the code

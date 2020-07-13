@@ -26,7 +26,7 @@ Given a state $q \in Q$. With $d^-(q)$ we denote the set of all \emph{ingoing} t
 \end{definition}
 \noindent If all states of a DFA $A$ are reachable, then we call $A$ \emph{accessible}~\cite[p. 2]{CP05}.
 
-A DFA is called \emph{complete} iff for all states, every symbol of the alphabet is used on an outgoing transition: $\forall q\in Q\colon \forall\sigma\in\Sigma\colon \exists p\in Q\colon \delta(q,\sigma) = p$. Note, that every incomplete DFA can be converted to a complete one by adding a so called \emph{dead state}~\cite[p. 67]{HMU01}. The resulting automaton has the same language. From now on we will only work with complete DFAs.
+A DFA is called \emph{complete}, iff for all states, every symbol of the alphabet is used on an outgoing transition: $\forall q\in Q\colon \forall\sigma\in\Sigma\colon \exists p\in Q\colon \delta(q,\sigma) = p$. Note, that every incomplete DFA can be converted to a complete one by adding a so called \emph{dead state}~\cite[p. 67]{HMU01}. The resulting automaton has the same language. From now on we will only work with complete DFAs.
 
 \begin{figure}[H]
 	\begin{subfigure}{.5\textwidth}\centering\resizebox{1.\linewidth}{!}{
@@ -119,9 +119,9 @@ There are three major algorithms for DFA minimization found by Moore, Brzozowski
 		\Function{\CompUnr}{$A$}
 			\State $U \gets Q \setminus \{s\}$	\Comment{undiscovered states}
 			\State $O \gets \{s\}$				\Comment{observed states}
-			\State $D \gets \{\}$				\Comment{discovered states}
+			\State $D \gets \emptyset$				\Comment{discovered states}
 			\While {$|O| > 0$}
-				\State $N \gets \{\ p\ | \ \exists q \in O\colon\ \sigma \in \Sigma \colon\ \delta(q, \sigma) = p\ \land\ p \notin O \cup D\ \}$
+				\State $N \gets \{\ p\ | \ \exists q \in O\colon\ \exists\sigma \in \Sigma \colon\ \delta(q, \sigma) = p\ \land\ p \notin O \cup D\ \}$
 				\State $U \gets U \setminus N$
 				\State $D \gets D \cup O$
 				\State $O \gets N$
@@ -140,7 +140,7 @@ There are three major algorithms for DFA minimization found by Moore, Brzozowski
 		\EndFunction
 	\end{algorithmic}
 
-	\item Compute all equivalent state pairs ($\sim_A$). The representation is inspired by Martens and Schwentick~\cite[ch.~4, p.~17]{MS18}. Note that \CompDist\ requires its input automaton to be complete (\cite[p.~13]{BBC10}).
+	\item Compute all equivalent state pairs ($\sim_A$). The representation is inspired by Martens and Schwentick~\cite[ch.~4, p.~17]{MS18}. Note that \CompDist\ requires its input automaton to be complete~\cite[p.~13]{BBC10}.
 	\vspace{0.2cm}
 	\begin{algorithmic}[1]
 		\Function{\CompDist}{$A$} \label{ch:2:minmark}
@@ -315,7 +315,7 @@ We already know of some simple requirements in advance. Firstly, we can state th
 
 % Difficulty adjustment possibilities
 
-Besides some other sensible requirements, we will devise especially parameters for generation algorithms in this section. These parameters are going to be adjustment possibilities, which will in almost all cases allow the user to influence the difficulty of the generated problem in some way.
+Besides some other sensible requirements, we will devise especially input parameters in this section. These parameters are going to be adjustment possibilities, which will in almost all cases allow the user to influence the difficulty of the generated problem in some way.
 
 Since the difficulty of a DFA minimization task $A_{task}$ for students is mainly determined by the difficulty of executing \MinAlg$(A_{task})$, most parameters will influence certain aspects of the execution of \MinAlg.
 
@@ -343,13 +343,13 @@ It is sensible to have $\nUN > 1, \nEQ > 1$, such that \RemUnr\ and \RemEq\ will
 
 \paragraph*{Alphabet size \texorpdfstring{($\kAL$)}{}.}
 
-The more symbols the alphabet of $A_{task}, A_{re}$ and $A_{sol}$ has (note that \MinAlg\ does not change the alphabet), the more transitions have to be followed when checking whether $(\delta(q,\sigma),\delta(p,\sigma))\in m(i-1)$ is true for each state pair $p,q$ (see line 6 of alg.~\ref{ch:2:m-minmark}). In addition we will see later, that there exists no DFA with $k<2$ having any equivalent state pairs, so $k\ge 2$ is sensible and even required if $\nEQ > 0$.
+The more symbols the alphabet of $A_{task}, A_{re}$ and $A_{sol}$ has (note that \MinAlg\ does not change the alphabet), the more transitions have to be followed when checking whether $(\delta(q,\sigma),\delta(p,\sigma))\in m(i-1)$ is true for each state pair $p,q$ (see line 6 of alg.~\ref{ch:2:m-minmark}). In addition we will see later, that in some cases there exists no DFA with $k<2$ having any equivalent state pairs, so $k\ge 2$ is sensible.
 
 \paragraph*{Number of final states \texorpdfstring{($\nF$)}{}.}
 
 Most DFAs in teaching have about 1 to 3 final states (see e.g.~\cite[pp. 48-78]{HMU01} or~\cite[pp. 28-48]{Sch01}), so being able to set a number of final states allows concentrating on or deviating from familiar DFAs.
 
-In this work $\nF$ shall determine the number of final states in $A_{sol}$. Consequently, $A_{task}$ may have minimum $\nF$ and maximum $\nF + \nEQ + \nUN$ final states. The latter is the case, if all equivalent states are created from final states and if every unreachable state is created as final state.
+In this work $\nF$ shall determine the number of final states in $A_{sol}$. Consequently, $A_{task}$ may have minimum $\nF$ and maximum $\nF + \nEQ + \nUN$ final states. The latter is the case, if all equivalent states are created from final states and if every unreachable state is created as final state. A good default value might therefore be $\nF = 1$ or $\nF = 2$.
 
 \paragraph*{Uniqueness of solution DFA language.}
 
@@ -361,11 +361,11 @@ Note that, if $A_{sol}$ is indeed \emph{new} in that sense, then $A_{task}$ will
 
 In opposition to \CompDist, \CompUnr\ and \RemUnr\ do not require their input DFA $A_{task}$ to be complete. So we could have unreachable states in $A_{task}$, to which $\delta$ is not defined for all alphabet symbols. It is however sensible to build task DFAs complete too to avoid possible confusion: Such subtleties do not highlight the main ideas of \MinAlg.
 
-Nonetheless we shall introduce a boolean parameter $c$, that determines if there are unreachable states, that make $A_{task}$ incomplete. Thus, an exercise lecturer has the option, to showcase this matter on a DFA and generate exercises accordingly.
+Nonetheless we shall introduce a boolean parameter $c$, that determines if there may be unreachable states, that make $A_{task}$ incomplete. Thus, an exercise lecturer has the option, to showcase this matter on a DFA and generate exercises accordingly.
 
-\paragraph*{Planar drawing of task DFA \texorpdfstring{($p_{sol}, p_{task}$)}{}.}
+\paragraph*{Planarity of task DFA \texorpdfstring{($p_{sol}, p_{task}$)}{}.}
 
-A graph $G$ is \emph{planar} if it can be represented by a drawing in the plane such that its edges do not cross. Such a drawing is then called \emph{planar drawing} of $G$. A visual aid for students would be given, if the task DFA were planar and presented as a planar drawing. In this work and its associated implementation libraries and parameters $p_{sol}, p_{task} \in \{0,1\}$ (toggling planarity of $A_{sol}, A_{task}$) will be used to allow the option of planarity, but neither ensuring planarity nor planar drawing will be investigated further theoretically.
+A graph $G$ is \emph{planar} if it can be represented by a drawing in the plane such that its edges do not cross. Such a drawing is then called \emph{planar drawing} of $G$. A visual aid for students would be given, if the task DFA were planar and presented as a planar drawing. In this work and its associated implementation, libraries and parameters $p_{sol}, p_{task} \in \{0,1\}$ (toggling planarity of $A_{sol}, A_{task}$) will be used to allow the option of planarity, but neither ensuring planarity nor planar drawing will be investigated further theoretically.
 
 \paragraph*{Maximum degree of any state in task DFA.}
 

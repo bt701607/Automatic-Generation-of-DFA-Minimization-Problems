@@ -3,7 +3,8 @@
 Dependencies:
 
 * python >=3.4
-* pdflatex, as provided by PGF/TikZ 2.0 or later (e.g. https://www.tug.org/texlive/)
+* pdflatex, as provided by PGF/TikZ 2.0 or later (e.g. https://www.tug.org/texlive/) 
+Only if you want to output DFAs as PDF using the -pdf option.
 * Graphviz (https://graphviz.org/download/)
 Must be added to the PATH environment variable. This should happen automatically on Linux and MacOS, whereas on Windows this has to be done manually.
 

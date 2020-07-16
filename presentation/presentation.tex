@@ -14,6 +14,9 @@
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 
+\usepackage{pgfpages}
+
+\setbeameroption{show notes on second screen}
 
 % -----------
 
@@ -68,6 +71,11 @@
 	
 	\begin{frame}
 		\titlepage
+		
+		\note[item]{stelle BA vor}
+		\note[item]{trägt Namen}
+		\note[item]{warum die Beschäftigung}
+		\note[item]{kurz in kleiner Motivation erläutern}
 	\end{frame}
 	
 	% Introduction
@@ -77,7 +85,6 @@
 	\begin{frame}
 		\frametitle{Introduction}
 		Automata theory is a classical topic in computer science curricula.
-		
 		Minimization of DFAs is a typical task for students:
 		\begin{itemize}
 			\item<2-> sufficiently easy to understand
@@ -94,13 +101,16 @@
 			
 			in the nature of such problems
 		\end{itemize}
-	\uncover<4->{
-		{\vspace{-2cm}\hfill\includegraphics[width=0.2\linewidth]{zeitdiebe-besiegen-lebenszeit-gewinnen.jpg}\hspace{0.1cm}\tiny\footnotemark}
-		
-		\renewcommand{\footnotesize}{\tiny}
-		
-		{\footnotetext{\url{https://www.rindlerwahn.de/zeitdiebe-besiegen-und-mehr-lebenszeit-gewinnen}}}
-	}
+		\uncover<4->{
+			{\vspace{-2cm}\hfill\includegraphics[width=0.2\linewidth]{zeitdiebe-besiegen-lebenszeit-gewinnen.jpg}\hspace{0.1cm}\footnotemark}
+			
+			{\footnotetext{\tiny\url{https://www.rindlerwahn.de/zeitdiebe-besiegen-und-mehr-lebenszeit-gewinnen}}}
+		}
+	
+		\note{Bekannt, AT klassischer Teil von inf-bezogenen Lehrplänen\\ DFA-Minimierung typische Aufgabe, einfache Gründe: Alg. ist...\\-\\}
+		\note<3->{So ergibt sich dann auch...}
+		\note<4->[item]{gibt Aufgabenersteller Zeit für andere Dinge}
+		\note<4->[item]{lässt auf interessante Einsichten hoffen\\-> Schwierigkeit}
 	\end{frame}
 	
 	% Thesis Content
@@ -110,33 +120,37 @@
 	\begin{frame}
 		\frametitle{Outline}
 		\tableofcontents[currentsection] % [pausesections]
+		
+		\note[item]{mit intro fertig}
+		\note[item]{Den Ansatz in zwei Abschnitten im Detail erklären}
+		\note[item]{im Anschluß wird es noch eine... und abschließend Resume ziehen}
 	\end{frame}
 	
+%	\begin{frame}
+%		\frametitle{Problem definition}
+%		\framesubtitle{Preliminaries (1/2)}
+%		
+%		A tuple $A = (Q, \Sigma, \delta, s, F)$ with $Q, \Sigma$ being a finite, $\delta \colon\ Q \times \Sigma \to Q$, $s \in Q$ and $F \subseteq Q$ is called \emph{deterministic finite automaton}.
+%		\vspace{0.3cm}
+%		
+%		% Note: Completeness
+%		
+%		We define the \emph{extended transition function} $\delta^* : Q \times \Sigma^* \to Q$ as:
+%		\begin{itemize}
+%			\item $\delta^*(q,\varepsilon) = q$
+%			\item $\delta^*(q,w\sigma) = \delta(\delta^*(q,w),\sigma)$ for all $q \in Q$, $w \in \Sigma^*$, $\sigma \in \Sigma$
+%		\end{itemize}
+%		\vspace{0.3cm}
+%		
+%		The \emph{language} of DFA is defined as $L(A) = \{\ w\ |\ \delta^*(s, w) \in F\ \}$.
+%		\vspace{0.3cm}
+%		
+%		We call a DFA \emph{minimal}, if there exists no other DFA with the same language having less states.
+%	\end{frame}
+		
 	\begin{frame}
 		\frametitle{Problem definition}
-		\framesubtitle{Preliminaries (1/2)}
-		
-		A tuple $A = (Q, \Sigma, \delta, s, F)$ with $Q, \Sigma$ being a finite, $\delta \colon\ Q \times \Sigma \to Q$, $s \in Q$ and $F \subseteq Q$ is called \emph{deterministic finite automaton}.
-		\vspace{0.3cm}
-		
-		% Note: Completeness
-		
-		We define the \emph{extended transition function} $\delta^* : Q \times \Sigma^* \to Q$ as:
-		\begin{itemize}
-			\item $\delta^*(q,\varepsilon) = q$
-			\item $\delta^*(q,w\sigma) = \delta(\delta^*(q,w),\sigma)$ for all $q \in Q$, $w \in \Sigma^*$, $\sigma \in \Sigma$
-		\end{itemize}
-		\vspace{0.3cm}
-		
-		The \emph{language} of DFA is defined as $L(A) = \{\ w\ |\ \delta^*(w) \in F\ \}$.
-		\vspace{0.3cm}
-		
-		We call a DFA \emph{minimal}, if there exists no other DFA with the same language having less states.
-	\end{frame}
-		
-	\begin{frame}
-		\frametitle{Problem definition}
-		\framesubtitle{Preliminaries (2/2)}
+		\framesubtitle{Preliminaries} % (2/2)
 		
 		We say a state $q$ is \emph{unreachable}, iff there is no word $w \in \Sigma^*$ such that $\delta^*(s, w) = q$.
 		\vspace{0.3cm}
@@ -144,7 +158,7 @@
 		A state pair $q_1, q_2 \in Q$ is called \emph{equivalent}, iff $\sim_A(q_1, q_2)$ is true, where
 		\begin{displaymath}
 		q_1 \sim_A q_2\ \Leftrightarrow_{def}\ \forall z \in \Sigma^* \colon\ (\delta^*(q_1, z) \in F \Leftrightarrow \delta^*(q_2, z) \in F)
-		\end{displaymath}\pause
+		\end{displaymath}
 		\begin{example}
 			\centering
 			\begin{tikzpicture}[initial text={}]
@@ -171,11 +185,17 @@
 			(4) edge node [above] {$a,b$} (3)
 			;
 			\end{tikzpicture}
-		\end{example}\pause
+		\end{example}
 	
 		\begin{theorem}
 			A DFA is minimal, iff it has neither unreachable nor equivalent states.
 		\end{theorem}
+	\note{gehe davon aus, dass Def. DFA, Überführungsfkt. usw. bekannt ist\\-\\}
+	\note{w, gelesen von ... aus, in ... führt\\-\\}
+	\note{die folgende Relation für die beiden wahr ist\\-\\}
+	\note{q1,q2 haben also das selbe Akzeptanzverhalten, egal welches Wort von den beiden Zuständen aus gelesen wird\\-\\}
+	\note{weil sie schon für die selben Symbole in den jeweils selben Zustand führen\\-\\}
+	\note{ein DFA ist minimal; dieses T. ist unweigerlich mit Hopcrofts Alg. verbunden}
 	\end{frame}
 
 
@@ -184,8 +204,13 @@
 		\framesubtitle{Hopcroft's Minimization Algorithm}
 		
 		\begin{tikzpicture}[remember picture,overlay]
-		\node[xshift=-1.5cm,yshift=-3cm] at (current page.north east) {\includegraphics[height=2.5cm]{jehyoung.jpg}};
+		\node[xshift=-1.5cm,yshift=-3cm] at (current page.north east) {\includegraphics[height=2.5cm]{jehyoung.jpg}\hspace{0.1cm}\footnotemark};
 		\end{tikzpicture}
+		
+		\footnotetext{\tiny\url{http://www.cs.cornell.edu/gries/banquets/symposium40/images/faculty/jehyoung.jpg}}
+		
+		\vspace{-0.4cm}
+		\noindent MinimizeDFA($A$)
 		
 		\begin{enumerate}
 		\item Compute all unreachable states
@@ -205,6 +230,12 @@
 		\end{algorithmic}
 		\item Merge all equivalent state pairs
 		\end{enumerate}
+		
+		\note{gehe auch hier davon aus\\zur Erinnerung\\-\\}
+		
+		\note{wir init. eine Menge m(0) mit Zustandspaaren, von denen je genau ein Zustand akzeptierend ist\\-\\}
+		
+		\note{neue Menge m(i); Zustandspaare (p,q), (p,q) in keiner vorher ber. Menge, und Paar delta p sigma, delta q sigma ist in Vorgängermenge}
 	\end{frame}
 
 	
@@ -250,6 +281,7 @@
 		}\end{center}
 		{\itshape Apply the minimization algorithm and illustrate for each state pair of $A$ during which \CompDist-iteration it was marked. Draw the resulting automaton.}
 		
+		\note{auf dieser Folie... Bsp DFA-Minimierungsaufgabe}
 	\end{frame}
 
 
@@ -302,21 +334,28 @@
 			\end{tikzpicture}
 		}\end{column}
 		\end{columns}
+		\note{Lsg, die dadurch zustandekommt, dass man Hop. Min.alg. anwendet}
 	\end{frame}
 
 	\begin{frame}
 		\frametitle{Problem Definition and Approach}
-		Problem: How to generate a \emph{DFA Minimization Problem} $A_{task}$?
+		
+		DFAMinimization\vspace{0.1cm}
+		
+		\qquad$\underline{Given:}$ \emph{A DFA $A_{task}$.}
+		
+		\qquad$\underline{Task:}$ \emph{Compute $A_{sol} = \MinAlg(A_{task})$.}
+		
+		\vspace{0.2cm}
+		Main question: How to generate instances of DFAMinimization?\pause
 		
 		\vspace{0.2cm}
 		Idea: First generate $A_{sol}$, then add equivalent, then unreachable states.
 		
-		$\Rightarrow$ modular pipeline architecture
-		
 		\vspace{0.4cm}
 		\begin{tikzpicture}[initial text={}, every node/.style={transform shape}]
 		
-		\node[draw,style={rounded corners}] (p) at (0,0) {$\nSO, \kAL, \nF, d, p_{sol}, p_{task}, \nEQ,\nUN, c$};
+		\node[draw,style={rounded corners}] (p) at (0,0) {Parameters}; % $\nSO, \kAL, \nF, d, p_{sol}, p_{task}, \nEQ,\nUN, c$
 		
 		\node[draw] (1) at (0,-2) {
 			\begin{minipage}{\linewidth}
@@ -344,7 +383,10 @@
 		(1) edge (o)
 		;
 		\end{tikzpicture}
-		
+		\note{Eine Min.aufgabe können wir wie folgt formalisieren\\-\\}
+		\note{in Anlehnung an H.Min.alg.\\-\\}
+		\note{in meiner Arbeit... Reihe an Parametern, mit denen man versch. Eig. des gen. Problems beeinfl. kann\\-\\}
+		\note{Trial-and-Error-Methode}
 	\end{frame}
 	
 	
@@ -400,35 +442,45 @@
 		\end{algorithmic}
 	
 		\begin{tikzpicture}[remember picture,overlay]
-		\node[xshift=-1.5cm,yshift=-6.25cm] at (current page.north east) {\includegraphics[height=1.75cm]{rejection.jpg}};
+		\node[xshift=-1.5cm,yshift=-6.25cm] at (current page.north east) {\includegraphics[height=1.75cm]{rejection.jpg}\hspace{0.1cm}\footnotemark};
 		\end{tikzpicture}
-	
+		
+		\footnotetext{\tiny\url{https://moviewriternyu.files.wordpress.com/2015/10/rejection.jpg}}
+		
+		\note[item]{while-Schleife}
+		\note[item]{test DFA generieren, für die schon drei Parameter garantiert stimmen, nämlich im Enzelnen}
+		\note[item]{restl. Eig. werden in z. 5-10, bsp. 5 minimalität}
+		\note[item]{wenn es Fragen zu den and. get. Eig. gibt, dann kann ich hier gerne im Anschluss genauere Erläuterungen geben}
+		\note[item]{Hier möchte.. nur auf test DFA Generierung in z.4 näher eingehen}
 	\end{frame}
 
 	\begin{frame}
 		\frametitle{Generating Minimal DFAs}
 		\framesubtitle{Test DFA Generation}
-		We will restrict ourselves to the following DFAs:
-		\[
-			Q = \mathbb{N}_0^ {\nSO-1}, \Sigma = \mathbb{N}_0^{\kAL-1}, s = 0
-		\]\pause
+		We will restrict ourselves to $Q = [0,\nSO-1],\ \Sigma = [0,\kAL-1],\ s = 0$.\\ $ $\\\pause
 		
+		\noindent Generation...
 		\begin{enumerate}
-			\item[(a)] Generation by Randomization:
+			\item[(a)] by randomization:
 			\begin{align*}
 			F &= random\_subset(Q)\\
 			\delta(q, \sigma) &= choose\_one(Q) \qquad\qquad \forall q\in Q, \sigma\in\Sigma
 			\end{align*}\pause
 			
-			\item[(b)] Generation by Enumeration:\\$ $\\
-			An \emph{enumeration state} $s_{\nSO, \kAL, \nF} = (F_F,F_\delta)$ consists of two arrays of length $\nSO, \nSO*\kAL$, respectively.
+			\item[(b)] by enumeration: An \emph{enumeration state} $s_{\nSO, \kAL, \nF} = (F_F,F_\delta)$ has the following semantics:
 			\begin{align*}
 			F_F[i] = 1 &\Leftrightarrow_{def} i \in F\\
 			F_\delta[i * \kAL + j] = q &\Leftrightarrow_{def} \delta(i, j) = q
 			\end{align*}
 			Example state: $s_{4, 2, 2} = (0110)_2\ \ (10\ 13\ 22\ 03)_4$
 		\end{enumerate}
-	
+		\note<1>{Im Rahmen dieser Arbeit\\}
+		\note<2>{Ich werde hier zwei Methoden zur Gen vorstellen. Die Gen. per Randomisierung funkt. hier wie folgt\\-\\}
+		\note<2>{Für die Tr.fkt. wird für jede Komb. eines Zustands und eines Symbols ein zufälliger Zustand ausgewählt\\}
+		\note<3>{verwalten wir für eine gegebene Enumeration einen\\-\\}
+		\note<3>{parametrisiert mit\\-\\}
+		\note<3>{wenn i nicht akz., dann FF[i] = 0; für alle Zustände definiert\\-\\}
+		\note<3>{2. Feld speichert für alle Komb. eines Zustands und eines Symbols zu welchem Zustand man gelangt\\-\\Unten angedeutet; Felder als Zahlen interpretieren; durch gewisse Inkrementierungsfkt. von einem DFA zum nächsten gelangen; nicht weiter ausführen}
 	\end{frame}
 
 %	\begin{frame}
@@ -444,6 +496,10 @@
 	\begin{frame}
 		\frametitle{Outline}
 		\tableofcontents[currentsection] % [pausesections]
+		
+		\note{Kapitel der Lös.DFA Gen. abgeschlossen; widmen uns Erweiterung dieser DFAs hin zu Aufgaben-DFAs\\-\\}
+		
+		\note{Beschäftigung zunächst, gemäß vorhin vorg. Reihenfolge, mit Hinz. äqu. Z.}
 	\end{frame}
 	
 	\input{./add_eq.tex}
@@ -466,11 +522,8 @@
 				\State let $q$ be the new state
 				\vspace{0.2cm}
 				
-				\State add ingoing tr.\ from a random subset of $U\times\Sigma$
-				\vspace{0.2cm}
-				
-				\State $\Sigma' \gets \textbf{if } c = 1 \textbf{ then } \Sigma \textbf{ else}$ random subset of $\Sigma$
-				\State add outgoing tr.\ to $|\Sigma'|$ random states
+				\State steal ingoing tr.\ from a random subset of $U\times\Sigma$
+				\State add outgoing tr.\ to $|\Sigma|$ random states
 				\vspace{0.2cm}
 				
 				\State add $q$ to $U$
@@ -493,41 +546,49 @@
 		\frametitle{Outline}
 		\tableofcontents[currentsection] % [pausesections]
 	\end{frame}
-	
+
 	\begin{frame}
 		\frametitle{Live Demonstration}
-		\framesubtitle{Program Architecture}
-		\begin{tikzpicture}[initial text={}, every node/.style={transform shape}]
+		\centering\vspace{1cm}
+		\hspace{0.2cm}\includegraphics[width=0.95\linewidth]{loading-100.png}\hspace{0.1cm}\footnotemark
 		
-		\node[draw] (main) at (0,0) {main.py};
-		
-		\node[draw,style={rounded corners}] (log) at (3,0) {log.py};
-		
-		\node[draw] (build) at (-3,-1.5) {build.py};
-		\node[draw] (extend) at (0,-1.5) {extend.py};
-		\node[draw] (output) at (3,-1.5) {output.py};
-		
-		\node[draw] (dbdfa) at (-4,-3) {db\_dfa.py};
-		\node[draw] (dbenum) at (-2,-3) {db\_enum.py};
-		
-		\node[draw] (iso) at (-3, -4.5) {isomorphy.py};
-		\node[draw] (min) at (0, -4.5) {minimization.py};
-		\node[draw] (plan) at (3, -4.5) {planarity.py};
-		
-		\node[draw, fit=(iso)(plan)] (iso) at (0, -5.3) {dfa.py};
-		
-		\path[->]
-			(main) edge (log)
-			
-			(main) edge (build)
-			(main) edge (extend)
-			(main) edge (output)
-			
-			(build) edge (dbdfa)
-			(build) edge (dbenum)
-		;
-		\end{tikzpicture}
+		\footnotetext{\tiny\url{https://sagamer.co.za/wp-content/uploads/2015/03/loading-please-wait.png}}
 	\end{frame}
+	
+%	\begin{frame}
+%		\frametitle{Live Demonstration}
+%		\framesubtitle{Program Architecture}
+%		\begin{tikzpicture}[initial text={}, every node/.style={transform shape}]
+%		
+%		\node[draw] (main) at (0,0) {main.py};
+%		
+%		\node[draw,style={rounded corners}] (log) at (3,0) {log.py};
+%		
+%		\node[draw] (build) at (-3,-1.5) {build.py};
+%		\node[draw] (extend) at (0,-1.5) {extend.py};
+%		\node[draw] (output) at (3,-1.5) {output.py};
+%		
+%		\node[draw] (dbdfa) at (-4,-3) {db\_dfa.py};
+%		\node[draw] (dbenum) at (-2,-3) {db\_enum.py};
+%		
+%		\node[draw] (iso) at (-3, -4.5) {isomorphy.py};
+%		\node[draw] (min) at (0, -4.5) {minimization.py};
+%		\node[draw] (plan) at (3, -4.5) {planarity.py};
+%		
+%		\node[draw, fit=(iso)(plan)] (iso) at (0, -5.3) {dfa.py};
+%		
+%		\path[->]
+%			(main) edge (log)
+%			
+%			(main) edge (build)
+%			(main) edge (extend)
+%			(main) edge (output)
+%			
+%			(build) edge (dbdfa)
+%			(build) edge (dbenum)
+%		;
+%		\end{tikzpicture}
+%	\end{frame}
 
 %	\begin{frame}
 %		\frametitle{Live Demonstration}
@@ -558,22 +619,90 @@
 		\begin{itemize}
 			\item more parameters, ranged parameters
 			
-			The \emph{degree} of a state $q$ is defined as $deg(q) = |in(q)| + |out(q)|$.
+			The \emph{degree} of a state $q$ is defined as $deg(q) = |d^-(q)| + |d^+(q)|$.
 			
 			$\Rightarrow$ capping the max.\ degree?
 			
 			\item investigate planarity and drawing algorithms
 			\item complexity analysis
-		\end{itemize}
+		\end{itemize}\pause
+		\vspace{0.4cm}
+		\begin{center}
+			\uncover<3-4>{Thanks for listening}\uncover<3>{!}\uncover<4>{even longer!}
+		\end{center}
 	
 	\end{frame}
 
+	\begin{frame}
+		\frametitle{Bonus-Slide}
+		\framesubtitle{$\mmD$-Proof}
+		
+		\begin{definition} \label{ch:4:def-dist-word}
+			We will call a word $w$ \emph{distinguishing word of $p,q$}, iff
+			\[
+				\delta^*(p,w) \in F \Leftrightarrow \delta^*(q,w) \notin F		
+			\]
+%				\item \emph{finishing word of $q$}, iff $\delta^*(q, w) \in F$
+		\end{definition}
+		\vspace{-0.7cm}
+		\begin{lemma}\label{ch:4:semantics-of-m(n)}
+			Iff $(p,q)\in m(n)$, the shortest distinguishing word of $p,q$ has length $n$.
+		\end{lemma}
+	
+		\begin{lemma}\label{ch:4:semantics-of-D(A)}
+			If \CompDist\ has done $n$ iterations and terminated (so $\mmD(A) = n$), then the longest word $w$, that is a shortest distinguishing word for any state pair, has length $\mmD(A)-1$.
+		\end{lemma}
+	
+		\begin{theorem}\label{ch:4:th-D}
+			Given two DFAs $A$, $A'$. If both are accessible and $L(A) = L(A')$, then \CompDist\ runs with the same number of iterations on them: $\mmD(A) = \mmD(A')$.
+		\end{theorem}
+	
+	\end{frame}
+%
 %	\begin{frame}
-%		\frametitle{References}
+%		\frametitle{Bonus-Slides}
+%		\framesubtitle{$\mmD$-Proof}
 %		
-%		\tiny
-%		\bibliography{presentation}
-%		
+%			\begin{itemize}
+%				\item [] $L(A) = L(A') \Rightarrow \forall w \in \Sigma^*\colon \delta^*(s, w) \in F \Leftrightarrow \delta'^*(s', w) \in F'$\pause
+%				
+%				We extend this to a statement that includes any state visited on the way to $F$ resp.\ $F'$.
+%				\vspace{0.2cm}
+%				
+%				
+%				\item[$\Rightarrow$] $\forall u \in \Sigma^*\colon \exists q,q' \in Q\colon$
+%				
+%				\qquad $\delta^*(s, u) = q \land \delta'^*(s', u) = q' \land$
+%				
+%				\qquad $f(q) = f(q')$\pause
+%				
+%				Since all states in $A$/$A'$ are reachable:
+%				\vspace{0.2cm}
+%				
+%				
+%				\item [$\Rightarrow$] $\forall q \in Q\colon \exists q' \in Q'\colon f(q) = f(q')$ $\land$ 
+%				
+%				$\forall q' \in Q'\colon \exists q \in Q\colon f(q) = f(q')$
+%				
+%				\item[$\Rightarrow$] $\{\ f(q)\ |\ q \in Q\ \} = \{\ f(q')\ |\ q' \in Q'\ \}$\pause
+%				
+%				\item[$\Rightarrow$] There cannot be a distinguishing word in one of $A$/$A'$ that is not distinguishing word in the other DFA.
+%				\vspace{0.2cm}
+%				
+%				\item[$\Rightarrow$] Both DFAs have the same shortest distinguishing words and thus too the same longest shortest distinguishing word.
+%				
+%				\item[$\Rightarrow$] If $\mmD(A) \neq \mmD(A')$, then one DFA would have a longer longest shortest distinguishing word $\Rightarrow \mmD(A) = \mmD(A')$
+%			\end{itemize}
+%	\end{frame}
+%
+%	\begin{frame}
+%	\frametitle{Bonus-Slides}
+%	\framesubtitle{Ideas for further Works}
+%	\end{frame}
+%
+%	\begin{frame}
+%	\frametitle{Bonus-Slides}
+%	\framesubtitle{Small Project-History}
 %	\end{frame}
 
 \end{document}

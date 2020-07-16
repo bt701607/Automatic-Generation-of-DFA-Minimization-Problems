@@ -2,11 +2,11 @@
 	\frametitle{Extending Minimal DFAs}
 	\framesubtitle{Adding Equivalent States (1)}
 	
-	We now want to add states $r_1,\ldots,r_\nEQ$ to a DFA, such that every $r_i$ is equivalent to a state $e$ in the original DFA:
+	We now want to add states $r_1,\ldots,r_\nEQ$ to the solution DFA, such that every $r_i$ is equivalent to a state $e$ in the solution DFA:
 	\[
 	\forall i \in [1,\nEQ] \colon\ \exists e \in Q_{sol}\colon\ r_i \sim_A e
 	\]
-	We will first choose an $e\in Q_{sol}$ for each state $r_i$ we create, then we add its transitions.\pause
+	Whenever we add a state $r_i$, we will first choose an $e\in Q_{sol}$, then we add the transitions of $r_i$.\pause
 	\begin{example}\centering
 	\begin{tikzpicture}[initial text={}]
 	\tikzstyle{every state}=[minimum size=5mm, inner sep=0pt]
@@ -42,6 +42,10 @@
 	;
 	\end{tikzpicture}
 	\end{example}
+\note<1>{Sei nE die gewünschte Anzahl an paarweise versch. äqu. Zustandspaaren.\\-\\}
+\note<1>{In diesem Verfahren werden die rI einzeln nacheinander hinzugefügt}
+\note<2-4>{im Bsp könnten wir zunächst Zst. 2 als orig. aussuchen, und dann rI gedanklich zu dessen Äqu. hinzufügen\\-\\}
+\note<2-4>{dann würden wir jetzt die Tr. hinzufügen, dabei beginnen wir mit den ausgehenden Tr.}
 \end{frame}
 
 \begin{frame}
@@ -55,11 +59,9 @@
 	\vspace{0.3cm}
 	\begin{itemize}
 		\item[R1:] For each symbol $\sigma \in \Sigma$ choose exactly one state $q\in[\delta(e, \sigma)]_{\sim_A}$ and set $\delta(r_i, \sigma) = q$.
-	\end{itemize}\pause
-	\vspace{0.3cm}
+	\end{itemize}
+	\vspace{0.3cm}\pause
 
-	\begin{columns}[T]
-	\begin{column}{0.5\linewidth}
 	\begin{example}\centering
 	\begin{tikzpicture}[initial text={}]
 	\tikzstyle{every state}=[minimum size=5mm, inner sep=0pt]
@@ -73,12 +75,8 @@
 	\node[state] (2) at (2, -1.5) {$e$};
 	\node[state] (ri) at (2, -3) {$r_i$};
 	
-	\node[fit=(1)(2)(2p)(ri),draw,rounded corners,dashed] {};
-	
 	\node[state,accepting]  (3) at (4, 0)   {$3$};
 	\node[state,accepting]  (4) at (4, -1.5)   {$4$};
-	
-	\node [fit=(3)(4),draw,rounded corners, dashed] {};
 	
 	\path[->]
 	([yshift=0.05cm]0.east) edge node [above] {$a$} ([yshift=0.05cm]1.west)
@@ -88,81 +86,96 @@
 	(1) edge node [left] {$b$} (2)
 	;
 	
-	\uncover<2>{
+	\uncover<1>{
+		\node [fit=(3)(4),draw,rounded corners, dashed] {};
+		\node[fit=(1)(2)(2p)(ri),draw,rounded corners,dashed] {};
 		\path[->]
 		(2) edge node [above] {$a$} (4)
+		(2) edge [loop below] node [below] {$b$} (2)
+		;
+	}
+	
+	\uncover<2>{
+		\node [fit=(3)(4),draw,rounded corners, dashed, color=Blue, line width=1.5pt] {};
+		\node[fit=(1)(2)(2p)(ri),draw,rounded corners,dashed] {};
+		\path[->]
+		(2) edge[color=Blue,line width=1.5pt] node [above] {$a$} (4)
 		(2) edge [loop below] node [below] {$b$} (2)
 		;
 	}
 	
 	\uncover<3>{
+		\node [fit=(3)(4),draw,rounded corners, dashed, color=Blue, line width=1.5pt] {};
+		\node[fit=(1)(2)(2p)(ri),draw,rounded corners,dashed] {};
 		\path[->]
-		(2) edge[color=ForestGreen] node [above] {$a$} (4)
-		(2) edge[color=ForestGreen] [loop below] node [below] {$b$} (2)
-		;
-	}
-	
-	\uncover<4>{
-		\path[->]
-		(2) edge node [above] {$a$} (4)
+		(2) edge[color=Blue,line width=1.5pt] node [above] {$a$} (4)
 		(2) edge [loop below] node [below] {$b$} (2)
 		
-		(ri) edge[bend left=1.5cm, color=ForestGreen] node[left] {$b$} (1)
-		(ri) edge[color=ForestGreen] node[below right] {$a$} (4)
+		(ri) edge[color=Red,line width=1.5pt] node[below right] {$a$} (4)
+		;
+	}
+
+	\uncover<4>{
+		\node [fit=(3)(4),draw,rounded corners, dashed] {};
+		\node[fit=(1)(2)(2p)(ri),draw,rounded corners,dashed, color=Blue, line width=1.5pt] {};
+		\path[->]
+		(2) edge node [above] {$a$} (4)
+		(2) edge[color=Blue,line width=1.5pt] [loop below] node [below] {$b$} (2)
+		
+		(ri) edge node[below right] {$a$} (4)
 		;
 	}
 
 	\uncover<5>{
+		\node [fit=(3)(4),draw,rounded corners, dashed] {};
+		\node[fit=(1)(2)(2p)(ri),draw,rounded corners,dashed, color=Blue, line width=1.5pt] {};
 		\path[->]
 		(2) edge node [above] {$a$} (4)
-		(2) edge [loop below] node [below] {$b$} (2)
+		(2) edge[color=Blue,line width=1.5pt] [loop below] node [below] {$b$} (2)
 		
-		(ri) edge[bend left=1.5cm] node[left] {$b$} (1)
+		(ri) edge[bend left=1.5cm, color=Red,line width=1.5pt] node[left] {$b$} (1)
 		(ri) edge node[below right] {$a$} (4)
 		;
 	}
 	\end{tikzpicture}
 	\end{example}
-	\end{column}
-	\begin{column}{0.5\linewidth}
-		\pause\pause\pause
-		The rule is always fulfillable:
-		\begin{itemize}
-			\item $A_{sol}$ is complete
-			\item every $r_i$ gets an out. transition for every alphabet symbol
-			\item[$\Rightarrow$] $\delta(e, \sigma)$ is always defined, so $[\delta(e, \sigma)]_{\sim_A}$ is never empty
-		\end{itemize}
-	\end{column}
-	\end{columns}
-
+	\note{..dann sind folglich auch diejenigen Zust. äqu., wenn wir ein bel. Symbol von rI und e aus lesen\\-\\}
+	\note{und setze diesen Zustand als Endzustand für delta(rI, sigma)\\-\\}
+	\note{So konnten wir mit dieser Regel erreichen, dass jede Transition von rI in dieselbe Äqu.kl. führt, die wir err. würden, wenn wir der korresp. Tr. von e folgten}
 \end{frame}
 
 \begin{frame}
 	\frametitle{Extending Minimal DFAs}
 	\framesubtitle{Adding Equivalent States (3) - Ingoing Transitions}
 	
-	First observation: Since $r_i$ must be reachable, $in(r_i) >= 1$.
-
+	First observation: Since $r_i$ must be reachable, we require $|d^-(r_i)| >= 1$.
+	
 	\vspace{0.2cm}
 	Let $q$ be a state s.t.\ $\delta(q,\sigma)=p$ and we want $\delta(q,\sigma)=r_i$.\pause
 	
 	\vspace{0.2cm}
 	\begin{itemize}
-		\item[] $q$ must remain in its equivalence class\pause
+		\item[] $q$ must remain in its equivalence class
 		
-		\item[$\Rightarrow$] $p$ must be in $[r_i]_{\sim_A} = [e]_{\sim_A}$\pause
+		\item[$\Rightarrow$] $p$ must be in $[r_i]_{\sim_A} = [e]_{\sim_A}$
 		
 		\item[$\Rightarrow$] $q$ has to have a transition to some state in $[r_i]_{\sim_A} = [e]_{\sim_A}$\pause
 	\end{itemize}
 	
 	\vspace{0.2cm}
-	We see that $p$ must have at least $2$ ingoing transitions.\pause
-	
-	\vspace{0.2cm}
+	Furthermore, we see that $p$ must have at least $2$ \emph{ingoing elements}.
+	\[
+	in(q) = |d^-(q)| + \begin{cases}
+	1 & \text{if } s = q\\
+	0 & \text{else}
+	\end{cases}
+	\]\pause
 	\begin{itemize}
 		\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $in(p) \geq 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
 	\end{itemize}
-
+	\note<1>{rI kann nicht Startzustand sein, daher nicht in Erreichbarkeits-Bed. aufgenommen\\-\\}
+	\note<1>{wir müssen Tr. klauen, weil es keine Tr. mit 'losen' Enden gibt- arbeiten mit kompletten DFAs}
+	\note<3>{im Wesentlichen: p muss freie eingehende Tr. haben}
 \end{frame}
 
 \begin{frame}
@@ -207,15 +220,22 @@
 	
 	\uncover<1>{
 		\path[->]
-		([yshift=-0.05cm]0.east) edge[color=ForestGreen] node [below] {$b$} ([yshift=-0.05cm]1.west)
-		(2) edge [loop below, color=ForestGreen] node [below] {$b$} (2)
+		([yshift=-0.05cm]0.east) edge[color=Blue, line width=1.5pt] node [below] {$b$} ([yshift=-0.05cm]1.west)
+		(2) edge [loop below, color=Blue, line width=1.5pt] node [below] {$b$} (2)
 		;
 	}
 	
 	\uncover<2>{
 		\path[->]
-		(0) edge[bend right=1.5cm, color=ForestGreen] node[left] {$b$} (ri)
-		(2) edge[color=ForestGreen] node[left] {$b$} (ri)
+		([yshift=-0.05cm]0.east) edge[color=Blue, line width=1.5pt] node [below] {$b$} ([yshift=-0.05cm]1.west)
+		(2) edge[color=Red, line width=1.5pt] node[left] {$b$} (ri)
+		;
+	}
+
+	\uncover<3>{
+		\path[->]
+		(0) edge[bend right=1.5cm, color=Red, line width=1.5pt] node[left] {$b$} (ri)
+		(2) edge[color=Red, line width=1.5pt] node[left] {$b$} (ri)
 		;
 	}
 	\end{tikzpicture}

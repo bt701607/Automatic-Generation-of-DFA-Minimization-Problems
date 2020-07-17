@@ -147,13 +147,7 @@
 \begin{frame}
 	\frametitle{Extending Minimal DFAs}
 	\framesubtitle{Adding Equivalent States (3) - Ingoing Transitions}
-	
-	First observation: Since $r_i$ must be reachable, we require $|d^-(r_i)| >= 1$.
-	
-	\vspace{0.2cm}
-	Let $q$ be a state s.t.\ $\delta(q,\sigma)=p$ and we want $\delta(q,\sigma)=r_i$.\pause
-	
-	\vspace{0.2cm}
+	Let $q$ be a state s.t.\ $\delta(q,\sigma)=p$ and we want $\delta(q,\sigma)=r_i$.
 	\begin{itemize}
 		\item[] $q$ must remain in its equivalence class
 		
@@ -161,6 +155,8 @@
 		
 		\item[$\Rightarrow$] $q$ has to have a transition to some state in $[r_i]_{\sim_A} = [e]_{\sim_A}$\pause
 	\end{itemize}
+
+	Observation: Since $r_i$ must be reachable, we require that there is at least one such transition for which $q \neq r_i$ is true.\pause
 	
 	\vspace{0.2cm}
 	Furthermore, we see that $p$ must have at least $2$ \emph{ingoing elements}.
@@ -171,9 +167,9 @@
 	\end{cases}
 	\]\pause
 	\begin{itemize}
-		\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $in(p) \geq 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
+		\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $in(p) \geq 2$. For at least one chosen transition  $q\neq r_i$ must be true. Remove each $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
 	\end{itemize}
-	\note<1>{rI kann nicht Startzustand sein, daher nicht in Erreichbarkeits-Bed. aufgenommen\\-\\}
+	\note<2>{bug in thesis and program, erst nach Abgabe gefunden, entsprechend dort falsch geschrieben u. programmiert\\-\\}
 	\note<1>{wir müssen Tr. klauen, weil es keine Tr. mit 'losen' Enden gibt- arbeiten mit kompletten DFAs}
 	\note<3>{im Wesentlichen: p muss freie eingehende Tr. haben}
 \end{frame}
@@ -183,7 +179,7 @@
 \framesubtitle{Adding Equivalent States (3) - Ingoing Transitions}
 
 \begin{itemize}
-\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $in(p) \geq 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
+	\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $in(p) \geq 2$. For at least one chosen transition  $q\neq r_i$ must be true. Remove each $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
 \end{itemize}
 
 	\begin{example}\centering

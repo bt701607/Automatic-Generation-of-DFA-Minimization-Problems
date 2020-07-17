@@ -191,17 +191,19 @@ def _shuffle_state_labels(solDFA, reachDFA, taskDFA):
                dfa.eqClasses[i].sort()
            
         
-def save_exercise(solDFA, reachDFA, taskDFA, outDir, saveDFA, buildTEX, buildPDF):
+def save_exercise(solDFA, reachDFA, taskDFA, 
+                  outDir, saveDFA, buildTEX, buildPDF, shuffle):
     """Saves a DFA minimization problem and its solution.
     
     saveDFA  - toggle whether solDFA,taskDFA shall be printed to .dfa-files
     buildTEX - toggle whether task,solution shall be saved as .tex-files
     buildPDF - toggle whether task,solution shall be saved as .pdf-files
-    
-    Shuffles the state labels of solDFA, reachDFA, taskDFA.
+    shuffle  - toggle whether the state labels of solDFA, reachDFA, taskDFA
+               shall be shuffled
     """
     
-    _shuffle_state_labels(solDFA, reachDFA, taskDFA)
+    if shuffle:
+        _shuffle_state_labels(solDFA, reachDFA, taskDFA)
     
     number = _next_path_number(outDir)
     

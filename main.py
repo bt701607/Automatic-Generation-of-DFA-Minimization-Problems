@@ -42,7 +42,8 @@ _ARGUMENTS = {
   ('-out',  str, _DEFAULT_OUTPUT, 'working directory; here results will be saved'),
   ('-dfa',  str, 'no',   'toggle whether DFAs shall be printed to .dfa-files', _BOOL_CHOICES),
   ('-tex',  str, 'yes',  'toggle whether LaTeX-code shall be created from DFAs', _BOOL_CHOICES),
-  ('-pdf',  str, 'yes',  'toggle whether PDFs shall be created from DFAs', _BOOL_CHOICES))
+  ('-pdf',  str, 'yes',  'toggle whether PDFs shall be created from DFAs', _BOOL_CHOICES),
+  ('-shuf', str, 'yes',  'toggle whether DFA labels shall be shuffled', _BOOL_CHOICES))
 }
 
 _EPILOG = '''
@@ -87,12 +88,13 @@ def main():
     
     strToBool = lambda x: x == 'yes'
     
-    args.ps  = strToBool(args.ps)
-    args.c   = strToBool(args.c)
-    args.pt  = strToBool(args.pt)
-    args.dfa = strToBool(args.dfa)
-    args.tex = strToBool(args.tex)
-    args.pdf = strToBool(args.pdf)
+    args.ps   = strToBool(args.ps)
+    args.c    = strToBool(args.c)
+    args.pt   = strToBool(args.pt)
+    args.dfa  = strToBool(args.dfa)
+    args.tex  = strToBool(args.tex)
+    args.pdf  = strToBool(args.pdf)
+    args.shuf = strToBool(args.shuf)
     
     args.out = pathlib.Path(args.out)
     
@@ -177,7 +179,8 @@ def main():
 
     if args.dfa or args.tex or args.pdf:
         log.saving()
-        save_exercise(solDFA, reachDFA, taskDFA, args.out, args.dfa, args.tex, args.pdf)
+        save_exercise(solDFA, reachDFA, taskDFA, args.out, 
+                      args.dfa, args.tex, args.pdf, args.shuf)
         log.done()
     else:
         log.no_saving()

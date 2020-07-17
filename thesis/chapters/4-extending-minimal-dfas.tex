@@ -99,13 +99,22 @@ Thus, a fitting state $q$ has to have a transition to some state in $[r]_{\sim_A
 We see here, that $p$ must have at least one ``free'' transition, else it would become unreachable. A state has a free transition, if it has at least two ingoing transitions or if it is start state and has at least one ingoing transition. With $in(q)$ we denote the \emph{ingoing elements of $q$}:
 \[
 	in(q) = |d^-(q)| + \begin{cases}
-							1 & \text{if } s = q1\\
+							1 & \text{if } s = q\\
 							0 & \text{else}
 						 \end{cases}
 \]
 Now we can define our rule for adding ingoing transitions:
 \begin{description}
-	\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $in(p) \ge 2$. Remove $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r)$.
+	\item[R2:] Choose at least one $((q, \sigma), p) \in \delta$ with $[p] = [e]$ and $in(p) \geq 2$, such that:
+	\begin{itemize}
+		\item For at least one chosen transition  $q\neq r_i$ is true.
+		
+		(if $r_i$ has only self-loops it is unreachable)
+		\item For each $p$ there must remain an ingoing transition, that makes $p$ reachable.
+		
+		
+	\end{itemize}
+	Remove each $((q, \sigma), p)$ from $\delta$ and add $((q, \sigma), r_i)$.
 \end{description}
 
 \subsection{Requirements for choosing origin states}
@@ -175,7 +184,7 @@ We integrate our strategy of creating equivalent state pairs in the following al
     
 		\For {$q$ \textbf{in} $Q$} \Comment{find a duplicatable state $e$}
 			\If {$in(q) \ge 2$}
-				\State $e \gets$ random chosen state from $[q]_{\sim_A}$
+				\State $e \gets$ randomly chosen state from $[q]_{\sim_A}$
 				\State \textbf{break}
 			\EndIf
 		\EndFor
@@ -190,12 +199,19 @@ We integrate our strategy of creating equivalent state pairs in the following al
 		\vspace{0.2cm}
 		
 		\For {$\sigma$ \textbf{in} $\Sigma$} \Comment{\textbf{R1:} add $d^+(r)$}
-			\State $\delta(r, \sigma) =$ random chosen state from $[\delta(e, \sigma)]_{\sim_A}$
+			\State $\delta(r, \sigma) =$ randomly chosen state from $[\delta(e, \sigma)]_{\sim_A}$
 		\EndFor
 		
 		\vspace{0.2cm}
 		
-		\State $P \gets \{\ ((s, \sigma), t) \in \delta\ |\ t \in [e]_{\sim_A},\ in(t) \geq 2\ \}$ \Comment{\textbf{R2:} add $d^-(r)$}
+		\State $P \gets \emptyset$\Comment{\textbf{R2:} add $d^-(r)$}
+		\For{$p$ \textbf{in} $[e]_{\sim_A}$}
+			\If{$in(p) \ge 2$}
+				\State $t \gets$ randomly chosen transition from $\{\ ((p',\sigma),p)\in d^-(p)\ |\ p' \neq p\ \}$
+				\State $P \gets P \cup d^-(p) \setminus \{t\}$ \Comment{$p$ keeps a transition s.t.\ it stays reachable}
+			\EndIf
+		\EndFor
+		
 		\State $C \gets$ random nonempty subset of $P$
 		\For {$((s, \sigma), t)$ \textbf{in} $C$}
             \State $\delta(s, \sigma) = r$

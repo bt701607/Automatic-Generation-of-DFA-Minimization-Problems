@@ -111,10 +111,10 @@ def _add_equiv_states(dfa, nEquiv=1):
       where each class is a list of states
     
     Raises DFANotExtendable, if it is not possible to add nEquiv equivalent 
-    states cannot be added.
+    states.
     """
     
-    def _in(q):
+    def _in(q, dfa):
         
         cnt = len(tuple( t for t in dfa.transitions if t[1] == q ))
         
@@ -130,7 +130,7 @@ def _add_equiv_states(dfa, nEquiv=1):
         # find a fitting state1 that shall be duplicated, create a new state
         # state2 and add it to state1's equivalence class
 
-        duplicatableStates = tuple(filter(lambda q: _in(q) >= 2, dfa.states))
+        duplicatableStates = tuple(filter(lambda q: _in(q,dfa) >= 2, dfa.states))
 
         state1 = random.choice(duplicatableStates) # here we could enumerate
         state2 = _new_state(dfa, state1 in dfa.final)
@@ -162,18 +162,52 @@ def _add_equiv_states(dfa, nEquiv=1):
 
                 dfa.transitions.append(((state2,c), random.choice(q2EqClass))) # here we could enumerate
 
-        # take half the ingoing transitions from state1 and give them state2
-
-        possible = tuple(t for t in dfa.transitions 
-                                if t[1] in state1eqClass and _in(t[1]) >= 2)
+        # take some transitions from states in state1eqClass and give them state2
     
-        nonEmptySubset = lambda s: random.sample(s, random.randint(1, len(s))) # here we could enumerate
+        subset = lambda s,_min: random.sample(s, random.randint(_min, len(s))) # here we could enumerate
 
-        for t in nonEmptySubset(possible):
+        s2reachable = False
 
-            (q1,c),q2 = t
-            dfa.transitions.append(((q1,c),state2))
-            dfa.transitions.remove(t)
+        random.shuffle(state1eqClass)
+
+        for q in state1eqClass:
+            
+            _inq = _in(q,dfa)
+            
+            intr = list(t for t in dfa.transitions if t[1] == q)
+            random.shuffle(intr)
+            
+            if _inq >= 2:
+            
+                # ensure q is reached afterwards
+                
+                if dfa.start != q:
+                
+                    reachTr = None
+                    
+                    for t in intr:
+                        if t[0][0] != q:
+                            reachTr = t
+                            break
+                            
+                    intr.remove(reachTr)
+            
+                # seek and steal transitions, ensure reachability of state2
+                
+                if not s2reachable and q != state2:
+                    
+                    chosen = subset(intr, 1)
+                    s2reachable = True
+                    
+                else:
+                
+                    chosen = subset(intr, 0)
+
+                for t in chosen:
+                
+                    (q1,c),q2 = t
+                    dfa.transitions.append(((q1,c),state2))
+                    dfa.transitions.remove(t)
                 
     # update informations
 
